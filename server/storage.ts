@@ -20,7 +20,8 @@ import {
   UrlClickRecord,
   InsertUrlClickRecord,
   urlClickRecords,
-  TimeRangeFilter
+  TimeRangeFilter,
+  blacklistedUrls
 } from "@shared/schema";
 import { db, pool } from "./db";
 import { eq, and, isNull, asc, desc, sql, inArray, ne, ilike, or, gte, lte } from "drizzle-orm";
@@ -855,6 +856,33 @@ export class DatabaseStorage implements IStorage {
     console.log('  - Campaign ID:', insertUrl.campaignId);
     console.log('  - Click limit (after multiplier):', insertUrl.clickLimit);
     console.log('  - Original click limit (user input):', originalClickLimit);
+    
+    // BLACKLIST CHECK: Check if this URL is blacklisted before doing anything else
+    // This is the central place to check, ensuring all URL creation routes are protected
+    const blacklistedEntries = await db.select().from(blacklistedUrls);
+    const matchedBlacklist = blacklistedEntries.find(entry => 
+      insertUrl.targetUrl === entry.targetUrl
+    );
+    
+    if (matchedBlacklist) {
+      console.log(`⛔ URL BLACKLISTED: The URL ${insertUrl.targetUrl} matches blacklisted URL: ${matchedBlacklist.targetUrl} (${matchedBlacklist.name})`);
+      
+      // If this URL is already marked as rejected, just return it
+      if (insertUrl.status === 'rejected') {
+        console.log(`  - URL already marked as rejected, continuing with creation`);
+      } else {
+        // If not already rejected, modify the insertUrl to be rejected
+        console.log(`  - Marking URL as rejected due to blacklist match`);
+        
+        // If name doesn't already indicate rejection, rename it to show blacklist rejection
+        if (!insertUrl.name.startsWith('Blacklisted{')) {
+          insertUrl.name = `Blacklisted{${matchedBlacklist.name}}(${insertUrl.name})`;
+        }
+        
+        // Mark as rejected
+        insertUrl.status = 'rejected';
+      }
+    }
     
     // Check if we already have an original URL record for this name
     const existingRecord = await this.getOriginalUrlRecordByName(insertUrl.name);
