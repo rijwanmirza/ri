@@ -865,7 +865,8 @@ export class DatabaseStorage implements IStorage {
         await this.createOriginalUrlRecord({
           name: insertUrl.name,
           targetUrl: insertUrl.targetUrl,
-          originalClickLimit: safeOriginalClickLimit
+          originalClickLimit: safeOriginalClickLimit,
+          status: insertUrl.status || 'active' // Use the provided status or default to active
         });
         console.log('🔍 DEBUG: Created original URL record for', insertUrl.name);
       } catch (error) {
@@ -995,7 +996,7 @@ export class DatabaseStorage implements IStorage {
         ...insertUrl,
         originalClickLimit: safeOriginalClickLimit, // Explicitly use the safe original value
         clicks: 0,
-        status: 'active',
+        status: insertUrl.status || 'active', // Use the provided status or default to active
         createdAt: now,
         updatedAt: now
       })

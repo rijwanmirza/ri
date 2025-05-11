@@ -1220,10 +1220,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Get all blacklisted URLs
       const blacklistedEntries = await db.select().from(blacklistedUrls);
-      const matchedBlacklist = blacklistedEntries.find(entry => targetUrl.includes(entry.targetUrl));
+      const matchedBlacklist = blacklistedEntries.find(entry => targetUrl === entry.targetUrl);
       
       if (matchedBlacklist) {
-        console.log(`⛔ URL BLACKLISTED: The URL ${targetUrl} matches blacklisted pattern: ${matchedBlacklist.targetUrl} (${matchedBlacklist.name})`);
+        console.log(`⛔ URL BLACKLISTED: The URL ${targetUrl} exactly matches blacklisted URL: ${matchedBlacklist.targetUrl} (${matchedBlacklist.name})`);
         
         // Create a rejected URL entry but with blacklisted status
         const blacklistedName = `Blacklisted{${matchedBlacklist.name}}(${req.body.name})`;
@@ -1236,13 +1236,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
           status: 'rejected'
         });
         
-        // Store in original URL records as well with rejected status
-        await db.insert(originalUrlRecords).values({
-          name: blacklistedName,
-          targetUrl: req.body.targetUrl,
-          originalClickLimit: req.body.clickLimit,
-          status: 'rejected'
-        });
+        // Check if original URL record already exists with this name
+        const existingOriginalRecord = await storage.getOriginalUrlRecordByName(blacklistedName);
+        
+        // Only create if it doesn't already exist
+        if (!existingOriginalRecord) {
+          // Store in original URL records as well with rejected status
+          await db.insert(originalUrlRecords).values({
+            name: blacklistedName,
+            targetUrl: req.body.targetUrl,
+            originalClickLimit: req.body.clickLimit,
+            status: 'rejected'
+          });
+        }
         
         return res.status(403).json({ 
           message: `URL rejected: Matches blacklisted pattern "${matchedBlacklist.name}"`,
