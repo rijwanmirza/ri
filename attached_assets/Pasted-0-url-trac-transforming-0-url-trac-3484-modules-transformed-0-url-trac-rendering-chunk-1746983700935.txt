@@ -1,0 +1,120 @@
+0|url-trac | transforming...
+0|url-trac | ✓ 3484 modules transformed.
+0|url-trac | rendering chunks...
+0|url-trac | computing gzip size...
+0|url-trac | ../dist/public/index.html                     2.02 kB │ gzip:   0.86 kB
+0|url-trac | ../dist/public/assets/index-E7MJdXL_.css     67.72 kB │ gzip:  11.77 kB
+0|url-trac | ../dist/public/assets/index-fwr4b3An.js   1,349.64 kB │ gzip: 372.83 kB
+0|url-trac | ✓ built in 4.36s
+0|url-trac | Copying dist to server/public...
+0|url-trac | Starting URL Campaign Tracker...
+0|url-trac | Building the client...
+0|url-trac |
+0|url-trac | > rest-express@1.0.0 build
+0|url-trac | > vite build && esbuild server/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist
+0|url-trac |
+
+0|url-tracker  | vite v5.4.19 building for production...
+0|url-tracker  | transforming...
+0|url-tracker  | Browserslist: browsers data (caniuse-lite) is 7 months old. Please run:
+0|url-tracker  |   npx update-browserslist-db@latest
+0|url-tracker  |   Why you should do it regularly: https://github.com/browserslist/update-db#readme
+0|url-tracker  | ✓ 3484 modules transformed.
+0|url-tracker  | rendering chunks...
+0|url-tracker  | computing gzip size...
+0|url-tracker  | ../dist/public/index.html                     2.02 kB │ gzip:   0.86 kB
+0|url-tracker  | ../dist/public/assets/index-E7MJdXL_.css     67.72 kB │ gzip:  11.77 kB
+0|url-tracker  | ../dist/public/assets/index-fwr4b3An.js   1,349.64 kB │ gzip: 372.83 kB
+0|url-tracker  | (!) Some chunks are larger than 500 kB after minification. Consider:
+0|url-tracker  | - Using dynamic import() to code-split the application
+0|url-tracker  | - Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+0|url-tracker  | - Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+0|url-tracker  | ✓ built in 4.36s
+0|url-tracker  |   dist/index.js  638.7kb
+0|url-tracker  | ⚡ Done in 39ms
+0|url-tracker  | Copying dist to server/public...
+0|url-tracker  | Starting URL Campaign Tracker...
+0|url-tracker  | URL Budget Manager initialized
+0|url-tracker  | TrafficStar API Service initialized
+0|url-tracker  | [youtube-api] INFO: YouTube API Service initialized
+0|url-tracker  | 🔍 DEBUG: Loaded saved config with autoDeleteMinutes: 2
+0|url-tracker  | 🔍 DEBUG: Gmail reader initialized with autoDeleteMinutes: 2
+0|url-tracker  | 5:14:23 PM [gmail-reader] Loaded 0 previously processed email IDs
+0|url-tracker  | TrafficStar Reports API test routes registered
+0|url-tracker  | Server monitoring initialized - collecting stats every minute
+0|url-tracker  | node:events:502
+0|url-tracker  |       throw er; // Unhandled 'error' event
+0|url-tracker  |       ^
+0|url-tracker  | Error: listen EADDRINUSE: address already in use 0.0.0.0:5000
+0|url-tracker  |     at Server.setupListenHandle [as _listen2] (node:net:1908:16)
+0|url-tracker  |     at listenInCluster (node:net:1965:12)
+0|url-tracker  |     at doListen (node:net:2139:7)
+0|url-tracker  |     at process.processTicksAndRejections (node:internal/process/task_queues:83:21)
+0|url-tracker  | Emitted 'error' event on Server instance at:
+0|url-tracker  |     at emitErrorNT (node:net:1944:8)
+0|url-tracker  |     at process.processTicksAndRejections (node:internal/process/task_queues:82:21) {
+0|url-tracker  |   code: 'EADDRINUSE',
+0|url-tracker  |   errno: -98,
+0|url-tracker  |   syscall: 'listen',
+0|url-tracker  |   address: '0.0.0.0',
+0|url-tracker  |   port: 5000
+0|url-tracker  | }
+0|url-tracker  | Node.js v20.19.1
+0|url-tracker  | Building the client...
+0|url-tracker  | > rest-express@1.0.0 build
+0|url-tracker  | > vite build && esbuild server/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist
+0|url-tracker  | vite v5.4.19 building for production...
+0|url-tracker  | transforming...
+0|url-tracker  | Browserslist: browsers data (caniuse-lite) is 7 months old. Please run:
+0|url-tracker  |   npx update-browserslist-db@latest
+0|url-tracker  |   Why you should do it regularly: https://github.com/browserslist/update-db#readme
+0|url-tracker  | ✓ 3484 modules transformed.
+0|url-tracker  | rendering chunks...
+0|url-tracker  | computing gzip size...
+0|url-tracker  | ../dist/public/index.html                     2.02 kB │ gzip:   0.86 kB
+0|url-tracker  | ../dist/public/assets/index-E7MJdXL_.css     67.72 kB │ gzip:  11.77 kB
+0|url-tracker  | ../dist/public/assets/index-fwr4b3An.js   1,349.64 kB │ gzip: 372.83 kB
+0|url-tracker  | (!) Some chunks are larger than 500 kB after minification. Consider:
+0|url-tracker  | - Using dynamic import() to code-split the application
+0|url-tracker  | - Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+0|url-tracker  | - Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+0|url-tracker  | ✓ built in 4.39s
+0|url-tracker  |   dist/index.js  638.7kb
+0|url-tracker  | ⚡ Done in 32ms
+0|url-tracker  | Copying dist to server/public...
+0|url-tracker  | Starting URL Campaign Tracker...
+0|url-tracker  | URL Budget Manager initialized
+0|url-tracker  | TrafficStar API Service initialized
+0|url-tracker  | [youtube-api] INFO: YouTube API Service initialized
+0|url-tracker  | 🔍 DEBUG: Loaded saved config with autoDeleteMinutes: 2
+0|url-tracker  | 🔍 DEBUG: Gmail reader initialized with autoDeleteMinutes: 2
+0|url-tracker  | 5:14:29 PM [gmail-reader] Loaded 0 previously processed email IDs
+0|url-tracker  | TrafficStar Reports API test routes registered
+0|url-tracker  | Server monitoring initialized - collecting stats every minute
+0|url-tracker  | node:events:502
+0|url-tracker  |       throw er; // Unhandled 'error' event
+0|url-tracker  |       ^
+0|url-tracker  | Error: listen EADDRINUSE: address already in use 0.0.0.0:5000
+0|url-tracker  |     at Server.setupListenHandle [as _listen2] (node:net:1908:16)
+0|url-tracker  |     at listenInCluster (node:net:1965:12)
+0|url-tracker  |     at doListen (node:net:2139:7)
+0|url-tracker  |     at process.processTicksAndRejections (node:internal/process/task_queues:83:21)
+0|url-tracker  | Emitted 'error' event on Server instance at:
+0|url-tracker  |     at emitErrorNT (node:net:1944:8)
+0|url-tracker  |     at process.processTicksAndRejections (node:internal/process/task_queues:82:21) {
+0|url-tracker  |   code: 'EADDRINUSE',
+0|url-tracker  |   errno: -98,
+0|url-tracker  |   syscall: 'listen',
+0|url-tracker  |   address: '0.0.0.0',
+0|url-tracker  |   port: 5000
+0|url-tracker  | }
+0|url-tracker  | Node.js v20.19.1
+0|url-tracker  | Building the client...
+0|url-tracker  | > rest-express@1.0.0 build
+0|url-tracker  | > vite build && esbuild server/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist
+0|url-tracker  | vite v5.4.19 building for production...
+0|url-tracker  | transforming...
+0|url-tracker  | Browserslist: browsers data (caniuse-lite) is 7 months old. Please run:
+0|url-tracker  |   npx update-browserslist-db@latest
+0|url-tracker  |   Why you should do it regularly: https://github.com/browserslist/update-db#readme
+^C

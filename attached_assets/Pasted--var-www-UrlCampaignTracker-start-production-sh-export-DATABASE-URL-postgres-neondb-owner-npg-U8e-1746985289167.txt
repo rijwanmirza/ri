@@ -1,0 +1,57 @@
+/var/www/UrlCampaignTracker/start-production.sh:export DATABASE_URL="postgres://neondb_owner:npg_U8evoXZz0WOB@localhost:5432/neondb"
+/var/www/UrlCampaignTracker/start.sh:export DATABASE_URL="postgres://neondb_owner:npg_U8evoXZz0WOB@localhost:5432/neondb"
+/var/www/UrlCampaignTracker/server.mjs:const DATABASE_URL = process.env.DATABASE_URL || 'postgres://neondb_owner:npg_U8evoXZz0WOB@localhost:5432/neondb';
+/var/www/UrlCampaignTracker/server.mjs:  connectionString: DATABASE_URL,
+/var/www/UrlCampaignTracker/server/public/index.js:    if (!process.env.DATABASE_URL) {
+/var/www/UrlCampaignTracker/server/public/index.js:        "DATABASE_URL must be set. Did you forget to provision a database?"
+/var/www/UrlCampaignTracker/server/public/index.js:      connectionString: process.env.DATABASE_URL,
+/var/www/UrlCampaignTracker/server/db.ts:// Check for DATABASE_URL
+/var/www/UrlCampaignTracker/server/db.ts:if (!process.env.DATABASE_URL) {
+/var/www/UrlCampaignTracker/server/db.ts:    "DATABASE_URL must be set. Did you forget to provision a database?",
+/var/www/UrlCampaignTracker/server/db.ts:  connectionString: process.env.DATABASE_URL,
+/var/www/UrlCampaignTracker/node_modules/connect-pg-simple/README.md:* **conString** - If you don't specify a pool object, use this option or `conObject` to specify a PostgreSQL connection string like `postgres://user:password@host:5432/database` and this module will create a new pool for you. If there's a connection string in the `DATABASE_URL` environment variable (as it is by default on eg. Heroku) then this module will fallback to that if no other connection method has been specified.
+/var/www/UrlCampaignTracker/node_modules/connect-pg-simple/index.js:        const conString = options.conString || process.env['DATABASE_URL'];
+/var/www/UrlCampaignTracker/node_modules/pg-pool/README.md:const params = url.parse(process.env.DATABASE_URL);
+/var/www/UrlCampaignTracker/node_modules/@neondatabase/serverless/README.md:DATABASE_URL=postgres://username:password@host.neon.tech/neondb
+/var/www/UrlCampaignTracker/node_modules/@neondatabase/serverless/README.md:const sql = neon(process.env.DATABASE_URL);
+/var/www/UrlCampaignTracker/node_modules/@neondatabase/serverless/README.md:const sql = neon(process.env.DATABASE_URL);
+/var/www/UrlCampaignTracker/node_modules/@neondatabase/serverless/README.md:npx vercel env add DATABASE_URL  # paste Neon connection string, select all environments
+/var/www/UrlCampaignTracker/node_modules/@neondatabase/serverless/README.md:const sql = neon(process.env.DATABASE_URL);
+/var/www/UrlCampaignTracker/node_modules/@neondatabase/serverless/README.md:const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+/var/www/UrlCampaignTracker/node_modules/@neondatabase/serverless/README.md:  const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+/var/www/UrlCampaignTracker/node_modules/@neondatabase/serverless/README.md:  const client = new Client(process.env.DATABASE_URL);
+/var/www/UrlCampaignTracker/node_modules/@neondatabase/serverless/CONFIG.md:const sql = neon(process.env.DATABASE_URL);
+/var/www/UrlCampaignTracker/node_modules/@neondatabase/serverless/CONFIG.md:const sql = neon(process.env.DATABASE_URL);
+/var/www/UrlCampaignTracker/node_modules/@neondatabase/serverless/CONFIG.md:const sql = neon(process.env.DATABASE_URL, { arrayMode: true });
+/var/www/UrlCampaignTracker/node_modules/@neondatabase/serverless/CONFIG.md:const sql = neon(process.env.DATABASE_URL);
+/var/www/UrlCampaignTracker/node_modules/@neondatabase/serverless/CONFIG.md:const sql = neon(process.env.DATABASE_URL, { fullResults: true });
+/var/www/UrlCampaignTracker/node_modules/@neondatabase/serverless/CONFIG.md:const sql = neon(process.env.DATABASE_URL);
+/var/www/UrlCampaignTracker/node_modules/@neondatabase/serverless/CONFIG.md:const sql = neon(process.env.DATABASE_URL, {
+/var/www/UrlCampaignTracker/node_modules/@neondatabase/serverless/CONFIG.md:const sql = neon(process.env.DATABASE_URL);
+/var/www/UrlCampaignTracker/node_modules/@neondatabase/serverless/CONFIG.md:const sql = neon(process.env.DATABASE_URL, {
+/var/www/UrlCampaignTracker/node_modules/@neondatabase/serverless/CONFIG.md:const sql = neon(process.env.DATABASE_URL, { authToken });
+/var/www/UrlCampaignTracker/node_modules/@neondatabase/serverless/CONFIG.md:const sql = neon(process.env.DATABASE_URL);
+/var/www/UrlCampaignTracker/node_modules/@neondatabase/serverless/CONFIG.md:const [authors, tags] = await neon(process.env.DATABASE_URL).transaction(
+/var/www/UrlCampaignTracker/node_modules/@neondatabase/serverless/CONFIG.md:const client = new Client(process.env.DATABASE_URL);
+/var/www/UrlCampaignTracker/simple-start.sh:export DATABASE_URL="postgres://neondb_owner:npg_U8evoXZz0WOB@localhost:5432/neondb"
+/var/www/UrlCampaignTracker/dist/index.js:    if (!process.env.DATABASE_URL) {
+/var/www/UrlCampaignTracker/dist/index.js:        "DATABASE_URL must be set. Did you forget to provision a database?"
+/var/www/UrlCampaignTracker/dist/index.js:      connectionString: process.env.DATABASE_URL,
+/var/www/UrlCampaignTracker/drizzle.config.ts:if (!process.env.DATABASE_URL) {
+/var/www/UrlCampaignTracker/drizzle.config.ts:  throw new Error("DATABASE_URL, ensure the database is provisioned");
+/var/www/UrlCampaignTracker/drizzle.config.ts:    url: process.env.DATABASE_URL,
+/var/www/UrlCampaignTracker/server.cjs:const DATABASE_URL = process.env.DATABASE_URL || 'postgres://neondb_owner:npg_U8evoXZz0WOB@localhost:5432/neondb';
+/var/www/UrlCampaignTracker/server.cjs:  connectionString: DATABASE_URL,
+/var/www/UrlCampaignTracker/server.js:const DATABASE_URL = process.env.DATABASE_URL || 'postgres://neondb_owner:npg_U8evoXZz0WOB@localhost:5432/neondb';
+/var/www/UrlCampaignTracker/server.js:  connectionString: DATABASE_URL,
+/var/www/UrlCampaignTracker/check-campaigns.mjs:    connectionString: process.env.DATABASE_URL
+/var/www/UrlCampaignTracker/README.md:3. Create PostgreSQL database and set DATABASE_URL in environment
+/var/www/UrlCampaignTracker/README.md:- `DATABASE_URL`: PostgreSQL connection string
+/var/www/UrlCampaignTracker/migrations/add_post_pause_check_minutes.js:  connectionString: process.env.DATABASE_URL,
+/var/www/UrlCampaignTracker/migrations/add_budget_update_time.js:// Create a connection pool using the DATABASE_URL environment variable
+/var/www/UrlCampaignTracker/migrations/add_budget_update_time.js:  connectionString: process.env.DATABASE_URL,
+/var/www/UrlCampaignTracker/migrations/add_high_spend_wait_minutes.js:const poolConfig = process.env.DATABASE_URL
+/var/www/UrlCampaignTracker/migrations/add_high_spend_wait_minutes.js:  ? { connectionString: process.env.DATABASE_URL }
+/var/www/UrlCampaignTracker/migrations/add_traffic_generator_field.js:const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+/var/www/UrlCampaignTracker/migrations/add_url_budget_fields.js:  connectionString: process.env.DATABASE_URL
+root@d026e9724:/var/www/UrlCampaignTracker#
