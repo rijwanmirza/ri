@@ -1041,6 +1041,32 @@ export class DatabaseStorage implements IStorage {
       }
     }
     
+    // Before insertion, perform one final blacklist check
+    // This ensures that even if the earlier check was bypassed somehow, 
+    // we still catch blacklisted URLs at the last moment
+    if (!insertUrl.status || insertUrl.status === 'active') {
+      // Recheck the blacklist to be doubly sure
+      const normalizedTargetUrl = insertUrl.targetUrl.trim();
+      const blacklistedEntries = await db.select().from(blacklistedUrls);
+      
+      const isBlacklisted = blacklistedEntries.some(entry => {
+        const normalizedBlacklistedUrl = entry.targetUrl.trim();
+        return normalizedTargetUrl === normalizedBlacklistedUrl;
+      });
+      
+      if (isBlacklisted) {
+        console.log(`⛔⛔ CRITICAL PROTECTION: Caught blacklisted URL at final insertion step!`);
+        console.log(`   URL: ${normalizedTargetUrl}`);
+        // Force status to rejected
+        insertUrl.status = 'rejected';
+        
+        // Rename if not already indicating blacklist
+        if (!insertUrl.name.startsWith('Blacklisted{')) {
+          insertUrl.name = `Blacklisted{FinalCheck}(${insertUrl.name})`;
+        }
+      }
+    }
+    
     // No duplicates found, proceed with normal URL creation
     const [url] = await db
       .insert(urls)
