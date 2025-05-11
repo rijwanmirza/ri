@@ -1,0 +1,22 @@
+# Environment variables and configs
+.env
+*.env
+config.json
+
+# Logs
+*.log
+url_budget_logs/
+Active_Url_Budget_Logs/
+logs/
+
+# Dependencies
+node_modules/
+
+# Database files
+*.sql
+*.dump
+
+# Secrets
+*credentials*.json
+*token*.json
+*secret*.json

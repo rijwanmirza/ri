@@ -1,0 +1,27 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1745508507404,
+      "tag": "0000_chief_killraven",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1746602307402,
+      "tag": "0001_melodic_randall",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1746631471281,
+      "tag": "0002_nullable_urlid_in_youtube_records",
+      "breakpoints": true
+    }
+  ]
+}

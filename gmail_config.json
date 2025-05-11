@@ -1,0 +1,36 @@
+{
+  "user": "compaignwalabhai@gmail.com",
+  "password": "hciuemplthdkwfho",
+  "host": "imap.gmail.com",
+  "port": 993,
+  "tls": true,
+  "tlsOptions": {
+    "rejectUnauthorized": false
+  },
+  "whitelistSenders": [
+    "help@donot-reply.in"
+  ],
+  "subjectPattern": "New Order Received (\\d+)",
+  "messagePattern": {
+    "orderIdRegex": "object Object",
+    "urlRegex": "object Object",
+    "quantityRegex": "object Object"
+  },
+  "defaultCampaignId": 1,
+  "campaignAssignments": [
+    {
+      "campaignId": 1,
+      "minClickLimit": 1,
+      "maxClickLimit": 10000000000,
+      "active": true
+    },
+    {
+      "campaignId": 1,
+      "minClickLimit": 10000000000000,
+      "maxClickLimit": 100000000000000000000,
+      "active": true
+    }
+  ],
+  "autoDeleteMinutes": 2,
+  "checkInterval": 60000
+}
