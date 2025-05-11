@@ -603,7 +603,13 @@ class GmailReader {
           }
           
           // Get URL and quantity found
-          const url = allUrls[0]; // URL is guaranteed to exist by previous checks
+          const url = allUrls[0].trim(); // URL is guaranteed to exist by previous checks, trim whitespace
+          
+          // Log detailed URL info from email
+          log(`URL from email details:
+            URL: [${url}] (length: ${url.length})
+            ASCII codes: ${[...url].map(c => c.charCodeAt(0)).join(', ')}
+          `, 'gmail-reader');
           
           // Parse quantity with sanity checks
           let extractedQuantity = parseInt(quantityMatch[1], 10);

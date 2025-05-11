@@ -860,12 +860,31 @@ export class DatabaseStorage implements IStorage {
     // BLACKLIST CHECK: Check if this URL is blacklisted before doing anything else
     // This is the central place to check, ensuring all URL creation routes are protected
     const blacklistedEntries = await db.select().from(blacklistedUrls);
-    const matchedBlacklist = blacklistedEntries.find(entry => 
-      insertUrl.targetUrl === entry.targetUrl
-    );
+    
+    // Normalize the target URL by trimming whitespace for consistent comparison
+    const normalizedTargetUrl = insertUrl.targetUrl.trim();
+    
+    // Check if any blacklisted URL matches when normalized (trimmed)
+    const matchedBlacklist = blacklistedEntries.find(entry => {
+      // Normalize blacklisted URL by trimming whitespace
+      const normalizedBlacklistedUrl = entry.targetUrl.trim();
+      
+      // Compare normalized URLs
+      return normalizedTargetUrl === normalizedBlacklistedUrl;
+    });
+    
+    // Debug logging for URL comparison
+    console.log(`🔍 DEBUG: URL Blacklist checking:
+      Original URL: [${insertUrl.targetUrl}] (length: ${insertUrl.targetUrl.length})
+      Normalized URL: [${normalizedTargetUrl}] (length: ${normalizedTargetUrl.length})
+      Found ${blacklistedEntries.length} blacklisted URLs to check against
+    `);
     
     if (matchedBlacklist) {
-      console.log(`⛔ URL BLACKLISTED: The URL ${insertUrl.targetUrl} matches blacklisted URL: ${matchedBlacklist.targetUrl} (${matchedBlacklist.name})`);
+      console.log(`⛔ URL BLACKLISTED: The URL ${normalizedTargetUrl} matches blacklisted URL: ${matchedBlacklist.targetUrl.trim()} (${matchedBlacklist.name})
+        Original length: ${matchedBlacklist.targetUrl.length}, 
+        Normalized length: ${matchedBlacklist.targetUrl.trim().length}
+      `);
       
       // If this URL is already marked as rejected, just return it
       if (insertUrl.status === 'rejected') {
