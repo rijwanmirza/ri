@@ -113,8 +113,8 @@ export default function OriginalUrlRecordsPage() {
   const fixClickProtectionMutation = useMutation({
     mutationFn: async () => {
       try {
-        const res = await apiRequest("POST", `/api/system/click-protection/fix-trigger`);
-        const jsonData = await res.json();
+        // apiRequest already returns the parsed JSON data
+        const jsonData = await apiRequest("POST", `/api/system/click-protection/fix-trigger`);
         return jsonData;
       } catch (error) {
         console.error("Error fixing click protection:", error);
@@ -200,8 +200,8 @@ export default function OriginalUrlRecordsPage() {
   const createMutation = useMutation({
     mutationFn: async (data: FormData) => {
       try {
-        const res = await apiRequest("POST", "/api/original-url-records", data);
-        const jsonData = await res.json();
+        // apiRequest already returns the parsed JSON data
+        const jsonData = await apiRequest("POST", "/api/original-url-records", data);
         return jsonData;
       } catch (error) {
         console.error("Error in create mutation:", error);
@@ -230,8 +230,8 @@ export default function OriginalUrlRecordsPage() {
   const updateMutation = useMutation({
     mutationFn: async (data: { id: number, data: UpdateFormData }) => {
       try {
-        const res = await apiRequest("PUT", `/api/original-url-records/${data.id}`, data.data);
-        const jsonData = await res.json();
+        // apiRequest already returns the JSON response
+        const jsonData = await apiRequest("PUT", `/api/original-url-records/${data.id}`, data.data);
         return jsonData;
       } catch (error) {
         console.error("Error in update mutation:", error);
@@ -291,8 +291,8 @@ export default function OriginalUrlRecordsPage() {
   const syncMutation = useMutation({
     mutationFn: async (id: number) => {
       try {
-        const res = await apiRequest("POST", `/api/original-url-records/${id}/sync`);
-        const jsonData = await res.json();
+        // apiRequest already returns the parsed JSON data
+        const jsonData = await apiRequest("POST", `/api/original-url-records/${id}/sync`);
         return jsonData;
       } catch (error) {
         console.error("Error in sync mutation:", error);
