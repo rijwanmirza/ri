@@ -1399,7 +1399,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         await storage.createOriginalUrlRecord({
           name: req.body.name,
           targetUrl: req.body.targetUrl || '',
-          originalClickLimit: originalClickLimit
+          originalClickLimit: originalClickLimit,
+          status: req.body.status || 'active' // Preserve the status from the URL
         });
         console.log(`✅ Created Original URL Record with click limit: ${originalClickLimit}`);
       } else {
