@@ -41,19 +41,13 @@ export default function BlacklistedUrlsPage() {
   // Fetch blacklisted URLs
   const { data: blacklistedUrls, isLoading, error } = useQuery({
     queryKey: ['/api/blacklisted-urls'],
-    queryFn: () => apiRequest<BlacklistedUrl[]>('/api/blacklisted-urls'),
+    queryFn: () => apiRequest<BlacklistedUrl[]>('GET', '/api/blacklisted-urls'),
   });
   
   // Create mutation
   const createMutation = useMutation({
     mutationFn: (newBlacklistedUrl: Omit<BlacklistedUrl, 'id' | 'createdAt' | 'updatedAt'>) => 
-      apiRequest('/api/blacklisted-urls', {
-        method: 'POST',
-        body: JSON.stringify(newBlacklistedUrl),
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      }),
+      apiRequest('POST', '/api/blacklisted-urls', newBlacklistedUrl),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/blacklisted-urls'] });
       toast({
@@ -75,16 +69,10 @@ export default function BlacklistedUrlsPage() {
   // Update mutation
   const updateMutation = useMutation({
     mutationFn: (blacklistedUrl: Partial<BlacklistedUrl> & { id: number }) => 
-      apiRequest(`/api/blacklisted-urls/${blacklistedUrl.id}`, {
-        method: 'PUT',
-        body: JSON.stringify({
-          name: blacklistedUrl.name,
-          targetUrl: blacklistedUrl.targetUrl,
-          description: blacklistedUrl.description,
-        }),
-        headers: {
-          'Content-Type': 'application/json',
-        },
+      apiRequest('PUT', `/api/blacklisted-urls/${blacklistedUrl.id}`, {
+        name: blacklistedUrl.name,
+        targetUrl: blacklistedUrl.targetUrl,
+        description: blacklistedUrl.description,
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/blacklisted-urls'] });
@@ -107,9 +95,7 @@ export default function BlacklistedUrlsPage() {
   // Delete mutation
   const deleteMutation = useMutation({
     mutationFn: (id: number) => 
-      apiRequest(`/api/blacklisted-urls/${id}`, {
-        method: 'DELETE',
-      }),
+      apiRequest('DELETE', `/api/blacklisted-urls/${id}`),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/blacklisted-urls'] });
       toast({

@@ -11,15 +11,22 @@ export async function apiRequest<T = any>(
   method: string,
   url: string,
   data?: unknown | undefined,
+  options?: { headers?: Record<string, string> }
 ): Promise<T> {
-  console.log(`🔍 DEBUG: API Request - ${method} ${url}`, data);
+  console.log(`🔍 DEBUG: API Request - ${url} ${data ? JSON.stringify(data) : ''}`);
   
   try {
+    // Prepare headers
+    const headers: Record<string, string> = {
+      ...(data ? { "Content-Type": "application/json" } : {}),
+      ...(options?.headers || {})
+    };
+    
     const res = await fetch(url, {
       method,
-      headers: data ? { "Content-Type": "application/json" } : {},
+      headers,
       body: data ? JSON.stringify(data) : undefined,
-      credentials: "include",
+      credentials: "include", // This ensures cookies are sent with the request
     });
 
     console.log(`🔍 DEBUG: API Response status: ${res.status}`);
@@ -30,7 +37,7 @@ export async function apiRequest<T = any>(
     const jsonData = await res.json();
     return jsonData as T;
   } catch (error) {
-    console.error(`🔴 ERROR: API Request failed - ${method} ${url}`, error);
+    console.error(`🔴 ERROR: API Request failed - ${url}`, error);
     throw error;
   }
 }
@@ -41,6 +48,7 @@ export const getQueryFn: <T>(options: {
 }) => QueryFunction<T> =
   ({ on401: unauthorizedBehavior }) =>
   async ({ queryKey }) => {
+    // Make the fetch request with credentials included (cookies)
     const res = await fetch(queryKey[0] as string, {
       credentials: "include",
     });
