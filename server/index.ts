@@ -82,7 +82,7 @@ app.use((req, res, next) => {
   app.use('/api', (req, res, next) => {
     // Skip auth for login/status routes and redirect routes
     if (req.path === '/auth/login' || 
-        req.path === '/auth/verify' || 
+        req.path === '/auth/verify-key' || 
         req.path === '/auth/status' ||
         req.path.startsWith('/campaigns/') && (req.method === 'GET' || req.method === 'OPTIONS') ||
         req.path.startsWith('/youtube-url-records') ||
@@ -112,15 +112,24 @@ app.use((req, res, next) => {
       return next();
     }
     
-    // Handle access control first - if the path is not /access/* or a valid temp login path
-    // and the request doesn't have a valid session, return 404
+    // Allow access to the frontend without authentication
+    // We'll handle authentication in the frontend
     const path = req.path;
+    
+    // Special case for login page and root - always allow access
+    if (path === '/login' || path === '/') {
+      return next();
+    }
+    
+    // Handle access control for other routes - if the path is not /access/* or a valid temp login path
+    // and the request doesn't have a valid session, return 404
     const sessionId = req.cookies.session_id;
     const apiKey = req.cookies.apiKey;
     
     if (path !== '/access' && !path.startsWith('/access/') && !isValidTemporaryLoginPath(path) && 
         (!sessionId || !apiKey || !isSessionValid(sessionId))) {
-      return res.status(404).send('Page not found');
+      // Redirect to login page instead of 404
+      return res.redirect('/login');
     }
     
     // Otherwise, continue to Vite middleware

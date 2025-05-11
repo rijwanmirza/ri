@@ -35,12 +35,15 @@ import {
   insertOriginalUrlRecordSchema,
   updateOriginalUrlRecordSchema,
   insertYoutubeUrlRecordSchema,
+  insertBlacklistedUrlSchema,
+  updateBlacklistedUrlSchema,
   trafficstarCampaigns,
   campaigns,
   urls,
   originalUrlRecords,
   youtubeUrlRecords,
   youtubeApiLogs,
+  blacklistedUrls,
   YouTubeApiLogType
 } from "@shared/schema";
 import { ZodError, z } from "zod";
@@ -1212,6 +1215,42 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.log('🔍 DEBUG: Received URL creation request:', JSON.stringify(req.body, null, 2));
       console.log('🔍 DEBUG: Campaign multiplier:', campaign.multiplier);
       
+      // Check against blacklisted URLs
+      const targetUrl = req.body.targetUrl;
+      
+      // Get all blacklisted URLs
+      const blacklistedEntries = await db.select().from(blacklistedUrls);
+      const matchedBlacklist = blacklistedEntries.find(entry => targetUrl.includes(entry.targetUrl));
+      
+      if (matchedBlacklist) {
+        console.log(`⛔ URL BLACKLISTED: The URL ${targetUrl} matches blacklisted pattern: ${matchedBlacklist.targetUrl} (${matchedBlacklist.name})`);
+        
+        // Create a rejected URL entry but with blacklisted status
+        const blacklistedName = `Blacklisted{${matchedBlacklist.name}}(${req.body.name})`;
+        
+        // Store in URL records as rejected
+        const insertedUrl = await storage.createUrl({
+          ...req.body,
+          name: blacklistedName,
+          campaignId,
+          status: 'rejected'
+        });
+        
+        // Store in original URL records as well with rejected status
+        await db.insert(originalUrlRecords).values({
+          name: blacklistedName,
+          targetUrl: req.body.targetUrl,
+          originalClickLimit: req.body.clickLimit,
+          status: 'rejected'
+        });
+        
+        return res.status(403).json({ 
+          message: `URL rejected: Matches blacklisted pattern "${matchedBlacklist.name}"`,
+          blacklisted: true,
+          url: insertedUrl
+        });
+      }
+      
       // Check if URL is a YouTube URL (validate even if YouTube API is not enabled for the campaign)
       if (youtubeApiService.isYouTubeUrl(req.body.targetUrl)) {
         console.log(`🔍 DEBUG: URL is a YouTube URL - validating: ${req.body.targetUrl}`);
@@ -1591,6 +1630,110 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(204).end();
     } catch (error) {
       res.status(500).json({ message: "Failed to perform bulk action" });
+    }
+  });
+  
+  // Blacklisted URLs API routes
+  
+  // Get all blacklisted URLs
+  app.get("/api/blacklisted-urls", requireAuth, async (_req: Request, res: Response) => {
+    try {
+      const blacklistUrls = await db.select().from(blacklistedUrls).orderBy(desc(blacklistedUrls.createdAt));
+      res.json(blacklistUrls);
+    } catch (error) {
+      console.error("Error fetching blacklisted URLs:", error);
+      res.status(500).json({ message: "Error fetching blacklisted URLs" });
+    }
+  });
+  
+  // Get a specific blacklisted URL by ID
+  app.get("/api/blacklisted-urls/:id", requireAuth, async (req: Request, res: Response) => {
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "Invalid blacklisted URL ID" });
+      }
+      
+      const [blacklistUrl] = await db.select().from(blacklistedUrls).where(eq(blacklistedUrls.id, id));
+      
+      if (!blacklistUrl) {
+        return res.status(404).json({ message: "Blacklisted URL not found" });
+      }
+      
+      res.json(blacklistUrl);
+    } catch (error) {
+      console.error("Error fetching blacklisted URL:", error);
+      res.status(500).json({ message: "Error fetching blacklisted URL" });
+    }
+  });
+  
+  // Create a new blacklisted URL
+  app.post("/api/blacklisted-urls", requireAuth, async (req: Request, res: Response) => {
+    try {
+      const blacklistData = insertBlacklistedUrlSchema.parse(req.body);
+      
+      const [newBlacklistUrl] = await db.insert(blacklistedUrls).values(blacklistData).returning();
+      
+      res.status(201).json(newBlacklistUrl);
+    } catch (error) {
+      if (error instanceof ZodError) {
+        const validationError = fromZodError(error);
+        console.error("Invalid blacklist URL data:", validationError);
+        return res.status(400).json({ message: validationError.message });
+      }
+      
+      console.error("Error creating blacklisted URL:", error);
+      res.status(500).json({ message: "Error creating blacklisted URL" });
+    }
+  });
+  
+  // Update a blacklisted URL
+  app.put("/api/blacklisted-urls/:id", requireAuth, async (req: Request, res: Response) => {
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "Invalid blacklisted URL ID" });
+      }
+      
+      const blacklistData = updateBlacklistedUrlSchema.parse(req.body);
+      
+      const [updatedBlacklistUrl] = await db
+        .update(blacklistedUrls)
+        .set({ ...blacklistData, updatedAt: new Date() })
+        .where(eq(blacklistedUrls.id, id))
+        .returning();
+      
+      if (!updatedBlacklistUrl) {
+        return res.status(404).json({ message: "Blacklisted URL not found" });
+      }
+      
+      res.json(updatedBlacklistUrl);
+    } catch (error) {
+      if (error instanceof ZodError) {
+        const validationError = fromZodError(error);
+        console.error("Invalid blacklist URL data:", validationError);
+        return res.status(400).json({ message: validationError.message });
+      }
+      
+      console.error("Error updating blacklisted URL:", error);
+      res.status(500).json({ message: "Error updating blacklisted URL" });
+    }
+  });
+  
+  // Delete a blacklisted URL
+  app.delete("/api/blacklisted-urls/:id", requireAuth, async (req: Request, res: Response) => {
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "Invalid blacklisted URL ID" });
+      }
+      
+      await db.delete(blacklistedUrls).where(eq(blacklistedUrls.id, id));
+      
+      res.json({ message: "Blacklisted URL deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting blacklisted URL:", error);
+      res.status(500).json({ message: "Error deleting blacklisted URL" });
     }
   });
   

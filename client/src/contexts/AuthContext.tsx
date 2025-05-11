@@ -65,6 +65,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     
     setIsLoading(true);
     try {
+      // Try the login endpoint first
+      try {
+        const loginResponse = await axios.post('/api/auth/login', { apiKey });
+        setIsAuthenticated(loginResponse.data.authenticated);
+        return;
+      } catch (loginError) {
+        console.log('Login endpoint failed, falling back to verify-key', loginError);
+      }
+      
+      // Fall back to verify-key if login fails
       const response = await axios.post('/api/auth/verify-key', { apiKey });
       setIsAuthenticated(response.data.authenticated);
     } catch (error) {

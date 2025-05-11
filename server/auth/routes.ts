@@ -7,6 +7,70 @@ import { storeApiKeyInSession, getAccessCode as getCurrentAccessCode } from '../
 
 // Register authentication routes
 export function registerAuthRoutes(app: Express) {
+  // API key login route
+  app.post('/api/auth/login', async (req: Request, res: Response) => {
+    const { apiKey } = req.body;
+    
+    try {
+      // Simple validation
+      if (!apiKey) {
+        return res.status(400).json({ message: 'API key is required' });
+      }
+      
+      // Validate the API key
+      const isValid = await validateApiKey(apiKey);
+      
+      if (!isValid) {
+        log(`API key login failed - invalid key provided`, 'auth');
+        return res.status(401).json({ 
+          message: 'Invalid API key', 
+          authenticated: false 
+        });
+      }
+      
+      // Set API key in cookie for future requests
+      res.cookie('apiKey', apiKey, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+        sameSite: 'lax'
+      });
+      
+      // Also store API key in access session if a session exists
+      const sessionId = req.cookies?.session_id;
+      if (sessionId) {
+        log(`Storing API key in existing session: ${sessionId}`, 'auth');
+        storeApiKeyInSession(sessionId, apiKey);
+      } else {
+        // No session exists yet, create one to ensure access control works
+        const newSessionId = Math.random().toString(36).substring(2, 15);
+        log(`Creating new session for authentication: ${newSessionId}`, 'auth');
+        
+        // Set session cookie
+        res.cookie('session_id', newSessionId, {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === 'production',
+          maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+          sameSite: 'lax'
+        });
+        
+        // Store API key in the new session
+        storeApiKeyInSession(newSessionId, apiKey);
+      }
+      
+      log(`API key login successful`, 'auth');
+      
+      // Success response
+      res.json({ 
+        message: 'Login successful',
+        authenticated: true
+      });
+    } catch (error) {
+      console.error('API key login error:', error);
+      res.status(500).json({ message: 'An error occurred during login' });
+    }
+  });
+  
   // API key verification route
   app.post('/api/auth/verify-key', async (req: Request, res: Response) => {
     const { apiKey } = req.body;

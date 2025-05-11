@@ -275,6 +275,20 @@ export default function Navbar() {
           </div>
         </Link>
         
+        <Link 
+          href="/blacklisted-urls" 
+          className="block py-3 border-b"
+          onClick={() => setMenuOpen(false)}
+        >
+          <div className="flex items-center">
+            <svg className="w-5 h-5 mr-3" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z" stroke="currentColor" strokeWidth="2" />
+              <path d="M4.93 4.93l14.14 14.14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+            </svg>
+            <span className="font-medium">Blacklisted URLs</span>
+          </div>
+        </Link>
+        
         <div className="block py-3 border-b text-gray-400 cursor-not-allowed">
           <div className="flex items-center">
             <svg className="w-5 h-5 mr-3" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">

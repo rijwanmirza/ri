@@ -587,3 +587,33 @@ export const updateSystemSettingSchema = createInsertSchema(systemSettings).omit
 export type SystemSetting = typeof systemSettings.$inferSelect;
 export type InsertSystemSetting = z.infer<typeof insertSystemSettingSchema>;
 export type UpdateSystemSetting = z.infer<typeof updateSystemSettingSchema>;
+
+// Blacklisted URLs Schema - For URLs that should never be added to campaigns
+export const blacklistedUrls = pgTable("blacklisted_urls", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(), // Name/identifier for the blacklisted URL
+  targetUrl: text("target_url").notNull(), // The URL pattern to blacklist
+  description: text("description"), // Optional description of why this URL is blacklisted
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const insertBlacklistedUrlSchema = createInsertSchema(blacklistedUrls).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const updateBlacklistedUrlSchema = createInsertSchema(blacklistedUrls).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+}).extend({
+  name: z.string().optional(),
+  targetUrl: z.string().url().optional(),
+  description: z.string().optional(),
+});
+
+export type BlacklistedUrl = typeof blacklistedUrls.$inferSelect;
+export type InsertBlacklistedUrl = z.infer<typeof insertBlacklistedUrlSchema>;
+export type UpdateBlacklistedUrl = z.infer<typeof updateBlacklistedUrlSchema>;
