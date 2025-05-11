@@ -726,6 +726,7 @@ export default function OriginalUrlRecordsPage() {
                 >
                   <option value="active">Active URLs</option>
                   <option value="paused">Paused URLs</option>
+                  <option value="rejected">Rejected URLs</option>
                   <option value="deleted">Deleted URLs</option>
                   <option value="completed">Completed URLs</option>
                   <option value="all">All URLs</option>
