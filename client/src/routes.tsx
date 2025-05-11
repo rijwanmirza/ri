@@ -86,9 +86,6 @@ export function getAppRoutes() {
       <Route path="/api-tester">
         <ApiTesterPage />
       </Route>
-      <Route path="/:rest*">
-        <NotFound />
-      </Route>
     </>
   );
 };

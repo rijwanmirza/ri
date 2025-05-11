@@ -31,6 +31,7 @@ function Router() {
         <Route path="/r/bridge/:campaignId/:urlId" component={RedirectPage} />
         <Route path="/views/:customPath" component={RedirectPage} />
         <Route path="/c/:campaignId" component={RedirectPage} />
+        <Route component={NotFound} />
       </Switch>
     );
   }
@@ -41,6 +42,7 @@ function Router() {
       <AppLayout>
         <Switch>
           {getAppRoutes()}
+          <Route component={NotFound} />
         </Switch>
       </AppLayout>
     );
@@ -51,6 +53,7 @@ function Router() {
     return (
       <Switch>
         <Route path="/login" component={LoginPage} />
+        <Route component={NotFound} />
       </Switch>
     );
   }
@@ -60,6 +63,7 @@ function Router() {
       <AppLayout>
         <Switch>
           {getAppRoutes()}
+          <Route component={NotFound} />
         </Switch>
       </AppLayout>
     </ProtectedRoute>
