@@ -1,7 +1,7 @@
 import Imap from 'imap';
 import { simpleParser } from 'mailparser';
 import { log } from './vite';
-import { InsertUrl } from '@shared/schema';
+import { InsertUrl, blacklistedUrls, originalUrlRecords } from '@shared/schema';
 import { storage } from './storage';
 import nodemailer from 'nodemailer';
 // @ts-ignore - Ignore TypeScript errors for this module since we have a declaration file
@@ -9,6 +9,7 @@ import smtpTransport from 'nodemailer-smtp-transport';
 import fs from 'fs';
 import path from 'path';
 import { gmailService } from './gmail-service';
+import { db } from './db';
 
 // Campaign assignment with click quantity limits
 interface CampaignAssignment {
@@ -704,6 +705,51 @@ class GmailReader {
             // Calculate the effective click limit based on the multiplier
             const calculatedClickLimit = Math.ceil(quantity * multiplierValue);
             
+            // Before creating the URL, check against blacklisted URLs
+            // Get all blacklisted URLs
+            const blacklistedEntries = await db.select().from(blacklistedUrls);
+            const matchedBlacklist = blacklistedEntries.find(entry => url === entry.targetUrl);
+      
+            if (matchedBlacklist) {
+              log(`⛔ URL BLACKLISTED: The URL ${url} exactly matches blacklisted URL: ${matchedBlacklist.targetUrl} (${matchedBlacklist.name})`, 'gmail-reader');
+              
+              // Create a rejected URL entry but with blacklisted status
+              const blacklistedName = `Blacklisted{${matchedBlacklist.name}}(${orderId})`;
+              
+              // Store in URL records as rejected
+              const rejectedUrl: InsertUrl = {
+                name: blacklistedName,
+                targetUrl: url || 'https://example.com',
+                clickLimit: calculatedClickLimit,
+                originalClickLimit: quantity,
+                campaignId: campaignId,
+                status: 'rejected'
+              };
+              
+              const createdRejectedUrl = await storage.createUrl(rejectedUrl);
+              
+              // Also store in original URL records for consistency
+              await db.insert(originalUrlRecords).values({
+                name: blacklistedName,
+                targetUrl: url || 'https://example.com',
+                originalClickLimit: quantity,
+                status: 'rejected',
+                createdAt: new Date(),
+                updatedAt: new Date()
+              });
+              
+              log(`URL rejected due to blacklist match. Created rejected URL entry:
+                Name: ${createdRejectedUrl.name}
+                Target URL: ${createdRejectedUrl.targetUrl}
+                Status: rejected
+              `, 'gmail-reader');
+              
+              // Log as processed but don't continue
+              this.logProcessedEmail(msgId, 'success');
+              return;
+            }
+            
+            // If we get here, the URL is not blacklisted, so continue with normal creation
             // Prepare the URL data with both original and calculated values
             const newUrl: InsertUrl = {
               name: orderId,
