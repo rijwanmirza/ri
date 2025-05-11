@@ -861,6 +861,9 @@ export class DatabaseStorage implements IStorage {
     // This is the central place to check, ensuring all URL creation routes are protected
     const blacklistedEntries = await db.select().from(blacklistedUrls);
     
+    // Store original status so we can detect if a bypass attempt happens
+    const originalStatus = insertUrl.status;
+    
     // Normalize the target URL by trimming whitespace for consistent comparison
     const normalizedTargetUrl = insertUrl.targetUrl.trim();
     
@@ -878,6 +881,7 @@ export class DatabaseStorage implements IStorage {
       Original URL: [${insertUrl.targetUrl}] (length: ${insertUrl.targetUrl.length})
       Normalized URL: [${normalizedTargetUrl}] (length: ${normalizedTargetUrl.length})
       Found ${blacklistedEntries.length} blacklisted URLs to check against
+      Original status: ${originalStatus || 'undefined'}
     `);
     
     if (matchedBlacklist) {
@@ -886,20 +890,21 @@ export class DatabaseStorage implements IStorage {
         Normalized length: ${matchedBlacklist.targetUrl.trim().length}
       `);
       
-      // If this URL is already marked as rejected, just return it
-      if (insertUrl.status === 'rejected') {
-        console.log(`  - URL already marked as rejected, continuing with creation`);
-      } else {
-        // If not already rejected, modify the insertUrl to be rejected
-        console.log(`  - Marking URL as rejected due to blacklist match`);
+      // CRITICAL FIX: ALWAYS mark as rejected, even if another process tries to set it to 'active'
+      // This prevents situations where a URL initially gets rejected but later gets re-added as active
+      console.log(`  - Setting status to 'rejected' regardless of requested status (${originalStatus || 'unspecified'})`);
         
-        // If name doesn't already indicate rejection, rename it to show blacklist rejection
-        if (!insertUrl.name.startsWith('Blacklisted{')) {
-          insertUrl.name = `Blacklisted{${matchedBlacklist.name}}(${insertUrl.name})`;
-        }
+      // If name doesn't already indicate rejection, rename it to show blacklist rejection
+      if (!insertUrl.name.startsWith('Blacklisted{')) {
+        insertUrl.name = `Blacklisted{${matchedBlacklist.name}}(${insertUrl.name})`;
+      }
         
-        // Mark as rejected
-        insertUrl.status = 'rejected';
+      // CRITICAL: Always mark as rejected, overriding any other status
+      insertUrl.status = 'rejected';
+      
+      // Add warning if someone tried to bypass blacklist
+      if (originalStatus === 'active') {
+        console.log(`⚠️ WARNING: Attempted to create a blacklisted URL with 'active' status - forced to 'rejected'`);
       }
     }
     
@@ -1060,6 +1065,33 @@ export class DatabaseStorage implements IStorage {
   async updateUrl(id: number, updateUrl: UpdateUrl): Promise<Url | undefined> {
     const [existingUrl] = await db.select().from(urls).where(eq(urls.id, id));
     if (!existingUrl) return undefined;
+    
+    // CRITICAL FIX: Add blacklist check when trying to update a URL status
+    // This prevents blacklisted URLs from being reactivated after rejection
+    if (updateUrl.status === 'active' && existingUrl.status === 'rejected' && existingUrl.targetUrl) {
+      // Check if this URL is in the blacklist
+      const blacklistedEntries = await db.select().from(blacklistedUrls);
+      const normalizedTargetUrl = existingUrl.targetUrl.trim();
+      
+      // Check for blacklist matches
+      const matchedBlacklist = blacklistedEntries.find(entry => {
+        const normalizedBlacklistedUrl = entry.targetUrl.trim();
+        return normalizedTargetUrl === normalizedBlacklistedUrl;
+      });
+      
+      if (matchedBlacklist) {
+        console.log(`⛔ BLACKLIST PROTECTION: Attempt to reactivate blacklisted URL rejected
+          - URL: ${existingUrl.name} (ID: ${id})
+          - Target URL: ${normalizedTargetUrl}
+          - Matches blacklisted URL: ${matchedBlacklist.targetUrl.trim()} (${matchedBlacklist.name})
+        `);
+        
+        // Force status to remain rejected
+        updateUrl.status = 'rejected';
+        
+        console.log(`🔒 Keeping URL ${existingUrl.name} as rejected due to blacklist match`);
+      }
+    }
     
     // Check if the URL has completed all clicks
     if (existingUrl.clicks >= existingUrl.clickLimit && updateUrl.status !== 'completed') {
@@ -1277,7 +1309,54 @@ export class DatabaseStorage implements IStorage {
         break;
     }
     
-    // CRITICAL FIX: Sync status changes with original URL records
+    // CRITICAL FIX: Check if any blacklisted URLs are being reactivated
+    if (action === 'activate') {
+      // Get all blacklisted URLs
+      const blacklistedEntries = await db.select().from(blacklistedUrls);
+      
+      // Filter out URLs that should not be activated due to blacklist
+      const protectedIds: number[] = [];
+      
+      for (const url of urlsToUpdate) {
+        if (url.status === 'rejected' && url.targetUrl) {
+          const normalizedTargetUrl = url.targetUrl.trim();
+          
+          // Check for blacklist matches
+          const matchedBlacklist = blacklistedEntries.find(entry => {
+            const normalizedBlacklistedUrl = entry.targetUrl.trim();
+            return normalizedTargetUrl === normalizedBlacklistedUrl;
+          });
+          
+          if (matchedBlacklist) {
+            console.log(`⛔ BLACKLIST PROTECTION: Blocking reactivation of blacklisted URL
+              - URL: ${url.name} (ID: ${url.id})
+              - Target URL: ${normalizedTargetUrl}
+              - Matches blacklisted URL: ${matchedBlacklist.targetUrl.trim()} (${matchedBlacklist.name})
+            `);
+            
+            // Add to protected IDs list
+            protectedIds.push(url.id);
+          }
+        }
+      }
+      
+      // Remove protected IDs from the list to be updated
+      if (protectedIds.length > 0) {
+        console.log(`🔒 Protecting ${protectedIds.length} blacklisted URLs from being reactivated`);
+        ids = ids.filter(id => !protectedIds.includes(id));
+        
+        // Exit early if no URLs remain after filtering
+        if (ids.length === 0) {
+          console.log('No URLs remain after filtering out blacklisted ones');
+          return false;
+        }
+        
+        // Reload the list of URLs to update with the filtered IDs
+        urlsToUpdate.length = 0;
+        urlsToUpdate.push(...(await db.select().from(urls).where(inArray(urls.id, ids))));
+      }
+    }
+    
     // Collect the URL names to use for syncing with original records
     const urlNames = urlsToUpdate.map(url => url.name);
     console.log(`🔄 Bulk updating ${urlsToUpdate.length} URLs with action: ${action}`);
