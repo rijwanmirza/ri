@@ -1,0 +1,48 @@
+Error fetching blacklisted URLs: error: relation "blacklisted_urls" does not exi                                                                             st
+    at /var/www/UrlCampaignTracker/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5                                                                             )
+    at async <anonymous> (/var/www/UrlCampaignTracker/node_modules/src/node-post                                                                             gres/session.ts:64:19)
+    at async <anonymous> (/var/www/UrlCampaignTracker/server/routes.ts:1648:29)                                                                              {
+  length: 115,
+  severity: 'ERROR',
+  code: '42P01',
+  detail: undefined,
+  hint: undefined,
+  position: '83',
+  internalPosition: undefined,
+  internalQuery: undefined,
+  where: undefined,
+  schema: undefined,
+  table: undefined,
+  column: undefined,
+  dataType: undefined,
+  constraint: undefined,
+  file: 'parse_relation.c',
+  line: '1449',
+  routine: 'parserOpenTable'
+}
+6:21:36 PM [express] GET /api/blacklisted-urls 500 in 7ms :: {"message":"Error f                                                                             etching blacklisted …
+^C6:21:45 PM [access] Access check for path: /api/urls
+6:21:45 PM [express] GET /api/urls 200 in 9ms :: {"urls":[{"id":105,"campaignId":1,"name":"63848886"…
+6:21:46 PM [access] Access check for path: /public/api/v1/landing/not_integrated
+6:21:46 PM [access] Access denied for path: /public/api/v1/landing/not_integrated - no valid session or API key
+6:21:46 PM [access] Access check for path: /public/api/v1/landing/not_integrated
+6:21:46 PM [access] Access denied for path: /public/api/v1/landing/not_integrated - no valid session or API key
+6:21:46 PM [access] Access check for path: /public/api/v1/landing/not_integrated
+6:21:46 PM [access] Access denied for path: /public/api/v1/landing/not_integrated - no valid session or API key
+6:21:46 PM [access] Access check for path: /public/api/v1/landing/not_integrated
+6:21:46 PM [access] Access denied for path: /public/api/v1/landing/not_integrated - no valid session or API key
+6:21:47 PM [access] Access check for path: /public/api/v1/landing/not_integrated
+6:21:47 PM [access] Access denied for path: /public/api/v1/landing/not_integrated - no valid session or API key
+6:21:47 PM [access] Access check for path: /public/api/v1/landing/not_integrated
+6:21:47 PM [access] Access denied for path: /public/api/v1/landing/not_integrated - no valid session or API key
+6:21:47 PM [access] Access check for path: /public/api/v1/landing/not_integrated
+6:21:47 PM [access] Access denied for path: /public/api/v1/landing/not_integrated - no valid session or API key
+6:21:47 PM [access] Access check for path: /public/api/v1/landing/not_integrated
+6:21:47 PM [access] Access denied for path: /public/api/v1/landing/not_integrated - no valid session or API key
+6:21:47 PM [access] Access check for path: /public/api/v1/landing/not_integrated
+6:21:47 PM [access] Access denied for path: /public/api/v1/landing/not_integrated - no valid session or API key
+6:21:47 PM [access] Access check for path: /public/api/v1/landing/not_integrated
+6:21:47 PM [access] Access denied for path: /public/api/v1/landing/not_integrated - no valid session or API key
+^Z
+[1]+  Stopped                 ./deploy-from-github.sh
