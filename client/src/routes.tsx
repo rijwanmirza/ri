@@ -22,7 +22,9 @@ import ApiTesterPage from "@/pages/api-tester";
 import NotFound from "@/pages/not-found";
 import { useIsMobile } from "@/hooks/use-mobile";
 
-export const getAppRoutes = () => {
+// Use a named function declaration instead of an anonymous arrow function
+// This helps React's Fast Refresh to properly update components
+export function getAppRoutes() {
   const isMobile = useIsMobile();
   
   return (
@@ -84,7 +86,7 @@ export const getAppRoutes = () => {
       <Route path="/api-tester">
         <ApiTesterPage />
       </Route>
-      <Route>
+      <Route path="/:rest*">
         <NotFound />
       </Route>
     </>

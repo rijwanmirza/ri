@@ -8,6 +8,7 @@ import AppLayout from "@/components/layout/app-layout";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { getAppRoutes } from "./routes";
+import NotFound from "@/pages/not-found";
 
 // Authentication is now enabled - set to false to require login
 const BYPASS_LOGIN = false; // Login and protected routes are now enforced
