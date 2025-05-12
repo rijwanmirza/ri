@@ -46,8 +46,13 @@ export const campaigns = pgTable("campaigns", {
   trafficGeneratorEnabled: boolean("traffic_generator_enabled").default(false), // Enable/disable traffic generator
   postPauseCheckMinutes: integer("post_pause_check_minutes").default(2), // Minutes to wait after pause before checking spent value
   highSpendWaitMinutes: integer("high_spend_wait_minutes").default(11), // Minutes to wait after pause for high-spend campaigns ($10+)
-  minPauseClickThreshold: integer("min_pause_click_threshold").default(5000), // Campaign-specific threshold for pausing (default: 5000)
-  minActivateClickThreshold: integer("min_activate_click_threshold").default(15000), // Campaign-specific threshold for activation (default: 15000)
+  // Low spend thresholds (used when campaign has spent less than $10)
+  minPauseClickThreshold: integer("min_pause_click_threshold").default(5000), // Low spend threshold for pausing (default: 5000)
+  minActivateClickThreshold: integer("min_activate_click_threshold").default(15000), // Low spend threshold for activation (default: 15000)
+  
+  // High spend thresholds (used when campaign has spent $10 or more)
+  highSpendPauseThreshold: integer("high_spend_pause_threshold").default(1000), // High spend threshold for pausing (default: 1000)
+  highSpendActivateThreshold: integer("high_spend_activate_threshold").default(5000), // High spend threshold for activation (default: 5000)
   // DEPRECATED: Traffic Sender feature has been removed
   // Keeping these fields in the schema for backward compatibility but they are no longer used
   trafficSenderEnabled: boolean("traffic_sender_enabled").default(false), // DEPRECATED: Traffic Sender removed
@@ -119,8 +124,12 @@ export const updateCampaignSchema = z.object({
   trafficGeneratorEnabled: z.boolean().optional(), // Traffic generator toggle
   postPauseCheckMinutes: z.number().int().min(1).max(30).optional(), // Minutes to wait after pause before checking spent value (1-30)
   highSpendWaitMinutes: z.number().int().min(1).max(30).optional(), // Minutes to wait after pause for high-spend campaigns ($10+)
-  minPauseClickThreshold: z.number().optional(), // Min clicks threshold for pausing (no restrictions)
-  minActivateClickThreshold: z.number().optional(), // Min clicks for activation (no restrictions)
+  // Low spend thresholds
+  minPauseClickThreshold: z.number().optional(), // Low spend threshold for pausing (no restrictions)
+  minActivateClickThreshold: z.number().optional(), // Low spend threshold for activation (no restrictions)
+  // High spend thresholds
+  highSpendPauseThreshold: z.number().optional(), // High spend threshold for pausing (no restrictions)
+  highSpendActivateThreshold: z.number().optional(), // High spend threshold for activation (no restrictions)
   // DEPRECATED: Traffic Sender fields - no longer in use
   trafficSenderEnabled: z.boolean().optional(), // DEPRECATED
   lastTrafficSenderAction: z.date().optional().nullable(), // DEPRECATED

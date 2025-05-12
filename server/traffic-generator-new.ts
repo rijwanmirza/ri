@@ -196,12 +196,20 @@ export async function handleCampaignBySpentValue(campaignId: number, trafficstar
   const campaignResult = await db.select().from(campaigns).where(eq(campaigns.id, campaignId)).limit(1);
   const campaignSettings = campaignResult[0];
   
-  // Use campaign-specific thresholds if available
-  const MINIMUM_CLICKS_THRESHOLD = campaignSettings?.minPauseClickThreshold || 5000; // Custom threshold for pausing
-  const REMAINING_CLICKS_THRESHOLD = campaignSettings?.minActivateClickThreshold || 15000; // Custom threshold for activation
+  // Determine whether to use LOW SPEND or HIGH SPEND thresholds based on current spent value
+  let MINIMUM_CLICKS_THRESHOLD, REMAINING_CLICKS_THRESHOLD;
   
-  // Log which thresholds are being used
-  console.log(`Using campaign-specific thresholds: Pause at ${MINIMUM_CLICKS_THRESHOLD} clicks, Activate at ${REMAINING_CLICKS_THRESHOLD} clicks`);
+  if (spentValue >= THRESHOLD) {
+    // HIGH SPEND: use high spend thresholds
+    MINIMUM_CLICKS_THRESHOLD = campaignSettings?.highSpendPauseThreshold || 1000; // High spend threshold for pausing
+    REMAINING_CLICKS_THRESHOLD = campaignSettings?.highSpendActivateThreshold || 5000; // High spend threshold for activation
+    console.log(`Using HIGH SPEND thresholds: Pause at ${MINIMUM_CLICKS_THRESHOLD} clicks, Activate at ${REMAINING_CLICKS_THRESHOLD} clicks`);
+  } else {
+    // LOW SPEND: use regular thresholds
+    MINIMUM_CLICKS_THRESHOLD = campaignSettings?.minPauseClickThreshold || 5000; // Low spend threshold for pausing
+    REMAINING_CLICKS_THRESHOLD = campaignSettings?.minActivateClickThreshold || 15000; // Low spend threshold for activation
+    console.log(`Using LOW SPEND thresholds: Pause at ${MINIMUM_CLICKS_THRESHOLD} clicks, Activate at ${REMAINING_CLICKS_THRESHOLD} clicks`);
+  }
   
   try {
     console.log(`TRAFFIC-GENERATOR: Handling campaign ${trafficstarCampaignId} by spent value - current spent: $${spentValue.toFixed(4)}`);
@@ -966,8 +974,25 @@ function startMinutelyStatusCheck(campaignId: number, trafficstarCampaignId: str
           // Need to fetch campaign settings to get the threshold
           const campaignResult = await db.select().from(campaigns).where(eq(campaigns.id, campaignId)).limit(1);
           const campaignSettings = campaignResult[0];
-          const MINIMUM_CLICKS_THRESHOLD = campaignSettings?.minPauseClickThreshold || 5000; // Use campaign-specific threshold
-          const MAXIMUM_CLICKS_THRESHOLD = campaignSettings?.minActivateClickThreshold || 15000; // Use campaign-specific threshold for activation
+          
+          // Get the last spent value to determine if we're in HIGH or LOW spend state
+          let MINIMUM_CLICKS_THRESHOLD, MAXIMUM_CLICKS_THRESHOLD;
+          
+          // Get the current spent value
+          const currentSpent = Number(campaignSettings?.dailySpent || 0);
+          const THRESHOLD = 10.0; // $10 threshold for different handling
+          
+          if (currentSpent >= THRESHOLD) {
+            // HIGH SPEND: use high spend thresholds
+            MINIMUM_CLICKS_THRESHOLD = campaignSettings?.highSpendPauseThreshold || 1000; // High spend threshold for pausing
+            MAXIMUM_CLICKS_THRESHOLD = campaignSettings?.highSpendActivateThreshold || 5000; // High spend threshold for activation
+            console.log(`Using HIGH SPEND thresholds for active monitoring: Pause at ${MINIMUM_CLICKS_THRESHOLD} clicks, Activate at ${MAXIMUM_CLICKS_THRESHOLD} clicks`);
+          } else {
+            // LOW SPEND: use regular thresholds
+            MINIMUM_CLICKS_THRESHOLD = campaignSettings?.minPauseClickThreshold || 5000; // Low spend threshold for pausing
+            MAXIMUM_CLICKS_THRESHOLD = campaignSettings?.minActivateClickThreshold || 15000; // Low spend threshold for activation
+            console.log(`Using LOW SPEND thresholds for active monitoring: Pause at ${MINIMUM_CLICKS_THRESHOLD} clicks, Activate at ${MAXIMUM_CLICKS_THRESHOLD} clicks`);
+          }
           
           // Only pause if clearly below the minimum threshold to avoid oscillation
           if (totalRemainingClicks < MINIMUM_CLICKS_THRESHOLD) {
@@ -1057,8 +1082,25 @@ function startMinutelyStatusCheck(campaignId: number, trafficstarCampaignId: str
             // Get campaign settings to determine the threshold
             const campaignResult = await db.select().from(campaigns).where(eq(campaigns.id, campaignId)).limit(1);
             const campaignSettings = campaignResult[0];
-            const MINIMUM_CLICKS_THRESHOLD = campaignSettings?.minPauseClickThreshold || 5000; // Use campaign-specific threshold for pausing
-            const REMAINING_CLICKS_THRESHOLD = campaignSettings?.minActivateClickThreshold || 15000; // Use campaign-specific threshold for activation
+            
+            // Get the last spent value to determine if we're in HIGH or LOW spend state
+            let MINIMUM_CLICKS_THRESHOLD, REMAINING_CLICKS_THRESHOLD;
+            
+            // Get the current spent value
+            const currentSpent = Number(campaignSettings?.dailySpent || 0);
+            const THRESHOLD = 10.0; // $10 threshold for different handling
+            
+            if (currentSpent >= THRESHOLD) {
+              // HIGH SPEND: use high spend thresholds
+              MINIMUM_CLICKS_THRESHOLD = campaignSettings?.highSpendPauseThreshold || 1000; // High spend threshold for pausing
+              REMAINING_CLICKS_THRESHOLD = campaignSettings?.highSpendActivateThreshold || 5000; // High spend threshold for activation
+              console.log(`Using HIGH SPEND thresholds for pause monitoring: Pause at ${MINIMUM_CLICKS_THRESHOLD} clicks, Activate at ${REMAINING_CLICKS_THRESHOLD} clicks`);
+            } else {
+              // LOW SPEND: use regular thresholds
+              MINIMUM_CLICKS_THRESHOLD = campaignSettings?.minPauseClickThreshold || 5000; // Low spend threshold for pausing
+              REMAINING_CLICKS_THRESHOLD = campaignSettings?.minActivateClickThreshold || 15000; // Low spend threshold for activation
+              console.log(`Using LOW SPEND thresholds for pause monitoring: Pause at ${MINIMUM_CLICKS_THRESHOLD} clicks, Activate at ${REMAINING_CLICKS_THRESHOLD} clicks`);
+            }
             
             // Only reactivate if clearly above the activation threshold to avoid oscillation
             if (totalRemainingClicks > REMAINING_CLICKS_THRESHOLD) {
@@ -1206,8 +1248,25 @@ function startMinutelyPauseStatusCheck(campaignId: number, trafficstarCampaignId
               // Need to fetch campaign settings to get the threshold
               const campaignResult = await db.select().from(campaigns).where(eq(campaigns.id, campaignId)).limit(1);
               const campaignSettings = campaignResult[0];
-              const MINIMUM_CLICKS_THRESHOLD = campaignSettings?.minPauseClickThreshold || 5000; // Use campaign-specific threshold for pausing
-              const REMAINING_CLICKS_THRESHOLD = campaignSettings?.minActivateClickThreshold || 15000; // Use campaign-specific threshold for activation
+              
+              // Get the last spent value to determine if we're in HIGH or LOW spend state
+              let MINIMUM_CLICKS_THRESHOLD, REMAINING_CLICKS_THRESHOLD;
+              
+              // Get the current spent value
+              const currentSpent = Number(campaignSettings?.dailySpent || 0);
+              const THRESHOLD = 10.0; // $10 threshold for different handling
+              
+              if (currentSpent >= THRESHOLD) {
+                // HIGH SPEND: use high spend thresholds
+                MINIMUM_CLICKS_THRESHOLD = campaignSettings?.highSpendPauseThreshold || 1000; // High spend threshold for pausing
+                REMAINING_CLICKS_THRESHOLD = campaignSettings?.highSpendActivateThreshold || 5000; // High spend threshold for activation
+                console.log(`Using HIGH SPEND thresholds for post-pause check: Pause at ${MINIMUM_CLICKS_THRESHOLD} clicks, Activate at ${REMAINING_CLICKS_THRESHOLD} clicks`);
+              } else {
+                // LOW SPEND: use regular thresholds
+                MINIMUM_CLICKS_THRESHOLD = campaignSettings?.minPauseClickThreshold || 5000; // Low spend threshold for pausing
+                REMAINING_CLICKS_THRESHOLD = campaignSettings?.minActivateClickThreshold || 15000; // Low spend threshold for activation
+                console.log(`Using LOW SPEND thresholds for post-pause check: Pause at ${MINIMUM_CLICKS_THRESHOLD} clicks, Activate at ${REMAINING_CLICKS_THRESHOLD} clicks`);
+              }
               
               if (totalRemainingClicks >= REMAINING_CLICKS_THRESHOLD) {
                 console.log(`✅ Campaign ${trafficstarCampaignId} now has ${totalRemainingClicks} remaining clicks (>= ${REMAINING_CLICKS_THRESHOLD}) - will attempt reactivation after pause period`);
@@ -1289,8 +1348,25 @@ function startMinutelyPauseStatusCheck(campaignId: number, trafficstarCampaignId
             // Get campaign thresholds
             const campaignResult = await db.select().from(campaigns).where(eq(campaigns.id, campaignId)).limit(1);
             const campaignSettings = campaignResult[0];
-            const MINIMUM_CLICKS_THRESHOLD = campaignSettings?.minPauseClickThreshold || 5000; // Pause threshold
-            const MAXIMUM_CLICKS_THRESHOLD = campaignSettings?.minActivateClickThreshold || 15000; // Activate threshold
+            
+            // Get the last spent value to determine if we're in HIGH or LOW spend state
+            let MINIMUM_CLICKS_THRESHOLD, MAXIMUM_CLICKS_THRESHOLD;
+            
+            // Get the current spent value
+            const currentSpent = Number(campaignSettings?.dailySpent || 0);
+            const THRESHOLD = 10.0; // $10 threshold for different handling
+            
+            if (currentSpent >= THRESHOLD) {
+              // HIGH SPEND: use high spend thresholds
+              MINIMUM_CLICKS_THRESHOLD = campaignSettings?.highSpendPauseThreshold || 1000; // High spend threshold for pausing
+              MAXIMUM_CLICKS_THRESHOLD = campaignSettings?.highSpendActivateThreshold || 5000; // High spend threshold for activation
+              console.log(`Using HIGH SPEND thresholds for hysteresis check: Pause at ${MINIMUM_CLICKS_THRESHOLD} clicks, Activate at ${MAXIMUM_CLICKS_THRESHOLD} clicks`);
+            } else {
+              // LOW SPEND: use regular thresholds
+              MINIMUM_CLICKS_THRESHOLD = campaignSettings?.minPauseClickThreshold || 5000; // Low spend threshold for pausing
+              MAXIMUM_CLICKS_THRESHOLD = campaignSettings?.minActivateClickThreshold || 15000; // Low spend threshold for activation
+              console.log(`Using LOW SPEND thresholds for hysteresis check: Pause at ${MINIMUM_CLICKS_THRESHOLD} clicks, Activate at ${MAXIMUM_CLICKS_THRESHOLD} clicks`);
+            }
             
             // Create hysteresis zone - a buffer between thresholds to prevent oscillation
             // Only re-pause if clearly below the activation threshold with a 10% buffer
