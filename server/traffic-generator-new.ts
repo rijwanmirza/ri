@@ -36,8 +36,35 @@ export async function getTrafficStarCampaignStatus(trafficstarCampaignId: string
       return null;
     }
     
+    // Get the campaign ID from our database to check its last activation time
+    const campaign = await db.query.campaigns.findFirst({
+      where: (c, { eq }) => eq(c.trafficstarCampaignId, trafficstarCampaignId)
+    });
+    
     // Return the campaign status (active or paused)
     console.log(`TRAFFIC-GENERATOR: TrafficStar campaign ${trafficstarCampaignId} REAL status is ${status.status}, active=${status.active}`);
+    
+    // Check for recent activation - if we activated this campaign in the last 5 minutes, 
+    // consider it still active regardless of what TrafficStar reports
+    if (campaign && campaign.lastTrafficSenderAction) {
+      const timeSinceAction = new Date().getTime() - new Date(campaign.lastTrafficSenderAction).getTime();
+      const campaignActions = recentActions.get(campaign.id);
+      
+      if (
+        // Either the DB shows a recent activation (check for any activation status)
+        (campaign.lastTrafficSenderStatus && 
+         (campaign.lastTrafficSenderStatus.includes('reactivated') || 
+          campaign.lastTrafficSenderStatus.includes('activated')) && 
+         timeSinceAction < ACTION_COOLDOWN_MS) ||
+        // Or our in-memory tracker shows a recent activation
+        (campaignActions && 
+         campaignActions.lastActivation && 
+         (new Date().getTime() - campaignActions.lastActivation.getTime() < ACTION_COOLDOWN_MS))
+      ) {
+        console.log(`⏱️ Campaign ${trafficstarCampaignId} was recently activated (${Math.floor(timeSinceAction / (1000 * 60))} minutes ago) - treating as ACTIVE despite API response`);
+        return 'active';
+      }
+    }
     
     // Convert status object to string status for compatibility with existing code
     return status.active ? 'active' : 'paused';
@@ -277,6 +304,13 @@ export async function handleCampaignBySpentValue(campaignId: number, trafficstar
               
               // If we get here without an error, the campaign was activated successfully
               console.log(`✅ AUTO-REACTIVATED low spend campaign ${trafficstarCampaignId} - it has ${totalRemainingClicks} remaining clicks`);
+              
+              // Record this activation in our recentActions map
+              const existingActions = recentActions.get(campaignId) || {};
+              recentActions.set(campaignId, {
+                ...existingActions,
+                lastActivation: new Date()
+              });
               
               // Mark as auto-reactivated in the database
               await db.update(campaigns)
