@@ -44,7 +44,7 @@ export async function getTrafficStarCampaignStatus(trafficstarCampaignId: string
     // Return the campaign status (active or paused)
     console.log(`TRAFFIC-GENERATOR: TrafficStar campaign ${trafficstarCampaignId} REAL status is ${status.status}, active=${status.active}`);
     
-    // Check for recent activation - if we activated this campaign in the last 5 minutes, 
+    // Check for recent activation - if we activated this campaign in the last 3 minutes, 
     // consider it still active regardless of what TrafficStar reports
     if (campaign && campaign.lastTrafficSenderAction) {
       const timeSinceAction = new Date().getTime() - new Date(campaign.lastTrafficSenderAction).getTime();
@@ -564,6 +564,13 @@ export async function handleCampaignBySpentValue(campaignId: number, trafficstar
               await trafficStarService.activateCampaign(Number(trafficstarCampaignId));
               console.log(`✅ Activated campaign ${trafficstarCampaignId} after budget update`);
               
+              // Record this activation in our recent actions map
+              const existingActions = recentActions.get(campaignId) || {};
+              recentActions.set(campaignId, {
+                ...existingActions,
+                lastActivation: new Date()
+              });
+              
               // 9. Update database status
               await db.update(campaigns)
                 .set({
@@ -944,7 +951,7 @@ const recentActions = new Map<number, {
 }>();
 
 // How long to wait before allowing the same action again (in milliseconds)
-const ACTION_COOLDOWN_MS = 5 * 60 * 1000; // 5 minutes
+const ACTION_COOLDOWN_MS = 3 * 60 * 1000; // 3 minutes
 const emptyUrlStatusChecks = new Map<number, NodeJS.Timeout>();
 
 /**
@@ -1313,6 +1320,13 @@ function startMinutelyPauseStatusCheck(campaignId: number, trafficstarCampaignId
                   
                   console.log(`✅ REACTIVATED campaign ${trafficstarCampaignId} after pause period - it now has ${totalRemainingClicks} remaining clicks`);
                   
+                  // Record this activation in our recent actions map
+                  const existingActions = recentActions.get(campaignId) || {};
+                  recentActions.set(campaignId, {
+                    ...existingActions,
+                    lastActivation: new Date()
+                  });
+                  
                   // Mark as reactivated after pause in the database
                   await db.update(campaigns)
                     .set({
@@ -1624,6 +1638,13 @@ export async function processTrafficGenerator(campaignId: number, forceMode?: st
         await trafficStarService.activateCampaign(Number(campaign.trafficstarCampaignId || campaign.trafficstar_campaign_id));
         
         console.log(`✅ FORCE MODE: Successfully activated campaign ${campaign.trafficstarCampaignId || campaign.trafficstar_campaign_id}`);
+        
+        // Record this activation in our recent actions map
+        const existingActions = recentActions.get(campaignId) || {};
+        recentActions.set(campaignId, {
+          ...existingActions,
+          lastActivation: new Date()
+        });
         
         // Start minute-by-minute monitoring
         startMinutelyStatusCheck(campaignId, campaign.trafficstarCampaignId || campaign.trafficstar_campaign_id);
