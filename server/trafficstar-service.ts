@@ -136,29 +136,11 @@ class TrafficStarService {
    */
   public async refreshToken(): Promise<string> {
     try {
-      // Get API key from environment - handle long tokens safely
-      let refreshToken = process.env.TRAFFICSTAR_API_KEY || '';
+      // Get API key from environment
+      const apiKey = process.env.TRAFFICSTAR_API_KEY;
       
-      // Check if we should load from a file instead
-      if (process.env.TRAFFICSTAR_TOKEN_FILE && refreshToken.length < 100) {
-        try {
-          // Try to use token from file system if available
-          const fs = require('fs');
-          const tokenFilePath = process.env.TRAFFICSTAR_TOKEN_FILE;
-          
-          if (fs.existsSync(tokenFilePath)) {
-            console.log(`Loading TrafficStar token from file: ${tokenFilePath}`);
-            refreshToken = fs.readFileSync(tokenFilePath, 'utf8').trim();
-            console.log(`Loaded token with length: ${refreshToken.length}`);
-          }
-        } catch (fileError) {
-          console.error('Error reading token file:', fileError);
-        }
-      }
-      
-      if (!refreshToken || refreshToken.length < 100) {
-        console.error(`TrafficStar token appears invalid or truncated. Length: ${refreshToken.length}`);
-        throw new Error('TrafficStar API key not set properly or is truncated');
+      if (!apiKey) {
+        throw new Error('TrafficStar API key not set in environment variables');
       }
       
       // Use OAuth 2.0 with refresh_token grant type
@@ -166,10 +148,7 @@ class TrafficStarService {
       
       const params = new URLSearchParams();
       params.append('grant_type', 'refresh_token');
-      params.append('refresh_token', refreshToken);
-      
-      // Log token length (not the actual token) for debugging
-      console.log(`Sending refresh token with length: ${refreshToken.length}`);
+      params.append('refresh_token', apiKey);
       
       const response = await axios.post(tokenUrl, params.toString(), {
         headers: {
@@ -190,7 +169,7 @@ class TrafficStarService {
       return this.accessToken;
     } catch (error) {
       console.error('Error refreshing token:', error);
-      throw error; // Throw the original error for better debugging
+      throw new Error('Failed to refresh token');
     }
   }
   
@@ -551,9 +530,9 @@ class TrafficStarService {
           
           // Update spent values for each campaign
           for (const campaign of campaignsResult) {
-            if (campaign.trafficstarCampaignId) {
+            if (campaign.trafficstarCampaignId || campaign.trafficstar_campaign_id) {
               try {
-                const trafficStarId = parseInt(campaign.trafficstarCampaignId);
+                const trafficStarId = parseInt(campaign.trafficstarCampaignId || campaign.trafficstar_campaign_id);
                 if (!isNaN(trafficStarId)) {
                   console.log(`Updating spent value for campaign ${campaign.id} (TrafficStar ID: ${trafficStarId})`);
                   
