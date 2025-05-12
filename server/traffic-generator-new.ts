@@ -299,9 +299,9 @@ export async function handleCampaignBySpentValue(campaignId: number, trafficstar
           } catch (error) {
             console.error(`❌ Error auto-reactivating low spend campaign ${trafficstarCampaignId}:`, error);
           }
-        } else if (totalRemainingClicks <= MINIMUM_CLICKS_THRESHOLD && currentStatus === 'active') {
-          // Case 2: Low remaining clicks (≤5,000) and active - PAUSE CAMPAIGN
-          console.log(`⏹️ Campaign ${trafficstarCampaignId} only has ${totalRemainingClicks} remaining clicks (<= ${MINIMUM_CLICKS_THRESHOLD}) - will pause campaign`);
+        } else if (totalRemainingClicks < MINIMUM_CLICKS_THRESHOLD && currentStatus === 'active') {
+          // Case 2: Low remaining clicks (<5,000) and active - PAUSE CAMPAIGN
+          console.log(`⏹️ Campaign ${trafficstarCampaignId} only has ${totalRemainingClicks} remaining clicks (< ${MINIMUM_CLICKS_THRESHOLD}) - will pause campaign`);
           
           try {
             // Set current date/time for end time
@@ -359,9 +359,9 @@ export async function handleCampaignBySpentValue(campaignId: number, trafficstar
             .where(eq(campaigns.id, campaignId));
           
           return;
-        } else if (totalRemainingClicks <= MINIMUM_CLICKS_THRESHOLD && currentStatus !== 'active') {
+        } else if (totalRemainingClicks < MINIMUM_CLICKS_THRESHOLD && currentStatus !== 'active') {
           // Case 4: Low remaining clicks and already paused - CONTINUE PAUSE MONITORING
-          console.log(`⏹️ Campaign ${trafficstarCampaignId} has ${totalRemainingClicks} remaining clicks (<= ${MINIMUM_CLICKS_THRESHOLD}) and is already paused - monitoring to ensure it stays paused`);
+          console.log(`⏹️ Campaign ${trafficstarCampaignId} has ${totalRemainingClicks} remaining clicks (< ${MINIMUM_CLICKS_THRESHOLD}) and is already paused - monitoring to ensure it stays paused`);
           
           // Ensure we're monitoring this campaign's pause status
           startMinutelyPauseStatusCheck(campaignId, trafficstarCampaignId);
@@ -938,7 +938,7 @@ function startMinutelyStatusCheck(campaignId: number, trafficstarCampaignId: str
         // Check if we need to pause based on remaining clicks
         // Only fetch active URLs for the campaign to improve performance
         const campaign = await db.query.campaigns.findFirst({
-          where: (campaign, { eq }) => eq(campaign.id, campaignId),
+          where: (c, { eq }) => eq(c.id, campaignId),
           with: { 
             urls: {
               where: (urls, { eq }) => eq(urls.status, 'active')
@@ -967,7 +967,10 @@ function startMinutelyStatusCheck(campaignId: number, trafficstarCampaignId: str
           const campaignResult = await db.select().from(campaigns).where(eq(campaigns.id, campaignId)).limit(1);
           const campaign = campaignResult[0];
           const MINIMUM_CLICKS_THRESHOLD = campaign?.minPauseClickThreshold || 5000; // Use campaign-specific threshold
-          if (totalRemainingClicks <= MINIMUM_CLICKS_THRESHOLD) {
+          const MAXIMUM_CLICKS_THRESHOLD = campaign?.minActivateClickThreshold || 15000; // Use campaign-specific threshold for activation
+          
+          // Only pause if clearly below the minimum threshold to avoid oscillation
+          if (totalRemainingClicks < MINIMUM_CLICKS_THRESHOLD) {
             console.log(`⏹️ During monitoring: Campaign ${trafficstarCampaignId} remaining clicks (${totalRemainingClicks}) fell below threshold (${MINIMUM_CLICKS_THRESHOLD}) - pausing campaign`);
             
             // Stop active status monitoring since we're switching to pause monitoring
@@ -1054,9 +1057,11 @@ function startMinutelyStatusCheck(campaignId: number, trafficstarCampaignId: str
             // Get campaign settings to determine the threshold
             const campaignResult = await db.select().from(campaigns).where(eq(campaigns.id, campaignId)).limit(1);
             const campaignSettings = campaignResult[0];
-            const REMAINING_CLICKS_THRESHOLD = campaignSettings?.minActivateClickThreshold || 15000; // Use campaign-specific threshold
+            const MINIMUM_CLICKS_THRESHOLD = campaignSettings?.minPauseClickThreshold || 5000; // Use campaign-specific threshold for pausing
+            const REMAINING_CLICKS_THRESHOLD = campaignSettings?.minActivateClickThreshold || 15000; // Use campaign-specific threshold for activation
             
-            if (totalRemainingClicks >= REMAINING_CLICKS_THRESHOLD) {
+            // Only reactivate if clearly above the activation threshold to avoid oscillation
+            if (totalRemainingClicks > REMAINING_CLICKS_THRESHOLD) {
               console.log(`✅ Campaign ${trafficstarCampaignId} has ${totalRemainingClicks} remaining clicks (>= ${REMAINING_CLICKS_THRESHOLD}) - will attempt reactivation during monitoring`);
               
               // Set end time to 23:59 UTC today
@@ -1154,7 +1159,7 @@ function startMinutelyPauseStatusCheck(campaignId: number, trafficstarCampaignId
         // Check current spent value and remaining clicks periodically
         // Only fetch active URLs for the campaign to improve performance
         const campaign = await db.query.campaigns.findFirst({
-          where: (campaign, { eq }) => eq(campaign.id, campaignId),
+          where: (c, { eq }) => eq(c.id, campaignId),
           with: { 
             urls: {
               where: (urls, { eq }) => eq(urls.status, 'active')
@@ -1201,7 +1206,8 @@ function startMinutelyPauseStatusCheck(campaignId: number, trafficstarCampaignId
               // Need to fetch campaign settings to get the threshold
               const campaignResult = await db.select().from(campaigns).where(eq(campaigns.id, campaignId)).limit(1);
               const campaignSettings = campaignResult[0];
-              const REMAINING_CLICKS_THRESHOLD = campaignSettings?.minActivateClickThreshold || 15000; // Use campaign-specific threshold
+              const MINIMUM_CLICKS_THRESHOLD = campaignSettings?.minPauseClickThreshold || 5000; // Use campaign-specific threshold for pausing
+              const REMAINING_CLICKS_THRESHOLD = campaignSettings?.minActivateClickThreshold || 15000; // Use campaign-specific threshold for activation
               
               if (totalRemainingClicks >= REMAINING_CLICKS_THRESHOLD) {
                 console.log(`✅ Campaign ${trafficstarCampaignId} now has ${totalRemainingClicks} remaining clicks (>= ${REMAINING_CLICKS_THRESHOLD}) - will attempt reactivation after pause period`);
@@ -1280,17 +1286,32 @@ function startMinutelyPauseStatusCheck(campaignId: number, trafficstarCampaignId
               }
             }
             
-            console.log(`Campaign ${trafficstarCampaignId} has ${totalRemainingClicks} remaining clicks but should be paused - re-pausing campaign`);
+            // Get campaign thresholds
+            const campaignResult = await db.select().from(campaigns).where(eq(campaigns.id, campaignId)).limit(1);
+            const campaignSettings = campaignResult[0];
+            const MINIMUM_CLICKS_THRESHOLD = campaignSettings?.minPauseClickThreshold || 5000; // Pause threshold
+            const MAXIMUM_CLICKS_THRESHOLD = campaignSettings?.minActivateClickThreshold || 15000; // Activate threshold
             
-            // Set current date/time for end time
-            const now = new Date();
-            const formattedDateTime = now.toISOString().replace('T', ' ').split('.')[0]; // YYYY-MM-DD HH:MM:SS
+            // Create hysteresis zone - a buffer between thresholds to prevent oscillation
+            // Only re-pause if clearly below the activation threshold with a 10% buffer
+            const HYSTERESIS_THRESHOLD = MAXIMUM_CLICKS_THRESHOLD * 0.9;
             
-            // First pause the campaign
-            await trafficStarService.pauseCampaign(Number(trafficstarCampaignId));
-            
-            // Then set its end time
-            await trafficStarService.updateCampaignEndTime(Number(trafficstarCampaignId), formattedDateTime);
+            if (totalRemainingClicks < HYSTERESIS_THRESHOLD) {
+              console.log(`Campaign ${trafficstarCampaignId} has ${totalRemainingClicks} remaining clicks (< ${HYSTERESIS_THRESHOLD}) - re-pausing campaign`);
+              
+              // Set current date/time for end time
+              const now = new Date();
+              const formattedDateTime = now.toISOString().replace('T', ' ').split('.')[0]; // YYYY-MM-DD HH:MM:SS
+              
+              // First pause the campaign
+              await trafficStarService.pauseCampaign(Number(trafficstarCampaignId));
+              
+              // Then set its end time
+              await trafficStarService.updateCampaignEndTime(Number(trafficstarCampaignId), formattedDateTime);
+            } else {
+              console.log(`Campaign ${trafficstarCampaignId} has ${totalRemainingClicks} remaining clicks in hysteresis zone (>= ${HYSTERESIS_THRESHOLD}) - not re-pausing to prevent oscillation`);
+              return; // Exit early without taking any action
+            }
             
             console.log(`✅ RE-PAUSED campaign ${trafficstarCampaignId} during pause monitoring - it was found active`);
             
