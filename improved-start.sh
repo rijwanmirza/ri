@@ -28,7 +28,14 @@ fi
 export DATABASE_URL="postgres://neondb_owner:npg_U8evoXZz0WOB@localhost:5432/neondb"
 export API_SECRET_KEY="TraffiCS10928"
 export YOUTUBE_API_KEY="AIzaSyBB2nPAhc87jhkGXDe02jgn2eyV0qr-9YA"
-export TRAFFICSTAR_API_KEY="eyJhbGciOiJIUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJjOGJmY2YyZi1lZjJlLTQwZGYtYTg4ZC1kYjQ3NmI4MTFiOGMifQ.eyJpYXQiOjE3NDA5MTI1MTUsI"
+# Load TrafficStar API key from separate file to avoid truncation
+if [ -f "/var/www/UrlCampaignTracker/trafficstar_token.txt" ]; then
+  export TRAFFICSTAR_API_KEY=$(cat /var/www/UrlCampaignTracker/trafficstar_token.txt)
+else
+  echo "WARNING: TrafficStar API token file not found. API functionality may be limited."
+  # You can use this as a fallback, but replace with your full token
+  export TRAFFICSTAR_API_KEY="eyJhbGciOiJIUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJjOGJmY2YyZi1lZjJlLTQwZGYtYTg4ZC1kYjQ3NmI4MTFiOGMifQ.eyJpYXQiOjE3NDA5MTI1MTUsImV4cCI6MTc0MDk5ODkxNSwianRpIjoiNWIxZjQyMGEtZWM3Yy00MTEwLTg2OTAtNDRlZjVlNWRhMTMzIiwiaXNzIjoiaHR0cHM6Ly9zc28udHJhZmZpY3N0YXJzLmNvbS9hdXRoL3JlYWxtcy90cmFmZmljc3RhcnMiLCJzdWIiOiI0ZTExZjhjMC1mN2VhLTQyNGQtYWZhYy1iMmE2YmM0NmQ2YWIiLCJ0eXAiOiJSZWZyZXNoIiwiYXpwIjoiYXBpLXYxIiwic2Vzc2lvbl9zdGF0ZSI6ImJiM2FlNzVmLTE3MzctNDM2ZS1hZTI0LTRkMDdlNjIzNDhhMiIsInNjb3BlIjoib2ZmbGluZV9hY2Nlc3MifQ.kbvfT4ReCFO2HxDBFW-TRmYMoFoW9b0_sMIcvZF-Z70"
+fi
 export SESSION_SECRET="2DcFsEodeYl7m0bq35CxJiW/hZI/J4dZhv9xrKiH186cZUKQ4tQEQLwDesAuMDbDZwoFG/5pyP/43tbnRIpwoQ=="
 export PGHOST="localhost"
 export PGPORT="5432"
