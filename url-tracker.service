@@ -1,0 +1,18 @@
+[Unit]
+Description=URL Campaign Tracker PM2 Service
+After=network.target
+
+[Service]
+Type=forking
+User=root
+WorkingDirectory=/var/www/UrlCampaignTracker
+Environment=PATH=/usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/usr/sbin:/sbin
+ExecStartPre=/bin/bash /var/www/UrlCampaignTracker/stop-all-instances.sh
+ExecStart=/usr/local/bin/pm2 start --name url-tracker npm -- start
+ExecStop=/usr/local/bin/pm2 stop url-tracker
+ExecReload=/usr/local/bin/pm2 reload url-tracker
+Restart=on-failure
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
