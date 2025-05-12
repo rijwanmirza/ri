@@ -427,8 +427,8 @@ function startMinutelyStatusCheck(campaignId: number, trafficstarCampaignId: str
           // If remaining clicks fell below threshold, pause the campaign
           // Need to fetch campaign settings to get the threshold
           const campaignResult = await db.select().from(campaigns).where(eq(campaigns.id, campaignId)).limit(1);
-          const campaign = campaignResult[0];
-          const MINIMUM_CLICKS_THRESHOLD = campaign?.minPauseClickThreshold || 5000; // Use campaign-specific threshold
+          const campaignSettings = campaignResult[0];
+          const MINIMUM_CLICKS_THRESHOLD = campaignSettings?.minPauseClickThreshold || 5000; // Use campaign-specific threshold
           if (totalRemainingClicks <= MINIMUM_CLICKS_THRESHOLD) {
             console.log(`⏹️ During monitoring: Campaign ${trafficstarCampaignId} remaining clicks (${totalRemainingClicks}) fell below threshold (${MINIMUM_CLICKS_THRESHOLD}) - pausing campaign`);
             
