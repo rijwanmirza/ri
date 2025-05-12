@@ -53,8 +53,8 @@ const campaignEditSchema = z.object({
   trafficGeneratorEnabled: z.boolean().default(false),
   postPauseCheckMinutes: z.number().int().min(1, "Minutes must be at least 1").max(30, "Minutes can't exceed 30").default(2), 
   highSpendWaitMinutes: z.number().int().min(1, "Minutes must be at least 1").max(30, "Minutes can't exceed 30").default(11),
-  minPauseClickThreshold: z.number().int().min(1000, "Threshold must be at least 1,000").max(50000, "Threshold can't exceed 50,000").default(5000),
-  minActivateClickThreshold: z.number().int().min(5000, "Threshold must be at least 5,000").max(100000, "Threshold can't exceed 100,000").default(15000),
+  minPauseClickThreshold: z.number().default(5000),
+  minActivateClickThreshold: z.number().default(15000),
   // YouTube API fields
   youtubeApiEnabled: z.boolean().default(false),
   youtubeApiIntervalMinutes: z.number().int().min(15, "Minutes must be at least 15").max(1440, "Minutes can't exceed 1440").default(60),
@@ -279,23 +279,15 @@ export default function CampaignEditForm({ campaign, onSuccess }: CampaignEditFo
       values.highSpendWaitMinutes = waitMinutes;
     }
     
-    // Validate minPauseClickThreshold (minimum value to pause campaign)
+    // Accept any value for minPauseClickThreshold
     const pauseThreshold = Number(values.minPauseClickThreshold);
-    if (isNaN(pauseThreshold) || pauseThreshold < 1000) {
-      values.minPauseClickThreshold = 5000; // Default to 5000 if invalid
-    } else if (pauseThreshold > 50000) {
-      values.minPauseClickThreshold = 50000; // Cap at 50000
-    } else {
+    if (!isNaN(pauseThreshold)) {
       values.minPauseClickThreshold = pauseThreshold;
     }
     
-    // Validate minActivateClickThreshold (minimum value to activate campaign)
+    // Accept any value for minActivateClickThreshold
     const activateThreshold = Number(values.minActivateClickThreshold);
-    if (isNaN(activateThreshold) || activateThreshold < 5000) {
-      values.minActivateClickThreshold = 15000; // Default to 15000 if invalid
-    } else if (activateThreshold > 100000) {
-      values.minActivateClickThreshold = 100000; // Cap at 100000
-    } else {
+    if (!isNaN(activateThreshold)) {
       values.minActivateClickThreshold = activateThreshold;
     }
     

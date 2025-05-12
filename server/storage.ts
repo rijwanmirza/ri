@@ -544,6 +544,18 @@ export class DatabaseStorage implements IStorage {
       console.log('🔍 DEBUG: Setting highSpendWaitMinutes to:', updateData.highSpendWaitMinutes);
     }
     
+    // Handle minPauseClickThreshold field with no restrictions
+    if (updateCampaign.minPauseClickThreshold !== undefined) {
+      updateData.minPauseClickThreshold = updateCampaign.minPauseClickThreshold;
+      console.log('🔍 DEBUG: Setting minPauseClickThreshold to:', updateData.minPauseClickThreshold);
+    }
+    
+    // Handle minActivateClickThreshold field with no restrictions
+    if (updateCampaign.minActivateClickThreshold !== undefined) {
+      updateData.minActivateClickThreshold = updateCampaign.minActivateClickThreshold;
+      console.log('🔍 DEBUG: Setting minActivateClickThreshold to:', updateData.minActivateClickThreshold);
+    }
+    
     // Handle Traffic Sender fields
     if (updateCampaign.trafficSenderEnabled !== undefined) {
       // CRITICAL FIX: Make sure we explicitly set this as a boolean to prevent any type conversion issues
