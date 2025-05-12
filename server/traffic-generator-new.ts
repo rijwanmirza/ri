@@ -901,6 +901,16 @@ async function handleNewUrlsAfterBudgetCalc(campaignId: number, trafficstarCampa
  */
 const activeStatusChecks = new Map<number, NodeJS.Timeout>();
 const pauseStatusChecks = new Map<number, NodeJS.Timeout>();
+
+// Store timestamps of recent actions to prevent oscillation
+// Map format: { campaignId: { action: timestamp } }
+const recentActions = new Map<number, { 
+  lastActivation?: Date,
+  lastPause?: Date 
+}>();
+
+// How long to wait before allowing the same action again (in milliseconds)
+const ACTION_COOLDOWN_MS = 5 * 60 * 1000; // 5 minutes
 const emptyUrlStatusChecks = new Map<number, NodeJS.Timeout>();
 
 /**
@@ -973,6 +983,18 @@ function startMinutelyStatusCheck(campaignId: number, trafficstarCampaignId: str
           if (totalRemainingClicks < MINIMUM_CLICKS_THRESHOLD) {
             console.log(`⏹️ During monitoring: Campaign ${trafficstarCampaignId} remaining clicks (${totalRemainingClicks}) fell below threshold (${MINIMUM_CLICKS_THRESHOLD}) - pausing campaign`);
             
+            // Check if we recently paused this campaign to prevent oscillation
+            const campaignActions = recentActions.get(campaignId);
+            const now = new Date();
+            if (campaignActions && campaignActions.lastPause) {
+              const timeSinceLastPause = now.getTime() - campaignActions.lastPause.getTime();
+              if (timeSinceLastPause < ACTION_COOLDOWN_MS) {
+                const minutesRemaining = Math.ceil((ACTION_COOLDOWN_MS - timeSinceLastPause) / (1000 * 60));
+                console.log(`⏱️ Campaign ${trafficstarCampaignId} was paused ${Math.floor(timeSinceLastPause / (1000 * 60))} minutes ago. Waiting ${minutesRemaining} more minutes before attempting again.`);
+                return;
+              }
+            }
+            
             // Stop active status monitoring since we're switching to pause monitoring
             clearInterval(interval);
             activeStatusChecks.delete(campaignId);
@@ -991,6 +1013,12 @@ function startMinutelyStatusCheck(campaignId: number, trafficstarCampaignId: str
                   await trafficStarService.updateCampaignEndTime(Number(trafficstarCampaignId), formattedDateTime);
                   
                   console.log(`✅ PAUSED low spend campaign ${trafficstarCampaignId} during monitoring due to low remaining clicks (${totalRemainingClicks} <= ${MINIMUM_CLICKS_THRESHOLD})`);
+                  
+                  // Record this pause in our recent actions map
+                  recentActions.set(campaignId, { 
+                    ...campaignActions,
+                    lastPause: new Date() 
+                  });
                   
                   // Mark as auto-paused in the database
                   await db.update(campaigns)
@@ -1064,29 +1092,54 @@ function startMinutelyStatusCheck(campaignId: number, trafficstarCampaignId: str
             if (totalRemainingClicks > REMAINING_CLICKS_THRESHOLD) {
               console.log(`✅ Campaign ${trafficstarCampaignId} has ${totalRemainingClicks} remaining clicks (>= ${REMAINING_CLICKS_THRESHOLD}) - will attempt reactivation during monitoring`);
               
+              // Check if we recently activated this campaign to prevent oscillation
+              const campaignActions = recentActions.get(campaignId);
+              const now = new Date();
+              if (campaignActions && campaignActions.lastActivation) {
+                const timeSinceLastActivation = now.getTime() - campaignActions.lastActivation.getTime();
+                if (timeSinceLastActivation < ACTION_COOLDOWN_MS) {
+                  const minutesRemaining = Math.ceil((ACTION_COOLDOWN_MS - timeSinceLastActivation) / (1000 * 60));
+                  console.log(`⏱️ Campaign ${trafficstarCampaignId} was activated ${Math.floor(timeSinceLastActivation / (1000 * 60))} minutes ago. Waiting ${minutesRemaining} more minutes before attempting again.`);
+                  
+                  // Start active monitoring to continue checking
+                  startMinutelyStatusCheck(campaignId, trafficstarCampaignId);
+                  return;
+                }
+              }
+              
               // Set end time to 23:59 UTC today
               const today = new Date();
               const todayStr = today.toISOString().split('T')[0]; // YYYY-MM-DD
               const endTimeStr = `${todayStr} 23:59:00`;
               
               // First set the end time, then activate
-              await trafficStarService.updateCampaignEndTime(Number(trafficstarCampaignId), endTimeStr);
-              
-              // Attempt to reactivate the campaign
-              await trafficStarService.activateCampaign(Number(trafficstarCampaignId));
-              
-              console.log(`✅ REACTIVATED campaign ${trafficstarCampaignId} during monitoring - it has ${totalRemainingClicks} remaining clicks`);
-              
-              // Mark as reactivated during monitoring in the database
-              await db.update(campaigns)
-                .set({
-                  lastTrafficSenderStatus: 'reactivated_during_monitoring',
-                  lastTrafficSenderAction: new Date(),
-                  updatedAt: new Date()
-                })
-                .where(eq(campaigns.id, campaignId));
-              
-              console.log(`✅ Marked campaign ${campaignId} as 'reactivated_during_monitoring' in database`);
+              try {
+                await trafficStarService.updateCampaignEndTime(Number(trafficstarCampaignId), endTimeStr);
+                
+                // Attempt to reactivate the campaign
+                await trafficStarService.activateCampaign(Number(trafficstarCampaignId));
+                
+                console.log(`✅ REACTIVATED campaign ${trafficstarCampaignId} during monitoring - it has ${totalRemainingClicks} remaining clicks`);
+                
+                // Record this activation in our recent actions map
+                recentActions.set(campaignId, { 
+                  ...campaignActions,
+                  lastActivation: new Date() 
+                });
+                
+                // Mark as reactivated during monitoring in the database
+                await db.update(campaigns)
+                  .set({
+                    lastTrafficSenderStatus: 'reactivated_during_monitoring',
+                    lastTrafficSenderAction: new Date(),
+                    updatedAt: new Date()
+                  })
+                  .where(eq(campaigns.id, campaignId));
+                
+                console.log(`✅ Marked campaign ${campaignId} as 'reactivated_during_monitoring' in database`);
+              } catch (error) {
+                console.error(`Failed to reactivate campaign ${trafficstarCampaignId}:`, error);
+              }
             } else {
               console.log(`⏹️ Campaign ${trafficstarCampaignId} has only ${totalRemainingClicks} remaining clicks (< ${REMAINING_CLICKS_THRESHOLD}) - will not reactivate during monitoring`);
               
