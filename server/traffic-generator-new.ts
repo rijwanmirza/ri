@@ -191,8 +191,17 @@ export async function getTrafficStarCampaignSpentValue(campaignId: number, traff
  */
 export async function handleCampaignBySpentValue(campaignId: number, trafficstarCampaignId: string, spentValue: number) {
   const THRESHOLD = 10.0; // $10 threshold for different handling
-  const REMAINING_CLICKS_THRESHOLD = 15000; // Threshold for auto-activation if campaign has low spend
-  const MINIMUM_CLICKS_THRESHOLD = 5000; // Threshold to pause campaign when remaining clicks fall below this value
+  
+  // Get campaign settings to get custom threshold values
+  const campaignResult = await db.select().from(campaigns).where(eq(campaigns.id, campaignId)).limit(1);
+  const campaignSettings = campaignResult[0];
+  
+  // Use campaign-specific thresholds if available
+  const MINIMUM_CLICKS_THRESHOLD = campaignSettings?.minPauseClickThreshold || 5000; // Custom threshold for pausing
+  const REMAINING_CLICKS_THRESHOLD = campaignSettings?.minActivateClickThreshold || 15000; // Custom threshold for activation
+  
+  // Log which thresholds are being used
+  console.log(`Using campaign-specific thresholds: Pause at ${MINIMUM_CLICKS_THRESHOLD} clicks, Activate at ${REMAINING_CLICKS_THRESHOLD} clicks`);
   
   try {
     console.log(`TRAFFIC-GENERATOR: Handling campaign ${trafficstarCampaignId} by spent value - current spent: $${spentValue.toFixed(4)}`);
@@ -954,7 +963,10 @@ function startMinutelyStatusCheck(campaignId: number, trafficstarCampaignId: str
           }
           
           // If remaining clicks fell below threshold, pause the campaign
-          const MINIMUM_CLICKS_THRESHOLD = 5000;
+          // Need to fetch campaign settings to get the threshold
+          const campaignResult = await db.select().from(campaigns).where(eq(campaigns.id, campaignId)).limit(1);
+          const campaign = campaignResult[0];
+          const MINIMUM_CLICKS_THRESHOLD = campaign?.minPauseClickThreshold || 5000; // Use campaign-specific threshold
           if (totalRemainingClicks <= MINIMUM_CLICKS_THRESHOLD) {
             console.log(`⏹️ During monitoring: Campaign ${trafficstarCampaignId} remaining clicks (${totalRemainingClicks}) fell below threshold (${MINIMUM_CLICKS_THRESHOLD}) - pausing campaign`);
             
@@ -1039,7 +1051,11 @@ function startMinutelyStatusCheck(campaignId: number, trafficstarCampaignId: str
             }
             
             // Only reactivate if there are enough remaining clicks
-            const REMAINING_CLICKS_THRESHOLD = 15000;
+            // Get campaign settings to determine the threshold
+            const campaignResult = await db.select().from(campaigns).where(eq(campaigns.id, campaignId)).limit(1);
+            const campaignSettings = campaignResult[0];
+            const REMAINING_CLICKS_THRESHOLD = campaignSettings?.minActivateClickThreshold || 15000; // Use campaign-specific threshold
+            
             if (totalRemainingClicks >= REMAINING_CLICKS_THRESHOLD) {
               console.log(`✅ Campaign ${trafficstarCampaignId} has ${totalRemainingClicks} remaining clicks (>= ${REMAINING_CLICKS_THRESHOLD}) - will attempt reactivation during monitoring`);
               
@@ -1182,7 +1198,11 @@ function startMinutelyPauseStatusCheck(campaignId: number, trafficstarCampaignId
               }
               
               // Check if clicks have been replenished
-              const REMAINING_CLICKS_THRESHOLD = 15000;
+              // Need to fetch campaign settings to get the threshold
+              const campaignResult = await db.select().from(campaigns).where(eq(campaigns.id, campaignId)).limit(1);
+              const campaignSettings = campaignResult[0];
+              const REMAINING_CLICKS_THRESHOLD = campaignSettings?.minActivateClickThreshold || 15000; // Use campaign-specific threshold
+              
               if (totalRemainingClicks >= REMAINING_CLICKS_THRESHOLD) {
                 console.log(`✅ Campaign ${trafficstarCampaignId} now has ${totalRemainingClicks} remaining clicks (>= ${REMAINING_CLICKS_THRESHOLD}) - will attempt reactivation after pause period`);
                 

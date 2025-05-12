@@ -118,11 +118,23 @@ export async function getTrafficStarCampaignSpentValue(campaignId: number, traff
  */
 export async function handleCampaignBySpentValue(campaignId: number, trafficstarCampaignId: string, spentValue: number) {
   const THRESHOLD = 10.0; // $10 threshold for different handling
-  const REMAINING_CLICKS_THRESHOLD = 15000; // Threshold for auto-activation if campaign has low spend
-  const MINIMUM_CLICKS_THRESHOLD = 5000; // Threshold to pause campaign when remaining clicks fall below this value
   
   try {
+    // Fetch campaign-specific thresholds if available
+    const campaignSettings = await db.query.campaigns.findFirst({
+      where: (campaign, { eq }) => eq(campaign.id, campaignId),
+      columns: {
+        minPauseClickThreshold: true,
+        minActivateClickThreshold: true
+      }
+    });
+    
+    // Use campaign-specific thresholds if available, otherwise use defaults
+    const MINIMUM_CLICKS_THRESHOLD = campaignSettings?.minPauseClickThreshold || 5000; // Custom threshold for pausing
+    const REMAINING_CLICKS_THRESHOLD = campaignSettings?.minActivateClickThreshold || 15000; // Custom threshold for activation
+    
     console.log(`TRAFFIC-GENERATOR: Handling campaign ${trafficstarCampaignId} by spent value - current spent: $${spentValue.toFixed(4)}`);
+    console.log(`Using campaign-specific thresholds: Pause at ${MINIMUM_CLICKS_THRESHOLD} clicks, Activate at ${REMAINING_CLICKS_THRESHOLD} clicks`);
     
     if (spentValue < THRESHOLD) {
       // Handle campaign with less than $10 spent
@@ -413,7 +425,10 @@ function startMinutelyStatusCheck(campaignId: number, trafficstarCampaignId: str
           }
           
           // If remaining clicks fell below threshold, pause the campaign
-          const MINIMUM_CLICKS_THRESHOLD = 5000;
+          // Need to fetch campaign settings to get the threshold
+          const campaignResult = await db.select().from(campaigns).where(eq(campaigns.id, campaignId)).limit(1);
+          const campaign = campaignResult[0];
+          const MINIMUM_CLICKS_THRESHOLD = campaign?.minPauseClickThreshold || 5000; // Use campaign-specific threshold
           if (totalRemainingClicks <= MINIMUM_CLICKS_THRESHOLD) {
             console.log(`⏹️ During monitoring: Campaign ${trafficstarCampaignId} remaining clicks (${totalRemainingClicks}) fell below threshold (${MINIMUM_CLICKS_THRESHOLD}) - pausing campaign`);
             
@@ -497,7 +512,7 @@ function startMinutelyStatusCheck(campaignId: number, trafficstarCampaignId: str
             }
             
             // Only reactivate if there are enough remaining clicks
-            const REMAINING_CLICKS_THRESHOLD = 15000;
+            const REMAINING_CLICKS_THRESHOLD = campaign.minActivateClickThreshold || 15000; // Use campaign-specific threshold if available
             if (totalRemainingClicks >= REMAINING_CLICKS_THRESHOLD) {
               console.log(`✅ Campaign ${trafficstarCampaignId} has ${totalRemainingClicks} remaining clicks (>= ${REMAINING_CLICKS_THRESHOLD}) - will attempt reactivation during monitoring`);
               
@@ -637,7 +652,7 @@ function startMinutelyPauseStatusCheck(campaignId: number, trafficstarCampaignId
               }
               
               // Check if clicks have been replenished
-              const REMAINING_CLICKS_THRESHOLD = 15000;
+              const REMAINING_CLICKS_THRESHOLD = campaign.minActivateClickThreshold || 15000; // Use campaign-specific threshold if available
               if (totalRemainingClicks >= REMAINING_CLICKS_THRESHOLD) {
                 console.log(`✅ Campaign ${trafficstarCampaignId} now has ${totalRemainingClicks} remaining clicks (>= ${REMAINING_CLICKS_THRESHOLD}) - will attempt reactivation after pause period`);
                 
@@ -862,10 +877,11 @@ export async function processTrafficGenerator(campaignId: number, forceMode?: st
       return;
     }
     
-    // IMMEDIATE CHECK: Check if remaining clicks are below 5000 and pause immediately if needed
+    // IMMEDIATE CHECK: Check if remaining clicks are below threshold and pause immediately if needed
     // This ensures we don't wait for the minute-by-minute check when a campaign is already below threshold
     if (campaign.trafficstarCampaignId || campaign.trafficstar_campaign_id && campaign.urls.length > 0) {
-      const MINIMUM_CLICKS_THRESHOLD = 5000;
+      // Use campaign-specific threshold if available, otherwise use default of 5000
+      const MINIMUM_CLICKS_THRESHOLD = campaign.minPauseClickThreshold || 5000;
       let totalRemainingClicks = 0;
       
       // Calculate total remaining clicks
@@ -1400,8 +1416,8 @@ export async function debugProcessCampaign(campaignId: number) {
       },
       thresholds: {
         spentThreshold: 10.0,
-        minimumClicksThreshold: 5000,
-        remainingClicksThreshold: 15000
+        minimumClicksThreshold: campaign.minPauseClickThreshold || 5000,
+        remainingClicksThreshold: campaign.minActivateClickThreshold || 15000
       }
     };
   } catch (error) {
