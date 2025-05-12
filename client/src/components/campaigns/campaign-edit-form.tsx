@@ -55,6 +55,8 @@ const campaignEditSchema = z.object({
   highSpendWaitMinutes: z.number().int().min(1, "Minutes must be at least 1").max(30, "Minutes can't exceed 30").default(11),
   minPauseClickThreshold: z.number().default(5000),
   minActivateClickThreshold: z.number().default(15000),
+  highSpendPauseThreshold: z.number().default(1000),
+  highSpendActivateThreshold: z.number().default(5000),
   // YouTube API fields
   youtubeApiEnabled: z.boolean().default(false),
   youtubeApiIntervalMinutes: z.number().int().min(15, "Minutes must be at least 15").max(1440, "Minutes can't exceed 1440").default(60),
@@ -104,6 +106,8 @@ export default function CampaignEditForm({ campaign, onSuccess }: CampaignEditFo
       highSpendWaitMinutes: campaign.highSpendWaitMinutes || 11, // Default to 11 minutes
       minPauseClickThreshold: campaign.minPauseClickThreshold || 5000, // Default to 5000 clicks
       minActivateClickThreshold: campaign.minActivateClickThreshold || 15000, // Default to 15000 clicks
+      highSpendPauseThreshold: campaign.highSpendPauseThreshold || 1000, // Default to 1000 clicks
+      highSpendActivateThreshold: campaign.highSpendActivateThreshold || 5000, // Default to 5000 clicks
       // YouTube API settings
       youtubeApiEnabled: campaign.youtubeApiEnabled || false,
       youtubeApiIntervalMinutes: campaign.youtubeApiIntervalMinutes || 60, // Default to 60 minutes
@@ -279,26 +283,49 @@ export default function CampaignEditForm({ campaign, onSuccess }: CampaignEditFo
       values.highSpendWaitMinutes = waitMinutes;
     }
     
-    // Accept any value for minPauseClickThreshold
+    // Accept any value for minPauseClickThreshold (LOW SPEND)
     const pauseThreshold = Number(values.minPauseClickThreshold);
     if (!isNaN(pauseThreshold)) {
       values.minPauseClickThreshold = pauseThreshold;
     }
     
-    // Accept any value for minActivateClickThreshold
+    // Accept any value for minActivateClickThreshold (LOW SPEND)
     const activateThreshold = Number(values.minActivateClickThreshold);
     if (!isNaN(activateThreshold)) {
       values.minActivateClickThreshold = activateThreshold;
     }
     
-    // Ensure activate threshold is greater than pause threshold
+    // Ensure LOW SPEND activate threshold is greater than pause threshold
     if (values.minActivateClickThreshold <= values.minPauseClickThreshold) {
       values.minActivateClickThreshold = values.minPauseClickThreshold + 5000;
+    }
+    
+    // Accept any value for highSpendPauseThreshold
+    const highSpendPauseThreshold = Number(values.highSpendPauseThreshold);
+    if (!isNaN(highSpendPauseThreshold)) {
+      values.highSpendPauseThreshold = highSpendPauseThreshold;
+    } else {
+      values.highSpendPauseThreshold = 1000; // Default value
+    }
+    
+    // Accept any value for highSpendActivateThreshold
+    const highSpendActivateThreshold = Number(values.highSpendActivateThreshold);
+    if (!isNaN(highSpendActivateThreshold)) {
+      values.highSpendActivateThreshold = highSpendActivateThreshold;
+    } else {
+      values.highSpendActivateThreshold = 5000; // Default value
+    }
+    
+    // Ensure HIGH SPEND activate threshold is greater than pause threshold
+    if (values.highSpendActivateThreshold <= values.highSpendPauseThreshold) {
+      values.highSpendActivateThreshold = values.highSpendPauseThreshold + 4000;
     }
     
     console.log("AFTER VALIDATION - highSpendWaitMinutes value:", values.highSpendWaitMinutes);
     console.log("AFTER VALIDATION - minPauseClickThreshold value:", values.minPauseClickThreshold);
     console.log("AFTER VALIDATION - minActivateClickThreshold value:", values.minActivateClickThreshold);
+    console.log("AFTER VALIDATION - highSpendPauseThreshold value:", values.highSpendPauseThreshold);
+    console.log("AFTER VALIDATION - highSpendActivateThreshold value:", values.highSpendActivateThreshold);
     
     // CRITICAL FIX: Make sure youtubeApiEnabled is properly set as a boolean
     console.log("Before fixing YouTube API value:", values.youtubeApiEnabled, typeof values.youtubeApiEnabled);
@@ -764,97 +791,205 @@ export default function CampaignEditForm({ campaign, onSuccess }: CampaignEditFo
                     />
                   )}
                   
-                  {/* Minimum Pause Click Threshold - only show when Traffic Generator is enabled */}
-                  {form.watch("trafficGeneratorEnabled") && (
-                    <FormField
-                      control={form.control}
-                      name="minPauseClickThreshold"
-                      render={({ field }) => (
-                        <FormItem className="mt-3 pt-3 border-t border-gray-100">
-                          <FormLabel>Pause Threshold (clicks)</FormLabel>
-                          <FormControl>
-                            <Input
-                              type="number"
-                              min="1000"
-                              max="50000"
-                              step="1000"
-                              {...field}
-                              onChange={(e) => {
-                                // Get raw value
-                                const value = e.target.value;
-                                
-                                if (value === '') {
-                                  // Default to 5000 if empty
-                                  field.onChange(5000);
-                                } else {
-                                  // Parse to integer
-                                  const parsedValue = parseInt(value, 10);
-                                  if (!isNaN(parsedValue)) {
-                                    // Ensure it's within range before updating
-                                    let finalValue = parsedValue;
-                                    if (finalValue < 1000) finalValue = 1000;
-                                    if (finalValue > 50000) finalValue = 50000;
-                                    
-                                    field.onChange(finalValue);
+                  {/* LOW SPEND THRESHOLDS SECTION */}
+                  <div className="my-4">
+                    <div className="bg-slate-50 px-4 py-3 rounded-md mb-3">
+                      <h3 className="text-sm font-semibold mb-1">LOW SPEND THRESHOLDS (When campaign spent &lt; $10)</h3>
+                      <p className="text-xs text-slate-500">These thresholds apply when the campaign has spent less than $10.</p>
+                    </div>
+                    
+                    {/* Minimum Pause Click Threshold - only show when Traffic Generator is enabled */}
+                    {form.watch("trafficGeneratorEnabled") && (
+                      <FormField
+                        control={form.control}
+                        name="minPauseClickThreshold"
+                        render={({ field }) => (
+                          <FormItem className="mt-3 pt-3 border-t border-gray-100">
+                            <FormLabel>LOW SPEND Pause Threshold (clicks)</FormLabel>
+                            <FormControl>
+                              <Input
+                                type="number"
+                                min="1000"
+                                max="50000"
+                                step="1000"
+                                {...field}
+                                onChange={(e) => {
+                                  // Get raw value
+                                  const value = e.target.value;
+                                  
+                                  if (value === '') {
+                                    // Default to 5000 if empty
+                                    field.onChange(5000);
+                                  } else {
+                                    // Parse to integer
+                                    const parsedValue = parseInt(value, 10);
+                                    if (!isNaN(parsedValue)) {
+                                      // Ensure it's within range before updating
+                                      let finalValue = parsedValue;
+                                      if (finalValue < 1000) finalValue = 1000;
+                                      if (finalValue > 50000) finalValue = 50000;
+                                      
+                                      field.onChange(finalValue);
+                                    }
                                   }
-                                }
-                              }}
-                            />
-                          </FormControl>
-                          <FormDescription>
-                            When remaining clicks fall below this threshold, the campaign will be paused (1,000-50,000 clicks).
-                          </FormDescription>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  )}
+                                }}
+                              />
+                            </FormControl>
+                            <FormDescription>
+                              When remaining clicks fall below this threshold, the campaign will be paused (1,000-50,000 clicks).
+                            </FormDescription>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    )}
+                    
+                    {/* Minimum Activate Click Threshold - only show when Traffic Generator is enabled */}
+                    {form.watch("trafficGeneratorEnabled") && (
+                      <FormField
+                        control={form.control}
+                        name="minActivateClickThreshold"
+                        render={({ field }) => (
+                          <FormItem className="mt-3 pt-3 border-t border-gray-100">
+                            <FormLabel>LOW SPEND Activate Threshold (clicks)</FormLabel>
+                            <FormControl>
+                              <Input
+                                type="number"
+                                min="5000"
+                                max="100000"
+                                step="1000"
+                                {...field}
+                                onChange={(e) => {
+                                  // Get raw value
+                                  const value = e.target.value;
+                                  
+                                  if (value === '') {
+                                    // Default to 15000 if empty
+                                    field.onChange(15000);
+                                  } else {
+                                    // Parse to integer
+                                    const parsedValue = parseInt(value, 10);
+                                    if (!isNaN(parsedValue)) {
+                                      // Ensure it's within range before updating
+                                      let finalValue = parsedValue;
+                                      if (finalValue < 5000) finalValue = 5000;
+                                      if (finalValue > 100000) finalValue = 100000;
+                                      
+                                      field.onChange(finalValue);
+                                    }
+                                  }
+                                }}
+                              />
+                            </FormControl>
+                            <FormDescription>
+                              When remaining clicks exceed this threshold, the campaign will be activated (5,000-100,000 clicks).
+                            </FormDescription>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    )}
+                  </div>
                   
-                  {/* Minimum Activate Click Threshold - only show when Traffic Generator is enabled */}
-                  {form.watch("trafficGeneratorEnabled") && (
-                    <FormField
-                      control={form.control}
-                      name="minActivateClickThreshold"
-                      render={({ field }) => (
-                        <FormItem className="mt-3 pt-3 border-t border-gray-100">
-                          <FormLabel>Activate Threshold (clicks)</FormLabel>
-                          <FormControl>
-                            <Input
-                              type="number"
-                              min="5000"
-                              max="100000"
-                              step="1000"
-                              {...field}
-                              onChange={(e) => {
-                                // Get raw value
-                                const value = e.target.value;
-                                
-                                if (value === '') {
-                                  // Default to 15000 if empty
-                                  field.onChange(15000);
-                                } else {
-                                  // Parse to integer
-                                  const parsedValue = parseInt(value, 10);
-                                  if (!isNaN(parsedValue)) {
-                                    // Ensure it's within range before updating
-                                    let finalValue = parsedValue;
-                                    if (finalValue < 5000) finalValue = 5000;
-                                    if (finalValue > 100000) finalValue = 100000;
-                                    
-                                    field.onChange(finalValue);
+                  {/* HIGH SPEND THRESHOLDS SECTION */}
+                  <div className="my-4">
+                    <div className="bg-blue-50 px-4 py-3 rounded-md mb-3">
+                      <h3 className="text-sm font-semibold mb-1">HIGH SPEND THRESHOLDS (When campaign spent ≥ $10)</h3>
+                      <p className="text-xs text-slate-500">These thresholds apply when the campaign has spent $10 or more.</p>
+                    </div>
+                    
+                    {/* High Spend Pause Click Threshold - only show when Traffic Generator is enabled */}
+                    {form.watch("trafficGeneratorEnabled") && (
+                      <FormField
+                        control={form.control}
+                        name="highSpendPauseThreshold"
+                        render={({ field }) => (
+                          <FormItem className="mt-3 pt-3 border-t border-gray-100">
+                            <FormLabel>HIGH SPEND Pause Threshold (clicks)</FormLabel>
+                            <FormControl>
+                              <Input
+                                type="number"
+                                min="500"
+                                max="10000"
+                                step="500"
+                                {...field}
+                                onChange={(e) => {
+                                  // Get raw value
+                                  const value = e.target.value;
+                                  
+                                  if (value === '') {
+                                    // Default to 1000 if empty
+                                    field.onChange(1000);
+                                  } else {
+                                    // Parse to integer
+                                    const parsedValue = parseInt(value, 10);
+                                    if (!isNaN(parsedValue)) {
+                                      // Ensure it's within range before updating
+                                      let finalValue = parsedValue;
+                                      if (finalValue < 500) finalValue = 500;
+                                      if (finalValue > 10000) finalValue = 10000;
+                                      
+                                      field.onChange(finalValue);
+                                    }
                                   }
-                                }
-                              }}
-                            />
-                          </FormControl>
-                          <FormDescription>
-                            When remaining clicks exceed this threshold, the campaign will be activated (5,000-100,000 clicks).
-                          </FormDescription>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  )}
+                                }}
+                              />
+                            </FormControl>
+                            <FormDescription>
+                              When remaining clicks fall below this threshold, the high-spend campaign will be paused (500-10,000 clicks).
+                            </FormDescription>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    )}
+                    
+                    {/* High Spend Activate Click Threshold - only show when Traffic Generator is enabled */}
+                    {form.watch("trafficGeneratorEnabled") && (
+                      <FormField
+                        control={form.control}
+                        name="highSpendActivateThreshold"
+                        render={({ field }) => (
+                          <FormItem className="mt-3 pt-3 border-t border-gray-100">
+                            <FormLabel>HIGH SPEND Activate Threshold (clicks)</FormLabel>
+                            <FormControl>
+                              <Input
+                                type="number"
+                                min="1000"
+                                max="20000"
+                                step="1000"
+                                {...field}
+                                onChange={(e) => {
+                                  // Get raw value
+                                  const value = e.target.value;
+                                  
+                                  if (value === '') {
+                                    // Default to 5000 if empty
+                                    field.onChange(5000);
+                                  } else {
+                                    // Parse to integer
+                                    const parsedValue = parseInt(value, 10);
+                                    if (!isNaN(parsedValue)) {
+                                      // Ensure it's within range before updating
+                                      let finalValue = parsedValue;
+                                      if (finalValue < 1000) finalValue = 1000;
+                                      if (finalValue > 20000) finalValue = 20000;
+                                      
+                                      field.onChange(finalValue);
+                                    }
+                                  }
+                                }}
+                              />
+                            </FormControl>
+                            <FormDescription>
+                              When remaining clicks exceed this threshold, the high-spend campaign will be activated (1,000-20,000 clicks).
+                            </FormDescription>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    )}
+                  </div>
                 </div>
               </div>
               
