@@ -125,7 +125,9 @@ export async function handleCampaignBySpentValue(campaignId: number, trafficstar
       where: (campaign, { eq }) => eq(campaign.id, campaignId),
       columns: {
         minPauseClickThreshold: true,
-        minActivateClickThreshold: true
+        minActivateClickThreshold: true,
+        highSpendPauseThreshold: true,
+        highSpendActivateThreshold: true
       }
     });
     
@@ -437,7 +439,13 @@ function startMinutelyStatusCheck(campaignId: number, trafficstarCampaignId: str
           
           // If remaining clicks fell below threshold, pause the campaign
           // Need to fetch campaign settings to get the threshold
-          const campaignResult = await db.select().from(campaigns).where(eq(campaigns.id, campaignId)).limit(1);
+          const campaignResult = await db.select({
+            id: campaigns.id,
+            minPauseClickThreshold: campaigns.minPauseClickThreshold,
+            minActivateClickThreshold: campaigns.minActivateClickThreshold,
+            highSpendPauseThreshold: campaigns.highSpendPauseThreshold,
+            highSpendActivateThreshold: campaigns.highSpendActivateThreshold
+          }).from(campaigns).where(eq(campaigns.id, campaignId)).limit(1);
           const campaignSettings = campaignResult[0];
           
           // Get current spent value to determine which threshold to use
@@ -678,6 +686,23 @@ function startMinutelyPauseStatusCheck(campaignId: number, trafficstarCampaignId
                 console.log(`✅ Adding ${validRemaining} remaining clicks from URL ID: ${url.id}`);
               }
               
+              // Need to fetch all campaign settings including high spend thresholds
+              const campaignSettings = await db.select({
+                id: campaigns.id,
+                minPauseClickThreshold: campaigns.minPauseClickThreshold,
+                minActivateClickThreshold: campaigns.minActivateClickThreshold,
+                highSpendPauseThreshold: campaigns.highSpendPauseThreshold,
+                highSpendActivateThreshold: campaigns.highSpendActivateThreshold
+              }).from(campaigns).where(eq(campaigns.id, campaignId)).limit(1);
+              
+              // Set defaults if not found
+              const settings = campaignSettings[0] || {
+                minPauseClickThreshold: 5000,
+                minActivateClickThreshold: 15000,
+                highSpendPauseThreshold: 1000,
+                highSpendActivateThreshold: 5000
+              };
+              
               // Check if clicks have been replenished
               // Determine which threshold to use based on spend state
               const THRESHOLD = 10.0; // $10 threshold for different handling
@@ -686,12 +711,12 @@ function startMinutelyPauseStatusCheck(campaignId: number, trafficstarCampaignId
               let REMAINING_CLICKS_THRESHOLD;
               if (spentValue >= THRESHOLD) {
                 // HIGH SPEND ($10+) - use high spend threshold
-                REMAINING_CLICKS_THRESHOLD = campaign.highSpendActivateThreshold || 5000;
-                console.log(`Using HIGH SPEND thresholds for hysteresis check: Pause at ${campaign.highSpendPauseThreshold || 1000} clicks, Activate at ${REMAINING_CLICKS_THRESHOLD} clicks`);
+                REMAINING_CLICKS_THRESHOLD = settings.highSpendActivateThreshold || 5000;
+                console.log(`Using HIGH SPEND thresholds for hysteresis check: Pause at ${settings.highSpendPauseThreshold || 1000} clicks, Activate at ${REMAINING_CLICKS_THRESHOLD} clicks`);
               } else {
                 // LOW SPEND (< $10) - use normal threshold
-                REMAINING_CLICKS_THRESHOLD = campaign.minActivateClickThreshold || 15000;
-                console.log(`Using LOW SPEND thresholds for hysteresis check: Pause at ${campaign.minPauseClickThreshold || 5000} clicks, Activate at ${REMAINING_CLICKS_THRESHOLD} clicks`);
+                REMAINING_CLICKS_THRESHOLD = settings.minActivateClickThreshold || 15000;
+                console.log(`Using LOW SPEND thresholds for hysteresis check: Pause at ${settings.minPauseClickThreshold || 5000} clicks, Activate at ${REMAINING_CLICKS_THRESHOLD} clicks`);
               }
               
               if (totalRemainingClicks >= REMAINING_CLICKS_THRESHOLD) {
