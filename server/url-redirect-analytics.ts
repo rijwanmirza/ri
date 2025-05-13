@@ -77,29 +77,32 @@ export class UrlRedirectAnalytics {
           .where(eq(urlRedirectAnalyticsTable.urlId, urlId));
         
         if (!results || results.length === 0) {
-          // Return empty analytics if none exist
+          // Return empty analytics if none exist using the field names from client interface
           return {
+            id: null,
             url_id: urlId,
+            direct_redirects: 0,
             linkedin_redirects: 0,
             facebook_redirects: 0,
             whatsapp_redirects: 0,
             google_meet_redirects: 0,
             google_search_redirects: 0,
-            google_play_redirects: 0,
-            direct_redirects: 0
+            google_play_redirects: 0
           };
         }
         
-        // Map the drizzle column names to the expected API response format
+        // Map the drizzle column names to match the React component interface
+        console.log(`Found analytics for URL ID ${urlId}:`, results[0]);
         return {
+          id: results[0].id,
           url_id: results[0].urlId,
+          direct_redirects: results[0].directRedirects,
           linkedin_redirects: results[0].linkedinRedirects,
           facebook_redirects: results[0].facebookRedirects,
           whatsapp_redirects: results[0].whatsappRedirects,
           google_meet_redirects: results[0].googleMeetRedirects,
           google_search_redirects: results[0].googleSearchRedirects,
-          google_play_redirects: results[0].googlePlayRedirects,
-          direct_redirects: results[0].directRedirects
+          google_play_redirects: results[0].googlePlayRedirects
         };
       } catch (dbError) {
         console.error('❌ Database error fetching redirect analytics:', dbError);
@@ -108,14 +111,15 @@ export class UrlRedirectAnalytics {
     } catch (error) {
       console.error('❌ Error fetching redirect analytics:', error);
       return {
+        id: null,
         url_id: urlId,
+        direct_redirects: 0,
         linkedin_redirects: 0,
         facebook_redirects: 0,
         whatsapp_redirects: 0,
         google_meet_redirects: 0,
         google_search_redirects: 0,
-        google_play_redirects: 0,
-        direct_redirects: 0
+        google_play_redirects: 0
       };
     }
   }
