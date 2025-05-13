@@ -129,12 +129,23 @@ export async function handleCampaignBySpentValue(campaignId: number, trafficstar
       }
     });
     
-    // Use campaign-specific thresholds if available, otherwise use defaults
-    const MINIMUM_CLICKS_THRESHOLD = campaignSettings?.minPauseClickThreshold || 5000; // Custom threshold for pausing
-    const REMAINING_CLICKS_THRESHOLD = campaignSettings?.minActivateClickThreshold || 15000; // Custom threshold for activation
+    // Determine which thresholds to use based on spent value
+    let MINIMUM_CLICKS_THRESHOLD;
+    let REMAINING_CLICKS_THRESHOLD;
+    
+    if (spentValue >= THRESHOLD) {
+      // HIGH SPEND ($10+) - use high spend thresholds
+      MINIMUM_CLICKS_THRESHOLD = campaignSettings?.highSpendPauseThreshold || 1000;
+      REMAINING_CLICKS_THRESHOLD = campaignSettings?.highSpendActivateThreshold || 5000;
+      console.log(`Using HIGH SPEND thresholds: Pause at ${MINIMUM_CLICKS_THRESHOLD} clicks, Activate at ${REMAINING_CLICKS_THRESHOLD} clicks`);
+    } else {
+      // LOW SPEND (< $10) - use regular thresholds
+      MINIMUM_CLICKS_THRESHOLD = campaignSettings?.minPauseClickThreshold || 5000;
+      REMAINING_CLICKS_THRESHOLD = campaignSettings?.minActivateClickThreshold || 15000;
+      console.log(`Using LOW SPEND thresholds: Pause at ${MINIMUM_CLICKS_THRESHOLD} clicks, Activate at ${REMAINING_CLICKS_THRESHOLD} clicks`);
+    }
     
     console.log(`TRAFFIC-GENERATOR: Handling campaign ${trafficstarCampaignId} by spent value - current spent: $${spentValue.toFixed(4)}`);
-    console.log(`Using campaign-specific thresholds: Pause at ${MINIMUM_CLICKS_THRESHOLD} clicks, Activate at ${REMAINING_CLICKS_THRESHOLD} clicks`);
     
     if (spentValue < THRESHOLD) {
       // Handle campaign with less than $10 spent
@@ -428,7 +439,23 @@ function startMinutelyStatusCheck(campaignId: number, trafficstarCampaignId: str
           // Need to fetch campaign settings to get the threshold
           const campaignResult = await db.select().from(campaigns).where(eq(campaigns.id, campaignId)).limit(1);
           const campaignSettings = campaignResult[0];
-          const MINIMUM_CLICKS_THRESHOLD = campaignSettings?.minPauseClickThreshold || 5000; // Use campaign-specific threshold
+          
+          // Get current spent value to determine which threshold to use
+          const spentValue = await getTrafficStarCampaignSpentValue(campaignId, trafficstarCampaignId);
+          const THRESHOLD = 10.0; // $10 threshold for different handling
+          
+          // Use different thresholds based on HIGH/LOW SPEND state
+          let MINIMUM_CLICKS_THRESHOLD;
+          if (spentValue !== null && spentValue >= THRESHOLD) {
+            // HIGH SPEND ($10+) - use high spend threshold
+            MINIMUM_CLICKS_THRESHOLD = campaignSettings?.highSpendPauseThreshold || 1000; 
+            console.log(`Using HIGH SPEND thresholds for pause: ${MINIMUM_CLICKS_THRESHOLD} clicks`);
+          } else {
+            // LOW SPEND (< $10) - use normal threshold
+            MINIMUM_CLICKS_THRESHOLD = campaignSettings?.minPauseClickThreshold || 5000;
+            console.log(`Using LOW SPEND thresholds for pause: ${MINIMUM_CLICKS_THRESHOLD} clicks`);
+          }
+          
           if (totalRemainingClicks <= MINIMUM_CLICKS_THRESHOLD) {
             console.log(`⏹️ During monitoring: Campaign ${trafficstarCampaignId} remaining clicks (${totalRemainingClicks}) fell below threshold (${MINIMUM_CLICKS_THRESHOLD}) - pausing campaign`);
             
@@ -652,7 +679,21 @@ function startMinutelyPauseStatusCheck(campaignId: number, trafficstarCampaignId
               }
               
               // Check if clicks have been replenished
-              const REMAINING_CLICKS_THRESHOLD = campaign.minActivateClickThreshold || 15000; // Use campaign-specific threshold if available
+              // Determine which threshold to use based on spend state
+              const THRESHOLD = 10.0; // $10 threshold for different handling
+              
+              // Use different thresholds based on HIGH/LOW SPEND state
+              let REMAINING_CLICKS_THRESHOLD;
+              if (spentValue >= THRESHOLD) {
+                // HIGH SPEND ($10+) - use high spend threshold
+                REMAINING_CLICKS_THRESHOLD = campaign.highSpendActivateThreshold || 5000;
+                console.log(`Using HIGH SPEND thresholds for hysteresis check: Pause at ${campaign.highSpendPauseThreshold || 1000} clicks, Activate at ${REMAINING_CLICKS_THRESHOLD} clicks`);
+              } else {
+                // LOW SPEND (< $10) - use normal threshold
+                REMAINING_CLICKS_THRESHOLD = campaign.minActivateClickThreshold || 15000;
+                console.log(`Using LOW SPEND thresholds for hysteresis check: Pause at ${campaign.minPauseClickThreshold || 5000} clicks, Activate at ${REMAINING_CLICKS_THRESHOLD} clicks`);
+              }
+              
               if (totalRemainingClicks >= REMAINING_CLICKS_THRESHOLD) {
                 console.log(`✅ Campaign ${trafficstarCampaignId} now has ${totalRemainingClicks} remaining clicks (>= ${REMAINING_CLICKS_THRESHOLD}) - will attempt reactivation after pause period`);
                 
