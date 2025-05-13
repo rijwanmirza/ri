@@ -15,27 +15,43 @@ export class UrlRedirectAnalytics {
    */
   async incrementRedirectCount(urlId: number, redirectMethod: string): Promise<void> {
     try {
+      console.log(`🔄 ATTEMPTING TO INCREMENT REDIRECT COUNT for URL ID ${urlId}, method: ${redirectMethod}`);
+      
       // Convert the method name to database column name
       const columnName = this.getColumnName(redirectMethod);
       const drizzleColumnName = this.getDrizzleColumnName(redirectMethod);
+      
+      console.log(`🔄 Using column name: ${columnName}, drizzle column name: ${drizzleColumnName}`);
       
       // Use the drizzle DB instance which has proper connection pooling
       // This is more reliable than creating a new pool for each request
       try {
         // Check if record exists first
+        console.log(`🔍 Checking if analytics record exists for URL ID ${urlId}`);
         const existing = await db.select()
           .from(urlRedirectAnalyticsTable)
           .where(eq(urlRedirectAnalyticsTable.urlId, urlId));
         
+        console.log(`🔍 Found ${existing.length} existing records for URL ID ${urlId}`);
+        
         if (existing && existing.length > 0) {
+          console.log(`✅ Record exists, updating count for ${redirectMethod}`);
           // Update existing record using raw SQL to avoid complex Drizzle expression building
-          await db.execute(sql`
+          const updateResult = await db.execute(sql`
             UPDATE url_redirect_analytics
             SET ${sql.raw(`${columnName} = ${columnName} + 1`)},
                 updated_at = NOW()
             WHERE url_id = ${urlId}
           `);
+          console.log(`✅ Update result:`, updateResult);
+          
+          // Verify the update by fetching the record again
+          const updated = await db.select()
+            .from(urlRedirectAnalyticsTable)
+            .where(eq(urlRedirectAnalyticsTable.urlId, urlId));
+          console.log(`✅ Updated record:`, updated[0]);
         } else {
+          console.log(`✅ No record exists yet, creating new record with ${redirectMethod} = 1`);
           // Create new record with default values for all columns
           const values: any = {
             urlId, // Use camelCase for Drizzle ORM
@@ -51,16 +67,27 @@ export class UrlRedirectAnalytics {
           // Set the specific redirect method count to 1
           values[drizzleColumnName] = 1;
           
+          console.log(`✅ Inserting new record with values:`, values);
+          
           // Insert new record
-          await db.insert(urlRedirectAnalyticsTable).values(values);
+          const insertResult = await db.insert(urlRedirectAnalyticsTable).values(values);
+          console.log(`✅ Insert result:`, insertResult);
+          
+          // Verify the insert by fetching the record
+          const inserted = await db.select()
+            .from(urlRedirectAnalyticsTable)
+            .where(eq(urlRedirectAnalyticsTable.urlId, urlId));
+          console.log(`✅ Inserted record:`, inserted[0]);
         }
         
-        console.log(`📊 Recorded ${redirectMethod} redirect for URL ID ${urlId}`);
+        console.log(`📊 Successfully recorded ${redirectMethod} redirect for URL ID ${urlId}`);
       } catch (dbError) {
         console.error('❌ Database error recording redirect analytics:', dbError);
+        console.error(dbError);
       }
     } catch (error) {
       console.error('❌ Error recording redirect analytics:', error);
+      console.error(error);
     }
   }
   

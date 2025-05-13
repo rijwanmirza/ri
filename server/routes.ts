@@ -1965,6 +1965,38 @@ export async function registerRoutes(app: Express): Promise<Server> {
       return res.status(500).json({ message: "Failed to reset redirect analytics" });
     }
   });
+  
+  // Test endpoint to directly increment a redirect method count
+  app.post("/api/urls/:id/test-redirect-method", async (req: Request, res: Response) => {
+    try {
+      const urlId = parseInt(req.params.id);
+      if (isNaN(urlId)) {
+        return res.status(400).json({ message: "Invalid URL ID" });
+      }
+      
+      // Get the method from the request body
+      const { method } = req.body;
+      if (!method) {
+        return res.status(400).json({ message: "Missing redirect method" });
+      }
+      
+      console.log(`🧪 TEST: Directly incrementing redirect count for URL ${urlId} with method ${method}`);
+      
+      // Directly increment the redirect count for testing
+      await urlRedirectAnalytics.incrementRedirectCount(urlId, method);
+      
+      // Get the updated analytics
+      const analytics = await urlRedirectAnalytics.getRedirectAnalytics(urlId);
+      
+      return res.json({ 
+        message: `Redirect count for method "${method}" incremented successfully`,
+        analytics
+      });
+    } catch (error) {
+      console.error("Error testing redirect method:", error);
+      return res.status(500).json({ message: "Failed to test redirect method" });
+    }
+  });
 
   // Redirect endpoint
   app.get("/r/:campaignId/:urlId", async (req: Request, res: Response) => {

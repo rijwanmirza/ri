@@ -116,17 +116,43 @@ export const RedirectMethodStats: React.FC<RedirectMethodStatsProps> = ({ urlId 
       }
     };
     
-    // For testing purposes - add sample data for a specific redirect method
+    // For testing purposes - trigger a real redirect with specific method
     const testRedirect = async (method: string) => {
       try {
-        // Get the URL to visit to trigger a redirect
+        console.log(`Testing redirect for URL ID ${urlId} with method ${method}`);
+        // Get the URL details to get the campaign ID
         const response = await fetch(`/api/urls/${urlId}`);
         const urlData = await response.json();
+        
         if (urlData && urlData.campaignId) {
-          // Open the redirect URL in a new tab
+          console.log(`Got URL data:`, urlData);
+          
+          // First use a direct API call to test/force incrementing for a specific method
+          const analyticsResponse = await fetch(`/api/urls/${urlId}/test-redirect-method`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ method })
+          });
+          
+          if (analyticsResponse.ok) {
+            console.log(`Successfully called test-redirect-method API`);
+          } else {
+            console.error(`Failed to call test-redirect-method API:`, await analyticsResponse.text());
+          }
+          
+          // Then also open the actual redirect URL in a new tab for real testing
           window.open(`/r/${urlData.campaignId}/${urlId}`, '_blank');
-          // Wait a moment before reloading
-          setTimeout(() => window.location.reload(), 1500);
+          
+          // Wait a moment before reloading to see updated data
+          console.log(`Waiting 2 seconds before reload to see updated data...`);
+          setTimeout(() => {
+            console.log(`Reloading page to see updated analytics...`);
+            window.location.reload();
+          }, 2000);
+        } else {
+          console.error(`Invalid URL data returned:`, urlData);
         }
       } catch (error) {
         console.error('Failed to test redirect:', error);
