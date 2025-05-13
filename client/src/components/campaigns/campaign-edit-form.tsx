@@ -170,6 +170,15 @@ export default function CampaignEditForm({ campaign, onSuccess }: CampaignEditFo
   console.log("Debug - highSpendWaitMinutes in campaign:", campaign.highSpendWaitMinutes);
   console.log("Debug - youtubeApiEnabled in campaign:", campaign.youtubeApiEnabled);
   
+  // Debug custom redirector fields
+  console.log("Debug - customRedirectorEnabled in campaign:", campaign.customRedirectorEnabled);
+  console.log("Debug - linkedinRedirectionEnabled in campaign:", campaign.linkedinRedirectionEnabled);
+  console.log("Debug - facebookRedirectionEnabled in campaign:", campaign.facebookRedirectionEnabled);
+  console.log("Debug - whatsappRedirectionEnabled in campaign:", campaign.whatsappRedirectionEnabled);
+  console.log("Debug - googleMeetRedirectionEnabled in campaign:", campaign.googleMeetRedirectionEnabled);
+  console.log("Debug - googleSearchRedirectionEnabled in campaign:", campaign.googleSearchRedirectionEnabled);
+  console.log("Debug - googlePlayRedirectionEnabled in campaign:", campaign.googlePlayRedirectionEnabled);
+  
   // CRITICAL FIX: Force the form values to be set properly
   setTimeout(() => {
     // Set price per thousand
@@ -401,6 +410,41 @@ export default function CampaignEditForm({ campaign, onSuccess }: CampaignEditFo
     }
     
     console.log("AFTER VALIDATION - youtubeApiEnabled value:", values.youtubeApiEnabled);
+    
+    // CRITICAL FIX: Make sure customRedirectorEnabled is properly set as a boolean
+    console.log("Before fixing Custom Redirector value:", values.customRedirectorEnabled, typeof values.customRedirectorEnabled);
+    
+    // This is very important - we need to make sure we don't lose the true value
+    // First, check if the value is explicitly false
+    if (values.customRedirectorEnabled === false) {
+      values.customRedirectorEnabled = false;
+    } else {
+      // Otherwise, if it's truthy (like "true", true, 1, etc.), set to true
+      values.customRedirectorEnabled = Boolean(values.customRedirectorEnabled);
+    }
+    
+    console.log("After fixing Custom Redirector value:", values.customRedirectorEnabled, typeof values.customRedirectorEnabled);
+    
+    // Handle all custom redirector boolean fields
+    if (values.customRedirectorEnabled) {
+      // Ensure boolean flags are properly set for all redirection platforms
+      values.linkedinRedirectionEnabled = values.linkedinRedirectionEnabled === true;
+      values.facebookRedirectionEnabled = values.facebookRedirectionEnabled === true;
+      values.whatsappRedirectionEnabled = values.whatsappRedirectionEnabled === true;
+      values.googleMeetRedirectionEnabled = values.googleMeetRedirectionEnabled === true;
+      values.googleSearchRedirectionEnabled = values.googleSearchRedirectionEnabled === true;
+      values.googlePlayRedirectionEnabled = values.googlePlayRedirectionEnabled === true;
+    }
+    
+    console.log("Final form values for custom redirector:", {
+      customRedirectorEnabled: values.customRedirectorEnabled,
+      linkedinRedirectionEnabled: values.linkedinRedirectionEnabled,
+      facebookRedirectionEnabled: values.facebookRedirectionEnabled,
+      whatsappRedirectionEnabled: values.whatsappRedirectionEnabled,
+      googleMeetRedirectionEnabled: values.googleMeetRedirectionEnabled,
+      googleSearchRedirectionEnabled: values.googleSearchRedirectionEnabled,
+      googlePlayRedirectionEnabled: values.googlePlayRedirectionEnabled
+    });
     
     updateCampaignMutation.mutate(values);
   };
@@ -1365,8 +1409,19 @@ export default function CampaignEditForm({ campaign, onSuccess }: CampaignEditFo
                           <Switch
                             checked={field.value === true}
                             onCheckedChange={(checked) => {
-                              field.onChange(checked);
+                              console.log("Custom Redirector main toggle changed to:", checked);
+                              field.onChange(checked === true);
                               form.setValue('customRedirectorEnabled', checked === true);
+                              
+                              // If disabling, make sure all options get disabled too
+                              if (!checked) {
+                                form.setValue('linkedinRedirectionEnabled', false);
+                                form.setValue('facebookRedirectionEnabled', false);
+                                form.setValue('whatsappRedirectionEnabled', false);
+                                form.setValue('googleMeetRedirectionEnabled', false);
+                                form.setValue('googleSearchRedirectionEnabled', false);
+                                form.setValue('googlePlayRedirectionEnabled', false);
+                              }
                             }}
                           />
                         </FormControl>
@@ -1395,8 +1450,12 @@ export default function CampaignEditForm({ campaign, onSuccess }: CampaignEditFo
                           <FormItem className="flex flex-row items-start space-x-3 space-y-0">
                             <FormControl>
                               <Checkbox
-                                checked={field.value}
-                                onCheckedChange={field.onChange}
+                                checked={field.value === true}
+                                onCheckedChange={(checked) => {
+                                  console.log("LinkedIn toggle changed to:", checked);
+                                  field.onChange(checked === true);
+                                  form.setValue('linkedinRedirectionEnabled', checked === true);
+                                }}
                               />
                             </FormControl>
                             <div className="space-y-1 leading-none">
@@ -1418,8 +1477,12 @@ export default function CampaignEditForm({ campaign, onSuccess }: CampaignEditFo
                           <FormItem className="flex flex-row items-start space-x-3 space-y-0">
                             <FormControl>
                               <Checkbox
-                                checked={field.value}
-                                onCheckedChange={field.onChange}
+                                checked={field.value === true}
+                                onCheckedChange={(checked) => {
+                                  console.log("Facebook toggle changed to:", checked);
+                                  field.onChange(checked === true);
+                                  form.setValue('facebookRedirectionEnabled', checked === true);
+                                }}
                               />
                             </FormControl>
                             <div className="space-y-1 leading-none">
@@ -1441,8 +1504,12 @@ export default function CampaignEditForm({ campaign, onSuccess }: CampaignEditFo
                           <FormItem className="flex flex-row items-start space-x-3 space-y-0">
                             <FormControl>
                               <Checkbox
-                                checked={field.value}
-                                onCheckedChange={field.onChange}
+                                checked={field.value === true}
+                                onCheckedChange={(checked) => {
+                                  console.log("WhatsApp toggle changed to:", checked);
+                                  field.onChange(checked === true);
+                                  form.setValue('whatsappRedirectionEnabled', checked === true);
+                                }}
                               />
                             </FormControl>
                             <div className="space-y-1 leading-none">
@@ -1464,8 +1531,12 @@ export default function CampaignEditForm({ campaign, onSuccess }: CampaignEditFo
                           <FormItem className="flex flex-row items-start space-x-3 space-y-0">
                             <FormControl>
                               <Checkbox
-                                checked={field.value}
-                                onCheckedChange={field.onChange}
+                                checked={field.value === true}
+                                onCheckedChange={(checked) => {
+                                  console.log("Google Meet toggle changed to:", checked);
+                                  field.onChange(checked === true);
+                                  form.setValue('googleMeetRedirectionEnabled', checked === true);
+                                }}
                               />
                             </FormControl>
                             <div className="space-y-1 leading-none">
@@ -1487,8 +1558,12 @@ export default function CampaignEditForm({ campaign, onSuccess }: CampaignEditFo
                           <FormItem className="flex flex-row items-start space-x-3 space-y-0">
                             <FormControl>
                               <Checkbox
-                                checked={field.value}
-                                onCheckedChange={field.onChange}
+                                checked={field.value === true}
+                                onCheckedChange={(checked) => {
+                                  console.log("Google Search toggle changed to:", checked);
+                                  field.onChange(checked === true);
+                                  form.setValue('googleSearchRedirectionEnabled', checked === true);
+                                }}
                               />
                             </FormControl>
                             <div className="space-y-1 leading-none">
@@ -1510,8 +1585,12 @@ export default function CampaignEditForm({ campaign, onSuccess }: CampaignEditFo
                           <FormItem className="flex flex-row items-start space-x-3 space-y-0">
                             <FormControl>
                               <Checkbox
-                                checked={field.value}
-                                onCheckedChange={field.onChange}
+                                checked={field.value === true}
+                                onCheckedChange={(checked) => {
+                                  console.log("Google Play toggle changed to:", checked);
+                                  field.onChange(checked === true);
+                                  form.setValue('googlePlayRedirectionEnabled', checked === true);
+                                }}
                               />
                             </FormControl>
                             <div className="space-y-1 leading-none">
