@@ -434,6 +434,29 @@ export default function CampaignEditForm({ campaign, onSuccess }: CampaignEditFo
       values.googleMeetRedirectionEnabled = values.googleMeetRedirectionEnabled === true;
       values.googleSearchRedirectionEnabled = values.googleSearchRedirectionEnabled === true;
       values.googlePlayRedirectionEnabled = values.googlePlayRedirectionEnabled === true;
+      
+      // Make sure we have at least one redirection method enabled
+      const hasEnabledRedirectMethod = 
+        values.linkedinRedirectionEnabled || 
+        values.facebookRedirectionEnabled || 
+        values.whatsappRedirectionEnabled || 
+        values.googleMeetRedirectionEnabled || 
+        values.googleSearchRedirectionEnabled ||
+        values.googlePlayRedirectionEnabled;
+      
+      // If no methods are enabled, enable LinkedIn as a default
+      if (!hasEnabledRedirectMethod) {
+        values.linkedinRedirectionEnabled = true;
+        console.log("No redirect methods were enabled, setting LinkedIn as default");
+      }
+    } else {
+      // If custom redirector is disabled, make sure all platform options are disabled
+      values.linkedinRedirectionEnabled = false;
+      values.facebookRedirectionEnabled = false;
+      values.whatsappRedirectionEnabled = false;
+      values.googleMeetRedirectionEnabled = false;
+      values.googleSearchRedirectionEnabled = false;
+      values.googlePlayRedirectionEnabled = false;
     }
     
     console.log("Final form values for custom redirector:", {

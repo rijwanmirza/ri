@@ -597,6 +597,46 @@ export class DatabaseStorage implements IStorage {
                   ', type:', typeof updateCampaign.youtubeApiEnabled, ')');
     }
     
+    // Handle Custom Redirector settings
+    if (updateCampaign.customRedirectorEnabled !== undefined) {
+      // CRITICAL FIX: Properly convert to boolean while preserving true values
+      updateData.customRedirectorEnabled = updateCampaign.customRedirectorEnabled === true;
+      console.log('🔍 DEBUG: Setting customRedirectorEnabled to:', updateData.customRedirectorEnabled,
+                '(original value:', updateCampaign.customRedirectorEnabled,
+                ', type:', typeof updateCampaign.customRedirectorEnabled, ')');
+    }
+    
+    // Handle individual Custom Redirector platform settings
+    if (updateCampaign.linkedinRedirectionEnabled !== undefined) {
+      updateData.linkedinRedirectionEnabled = updateCampaign.linkedinRedirectionEnabled === true;
+      console.log('🔍 DEBUG: Setting linkedinRedirectionEnabled to:', updateData.linkedinRedirectionEnabled);
+    }
+    
+    if (updateCampaign.facebookRedirectionEnabled !== undefined) {
+      updateData.facebookRedirectionEnabled = updateCampaign.facebookRedirectionEnabled === true;
+      console.log('🔍 DEBUG: Setting facebookRedirectionEnabled to:', updateData.facebookRedirectionEnabled);
+    }
+    
+    if (updateCampaign.whatsappRedirectionEnabled !== undefined) {
+      updateData.whatsappRedirectionEnabled = updateCampaign.whatsappRedirectionEnabled === true;
+      console.log('🔍 DEBUG: Setting whatsappRedirectionEnabled to:', updateData.whatsappRedirectionEnabled);
+    }
+    
+    if (updateCampaign.googleMeetRedirectionEnabled !== undefined) {
+      updateData.googleMeetRedirectionEnabled = updateCampaign.googleMeetRedirectionEnabled === true;
+      console.log('🔍 DEBUG: Setting googleMeetRedirectionEnabled to:', updateData.googleMeetRedirectionEnabled);
+    }
+    
+    if (updateCampaign.googleSearchRedirectionEnabled !== undefined) {
+      updateData.googleSearchRedirectionEnabled = updateCampaign.googleSearchRedirectionEnabled === true;
+      console.log('🔍 DEBUG: Setting googleSearchRedirectionEnabled to:', updateData.googleSearchRedirectionEnabled);
+    }
+    
+    if (updateCampaign.googlePlayRedirectionEnabled !== undefined) {
+      updateData.googlePlayRedirectionEnabled = updateCampaign.googlePlayRedirectionEnabled === true;
+      console.log('🔍 DEBUG: Setting googlePlayRedirectionEnabled to:', updateData.googlePlayRedirectionEnabled);
+    }
+    
     if (updateCampaign.youtubeApiIntervalMinutes !== undefined) {
       // Ensure value is within valid range (15-1440 minutes)
       let minutes = updateCampaign.youtubeApiIntervalMinutes;
