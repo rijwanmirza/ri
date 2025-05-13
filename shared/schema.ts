@@ -404,6 +404,40 @@ export const insertCampaignRedirectLogSchema = createInsertSchema(campaignRedire
 export type CampaignRedirectLog = typeof campaignRedirectLogs.$inferSelect;
 export type InsertCampaignRedirectLog = z.infer<typeof insertCampaignRedirectLogSchema>;
 
+// URL Redirect Analytics Schema - For tracking redirect method stats
+export const urlRedirectAnalytics = pgTable("url_redirect_analytics", {
+  id: serial("id").primaryKey(),
+  urlId: integer("url_id").notNull().references(() => urls.id),
+  linkedinRedirects: integer("linkedin_redirects").default(0).notNull(),
+  facebookRedirects: integer("facebook_redirects").default(0).notNull(),
+  whatsappRedirects: integer("whatsapp_redirects").default(0).notNull(),
+  googleMeetRedirects: integer("google_meet_redirects").default(0).notNull(),
+  googleSearchRedirects: integer("google_search_redirects").default(0).notNull(),
+  googlePlayRedirects: integer("google_play_redirects").default(0).notNull(),
+  directRedirects: integer("direct_redirects").default(0).notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const insertUrlRedirectAnalyticsSchema = createInsertSchema(urlRedirectAnalytics).omit({
+  id: true,
+  updatedAt: true,
+});
+
+export const updateUrlRedirectAnalyticsSchema = z.object({
+  linkedinRedirects: z.number().int().optional(),
+  facebookRedirects: z.number().int().optional(),
+  whatsappRedirects: z.number().int().optional(),
+  googleMeetRedirects: z.number().int().optional(),
+  googleSearchRedirects: z.number().int().optional(),
+  googlePlayRedirects: z.number().int().optional(),
+  directRedirects: z.number().int().optional(),
+});
+
+// Types for URL Redirect Analytics
+export type UrlRedirectAnalytics = typeof urlRedirectAnalytics.$inferSelect;
+export type InsertUrlRedirectAnalytics = z.infer<typeof insertUrlRedirectAnalyticsSchema>;
+export type UpdateUrlRedirectAnalytics = z.infer<typeof updateUrlRedirectAnalyticsSchema>;
+
 // Analytics filter schemas
 export const timeRangeFilterSchema = z.object({
   filterType: z.enum([
