@@ -1,6 +1,7 @@
 import { db } from './db';
 import { eq } from 'drizzle-orm';
-import { Pool } from '@neondatabase/serverless';
+import { sql } from 'drizzle-orm';
+import { urlRedirectAnalytics as urlRedirectAnalyticsTable } from '@shared/schema';
 
 /**
  * Track and manage redirect analytics for URLs
@@ -17,24 +18,45 @@ export class UrlRedirectAnalytics {
       // Convert the method name to database column name
       const columnName = this.getColumnName(redirectMethod);
       
-      // Use direct SQL query for better compatibility
-      const pool = new Pool({ connectionString: process.env.DATABASE_URL });
-      
+      // Use the drizzle DB instance which has proper connection pooling
+      // This is more reliable than creating a new pool for each request
       try {
-        // Try to update existing record
-        await pool.query(`
-          INSERT INTO url_redirect_analytics (url_id, ${columnName})
-          VALUES ($1, 1)
-          ON CONFLICT (url_id) 
-          DO UPDATE SET 
-            ${columnName} = url_redirect_analytics.${columnName} + 1,
-            updated_at = NOW()
-        `, [urlId]);
+        // Check if record exists first
+        const existing = await db.select()
+          .from(urlRedirectAnalyticsTable)
+          .where(eq(urlRedirectAnalyticsTable.url_id, urlId));
+        
+        if (existing && existing.length > 0) {
+          // Update existing record
+          await db.execute(sql`
+            UPDATE url_redirect_analytics
+            SET ${sql.raw(columnName)} = ${sql.raw(columnName)} + 1,
+                updated_at = NOW()
+            WHERE url_id = ${urlId}
+          `);
+        } else {
+          // Create new record with default values for all columns
+          const values: any = {
+            url_id: urlId,
+            linkedin_redirects: 0,
+            facebook_redirects: 0,
+            whatsapp_redirects: 0,
+            google_meet_redirects: 0,
+            google_search_redirects: 0,
+            google_play_redirects: 0,
+            direct_redirects: 0,
+          };
+          
+          // Set the specific redirect method count to 1
+          values[columnName] = 1;
+          
+          // Insert new record
+          await db.insert(urlRedirectAnalyticsTable).values(values);
+        }
         
         console.log(`📊 Recorded ${redirectMethod} redirect for URL ID ${urlId}`);
-      } finally {
-        // Always release the pool when done
-        await pool.end();
+      } catch (dbError) {
+        console.error('❌ Database error recording redirect analytics:', dbError);
       }
     } catch (error) {
       console.error('❌ Error recording redirect analytics:', error);
@@ -47,18 +69,16 @@ export class UrlRedirectAnalytics {
    */
   async getRedirectAnalytics(urlId: number): Promise<any> {
     try {
-      const pool = new Pool({ connectionString: process.env.DATABASE_URL });
-      
+      // Use drizzle instance which has proper connection pooling
       try {
-        const result = await pool.query(`
-          SELECT * FROM url_redirect_analytics 
-          WHERE url_id = $1
-        `, [urlId]);
+        const results = await db.select()
+          .from(urlRedirectAnalyticsTable)
+          .where(eq(urlRedirectAnalyticsTable.url_id, urlId));
         
-        if (!result || result.rows.length === 0) {
+        if (!results || results.length === 0) {
           // Return empty analytics if none exist
           return {
-            urlId,
+            url_id: urlId,
             linkedin_redirects: 0,
             facebook_redirects: 0,
             whatsapp_redirects: 0,
@@ -69,14 +89,15 @@ export class UrlRedirectAnalytics {
           };
         }
         
-        return result.rows[0];
-      } finally {
-        await pool.end();
+        return results[0];
+      } catch (dbError) {
+        console.error('❌ Database error fetching redirect analytics:', dbError);
+        throw dbError;
       }
     } catch (error) {
       console.error('❌ Error fetching redirect analytics:', error);
       return {
-        urlId,
+        url_id: urlId,
         linkedin_redirects: 0,
         facebook_redirects: 0,
         whatsapp_redirects: 0,
@@ -107,6 +128,20 @@ export class UrlRedirectAnalytics {
         return 'google_play_redirects';
       default:
         return 'direct_redirects';
+    }
+  }
+  
+  /**
+   * DEBUG: Reset analytics for testing
+   * @param urlId URL ID
+   */
+  async resetRedirectAnalytics(urlId: number): Promise<void> {
+    try {
+      await db.delete(urlRedirectAnalyticsTable)
+        .where(eq(urlRedirectAnalyticsTable.url_id, urlId));
+      console.log(`🧹 Reset redirect analytics for URL ID ${urlId}`);
+    } catch (error) {
+      console.error('❌ Error resetting redirect analytics:', error);
     }
   }
 }

@@ -1946,6 +1946,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
       return res.status(500).json({ message: "Failed to get URL redirect analytics" });
     }
   });
+  
+  // Reset URL redirect analytics (for testing only)
+  app.delete("/api/urls/:id/redirect-analytics", async (req: Request, res: Response) => {
+    try {
+      const urlId = parseInt(req.params.id);
+      
+      if (isNaN(urlId)) {
+        return res.status(400).json({ message: "Invalid URL ID" });
+      }
+      
+      // Reset analytics for this URL
+      await urlRedirectAnalytics.resetRedirectAnalytics(urlId);
+      
+      return res.json({ message: "Redirect analytics reset successfully" });
+    } catch (error) {
+      console.error("Error resetting URL redirect analytics:", error);
+      return res.status(500).json({ message: "Failed to reset redirect analytics" });
+    }
+  });
 
   // Redirect endpoint
   app.get("/r/:campaignId/:urlId", async (req: Request, res: Response) => {
