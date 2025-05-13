@@ -71,9 +71,14 @@ export default function SystemSettings() {
           `${result.campaignClickRecordsDeleted || 0} campaign click records`
         ].join(', ');
         
+        // Add disk space freed message if available
+        const diskSpaceMessage = result.diskSpaceFreed && result.diskSpaceFreed !== "Unknown" 
+          ? `Freed disk space: ${result.diskSpaceFreed}` 
+          : "";
+        
         toast({
           title: "System Cleanup Complete",
-          description: `Successfully deleted: ${deletedItems}`,
+          description: `Successfully deleted: ${deletedItems}${diskSpaceMessage ? `\n${diskSpaceMessage}` : ""}`,
         });
         
         // Close the dialog and clear the input

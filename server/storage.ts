@@ -2008,7 +2008,7 @@ export class DatabaseStorage implements IStorage {
     return updatedUrl;
   }
   
-  // Full system cleanup - deletes all campaigns and URLs
+  // Full system cleanup - deletes all campaigns and URLs, plus cleans up disk space
   async fullSystemCleanup(): Promise<{ 
     campaignsDeleted: number, 
     urlsDeleted: number, 
@@ -2018,9 +2018,25 @@ export class DatabaseStorage implements IStorage {
     urlBudgetLogsDeleted: number,
     urlClickRecordsDeleted: number,
     urlClickLogsDeleted: number,
-    campaignClickRecordsDeleted: number
+    campaignClickRecordsDeleted: number,
+    diskSpaceFreed: string
   }> {
     try {
+      // Record starting disk space to calculate space freed
+      let startingDiskSpace = 0;
+      let endingDiskSpace = 0;
+      try {
+        const { getDiskSpaceInfo } = await import("./diskmonitor");
+        const diskInfo = await getDiskSpaceInfo();
+        if (diskInfo.length > 0) {
+          startingDiskSpace = diskInfo[0].available;
+        }
+      } catch (error) {
+        console.log(`ℹ️ SYSTEM RESET: Unable to get starting disk space info: ${error.message}`);
+      }
+      
+      console.log(`🧹 SYSTEM RESET: Starting comprehensive system cleanup...`);
+      
       // First, count how many items we'll delete
       const allCampaigns = await this.getCampaigns();
       let totalUrls = 0;
@@ -2099,6 +2115,7 @@ export class DatabaseStorage implements IStorage {
         - ${campaignClickRecordsCount} campaign click records
       `);
       
+      // PART 1: CLEAN DATABASE RECORDS
       // Delete in proper order to respect foreign key constraints
       
       // 1. First delete child records linked to URLs
@@ -2193,7 +2210,7 @@ export class DatabaseStorage implements IStorage {
         console.log(`ℹ️ SYSTEM RESET: No sessions table found or nothing to delete`);
       }
       
-      // 12. Clear file-based logs
+      // PART 2: CLEAN FILE-BASED LOGS
       try {
         // Clear redirect logs
         await redirectLogsManager.clearAllLogs();
@@ -2202,11 +2219,74 @@ export class DatabaseStorage implements IStorage {
         // Clear URL click logs
         await urlClickLogsManager.clearAllLogs();
         console.log(`✅ SYSTEM RESET: Cleared all URL click logs`);
+        
+        // Clear URL budget logs - try to use the imported instance
+        try {
+          const urlBudgetLogger = (await import('./url-budget-logger')).default;
+          const budgetLogsDeleted = await urlBudgetLogger.clearAllLogs();
+          console.log(`✅ SYSTEM RESET: Cleared all URL budget logs (${budgetLogsDeleted} files)`);
+        } catch (error) {
+          console.log(`ℹ️ SYSTEM RESET: Unable to clear URL budget logs: ${error.message}`);
+        }
+        
+        // Clear Gmail processed emails log
+        try {
+          const fs = await import('fs');
+          const path = await import('path');
+          const processedEmailsLog = path.join('.', 'processed_emails.log');
+          const processedEmailsLogOld = path.join('.', 'processed_emails.log.old');
+          
+          if (fs.existsSync(processedEmailsLog)) {
+            fs.writeFileSync(processedEmailsLog, '', 'utf-8');
+            console.log(`✅ SYSTEM RESET: Cleared processed emails log file`);
+          }
+          
+          if (fs.existsSync(processedEmailsLogOld)) {
+            fs.unlinkSync(processedEmailsLogOld);
+            console.log(`✅ SYSTEM RESET: Removed processed emails log backup file`);
+          }
+        } catch (error) {
+          console.log(`ℹ️ SYSTEM RESET: Unable to clear processed emails logs: ${error.message}`);
+        }
       } catch (error) {
         console.error(`⚠️ SYSTEM RESET: Error clearing file-based logs:`, error);
       }
       
-      // 13. CRITICAL FIX: Reset all ID sequences to start from 1 again
+      // PART 3: CLEAN BACKUP FILES
+      try {
+        const fs = await import('fs');
+        const path = await import('path');
+        const { promisify } = await import('util');
+        const exec = promisify((await import('child_process')).exec);
+        
+        console.log(`🔍 SYSTEM RESET: Looking for backup and temporary files to clean...`);
+        
+        // Find and remove .bak, .backup, and .old files
+        const { stdout } = await exec("find . -name '*.bak' -o -name '*.backup*' -o -name '*.old' | grep -v 'node_modules'");
+        const backupFiles = stdout.trim().split('\n').filter(Boolean);
+        
+        for (const file of backupFiles) {
+          try {
+            fs.unlinkSync(file);
+            console.log(`✅ SYSTEM RESET: Removed backup file: ${file}`);
+          } catch (error) {
+            console.log(`⚠️ SYSTEM RESET: Could not remove backup file ${file}: ${error.message}`);
+          }
+        }
+      } catch (error) {
+        console.log(`ℹ️ SYSTEM RESET: Unable to clean backup files: ${error.message}`);
+      }
+      
+      // PART 4: VACUUM DATABASE
+      try {
+        console.log(`🧹 SYSTEM RESET: Vacuuming PostgreSQL database to free space...`);
+        await db.execute(sql`VACUUM FULL`);
+        console.log(`✅ SYSTEM RESET: Database vacuum completed`);
+      } catch (error) {
+        console.log(`ℹ️ SYSTEM RESET: Unable to vacuum database: ${error.message}`);
+      }
+      
+      // PART 5: RESET DATABASE SEQUENCES
       console.log(`🔄 SYSTEM RESET: Resetting all database sequences to start from 1...`);
       try {
         // Reset URLs sequence
@@ -2257,6 +2337,7 @@ export class DatabaseStorage implements IStorage {
         // Continue anyway, as the main data is still deleted
       }
       
+      // PART 6: RESET APPLICATION STATE
       // Clear all caches for complete reset
       this.campaignUrlsCache.clear();
       this.urlCache.clear();
@@ -2273,7 +2354,36 @@ export class DatabaseStorage implements IStorage {
         console.log(`✅ SYSTEM RESET: Reset click update timer`);
       }
       
+      // PART 7: CALCULATE DISK SPACE FREED
+      let diskSpaceFreed = "Unknown";
+      try {
+        const { getDiskSpaceInfo } = await import("./diskmonitor");
+        const diskInfo = await getDiskSpaceInfo();
+        if (diskInfo.length > 0 && startingDiskSpace > 0) {
+          endingDiskSpace = diskInfo[0].available;
+          const bytesFreed = endingDiskSpace - startingDiskSpace;
+          
+          // Convert to human-readable format
+          if (bytesFreed > 0) {
+            if (bytesFreed > 1073741824) {
+              diskSpaceFreed = `${(bytesFreed / 1073741824).toFixed(2)} GB`;
+            } else if (bytesFreed > 1048576) {
+              diskSpaceFreed = `${(bytesFreed / 1048576).toFixed(2)} MB`;
+            } else if (bytesFreed > 1024) {
+              diskSpaceFreed = `${(bytesFreed / 1024).toFixed(2)} KB`;
+            } else {
+              diskSpaceFreed = `${bytesFreed} bytes`;
+            }
+          } else {
+            diskSpaceFreed = "No measurable change";
+          }
+        }
+      } catch (error) {
+        console.log(`ℹ️ SYSTEM RESET: Unable to calculate disk space freed: ${error.message}`);
+      }
+      
       console.log(`✅ SYSTEM RESET COMPLETED: Successfully reset all system data`);
+      console.log(`💾 SYSTEM RESET: Disk space freed: ${diskSpaceFreed}`);
       
       return {
         campaignsDeleted: allCampaigns.length,
@@ -2284,7 +2394,8 @@ export class DatabaseStorage implements IStorage {
         urlBudgetLogsDeleted: urlBudgetLogsCount,
         urlClickRecordsDeleted: urlClickRecordsCount,
         urlClickLogsDeleted: urlClickLogsCount,
-        campaignClickRecordsDeleted: campaignClickRecordsCount
+        campaignClickRecordsDeleted: campaignClickRecordsCount,
+        diskSpaceFreed: diskSpaceFreed
       };
     } catch (error) {
       console.error("Error during full system cleanup:", error);

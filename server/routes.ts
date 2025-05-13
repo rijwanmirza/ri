@@ -2907,7 +2907,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
           urlClickLogsDeleted: dbResult.urlClickLogsDeleted || 0,
           campaignClickRecordsDeleted: dbResult.campaignClickRecordsDeleted || 0,
           emailLogsCleared: emailLogsResult.success,
-          emailLogsRemoved: emailLogsResult.entriesRemoved
+          emailLogsRemoved: emailLogsResult.entriesRemoved,
+          diskSpaceFreed: dbResult.diskSpaceFreed || "Unknown"
         }
       });
     } catch (error) {
