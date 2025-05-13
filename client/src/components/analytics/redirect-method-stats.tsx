@@ -102,6 +102,37 @@ export const RedirectMethodStats: React.FC<RedirectMethodStatsProps> = ({ urlId 
 
   // If we have no data or no redirects, show a message
   if (!stats || totalRedirects === 0) {
+    // For debugging and testing purposes
+    const resetAnalytics = async () => {
+      try {
+        const response = await fetch(`/api/urls/${urlId}/redirect-analytics`, {
+          method: 'DELETE'
+        });
+        if (response.ok) {
+          window.location.reload();
+        }
+      } catch (error) {
+        console.error('Failed to reset analytics:', error);
+      }
+    };
+    
+    // For testing purposes - add sample data for a specific redirect method
+    const testRedirect = async (method: string) => {
+      try {
+        // Get the URL to visit to trigger a redirect
+        const response = await fetch(`/api/urls/${urlId}`);
+        const urlData = await response.json();
+        if (urlData && urlData.campaignId) {
+          // Open the redirect URL in a new tab
+          window.open(`/r/${urlData.campaignId}/${urlId}`, '_blank');
+          // Wait a moment before reloading
+          setTimeout(() => window.location.reload(), 1500);
+        }
+      } catch (error) {
+        console.error('Failed to test redirect:', error);
+      }
+    };
+    
     return (
       <Card>
         <CardHeader>
@@ -111,7 +142,26 @@ export const RedirectMethodStats: React.FC<RedirectMethodStatsProps> = ({ urlId 
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <p className="text-muted-foreground">There are no recorded redirects for this URL.</p>
+          <p className="text-muted-foreground mb-4">There are no recorded redirects for this URL.</p>
+          
+          {/* Debug controls */}
+          <div className="border p-4 rounded-md bg-muted/20">
+            <h4 className="font-medium mb-2">Debug Controls</h4>
+            <div className="flex flex-wrap gap-2">
+              <button 
+                onClick={() => testRedirect('direct')}
+                className="bg-blue-600 hover:bg-blue-700 text-white px-2 py-1 rounded text-xs"
+              >
+                Test Redirect
+              </button>
+              <button 
+                onClick={resetAnalytics}
+                className="bg-red-600 hover:bg-red-700 text-white px-2 py-1 rounded text-xs"
+              >
+                Reset Analytics
+              </button>
+            </div>
+          </div>
         </CardContent>
       </Card>
     );
@@ -147,6 +197,50 @@ export const RedirectMethodStats: React.FC<RedirectMethodStatsProps> = ({ urlId 
               </Bar>
             </BarChart>
           </ResponsiveContainer>
+        </div>
+        
+        {/* Debug controls */}
+        <div className="border p-4 rounded-md bg-muted/20 mt-4">
+          <h4 className="font-medium mb-2">Debug Controls</h4>
+          <div className="flex flex-wrap gap-2">
+            <button 
+              onClick={async () => {
+                try {
+                  // Get the URL to visit to trigger a redirect
+                  const response = await fetch(`/api/urls/${urlId}`);
+                  const urlData = await response.json();
+                  if (urlData && urlData.campaignId) {
+                    // Open the redirect URL in a new tab
+                    window.open(`/r/${urlData.campaignId}/${urlId}`, '_blank');
+                    // Wait a moment before reloading
+                    setTimeout(() => window.location.reload(), 1500);
+                  }
+                } catch (error) {
+                  console.error('Failed to test redirect:', error);
+                }
+              }}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-2 py-1 rounded text-xs"
+            >
+              Test Redirect
+            </button>
+            <button 
+              onClick={async () => {
+                try {
+                  const response = await fetch(`/api/urls/${urlId}/redirect-analytics`, {
+                    method: 'DELETE'
+                  });
+                  if (response.ok) {
+                    window.location.reload();
+                  }
+                } catch (error) {
+                  console.error('Failed to reset analytics:', error);
+                }
+              }}
+              className="bg-red-600 hover:bg-red-700 text-white px-2 py-1 rounded text-xs"
+            >
+              Reset Analytics
+            </button>
+          </div>
         </div>
       </CardContent>
     </Card>

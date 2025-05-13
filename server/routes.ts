@@ -2253,7 +2253,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
         
         // Track the redirect method used in our analytics
-        urlRedirectAnalytics.incrementRedirectCount(urlId, redirectMethod).catch(err => {
+        // For bridge page, we always count it as direct redirect
+        const bridgeRedirectMethod = 'direct';
+        urlRedirectAnalytics.incrementRedirectCount(urlId, bridgeRedirectMethod).catch(err => {
           console.error("Error tracking redirect method:", err);
         });
       } catch (analyticsError) {
