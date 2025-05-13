@@ -97,6 +97,8 @@ export class UrlRedirectAnalytics {
    */
   async getRedirectAnalytics(urlId: number): Promise<any> {
     try {
+      console.log(`🔍 Getting redirect analytics for URL ID ${urlId}`);
+      
       // Use drizzle instance which has proper connection pooling
       try {
         const results = await db.select()
@@ -104,32 +106,53 @@ export class UrlRedirectAnalytics {
           .where(eq(urlRedirectAnalyticsTable.urlId, urlId));
         
         if (!results || results.length === 0) {
-          // Return empty analytics if none exist using the field names from client interface
-          return {
+          console.log(`⚠️ No analytics found for URL ID ${urlId}, returning empty data`);
+          
+          // Return empty analytics with camelCase field names consistent with the API
+          const emptyData = {
             id: null,
-            url_id: urlId,
-            direct_redirects: 0,
-            linkedin_redirects: 0,
-            facebook_redirects: 0,
-            whatsapp_redirects: 0,
-            google_meet_redirects: 0,
-            google_search_redirects: 0,
-            google_play_redirects: 0
+            urlId: urlId,
+            directRedirects: 0,
+            linkedinRedirects: 0,
+            facebookRedirects: 0,
+            whatsappRedirects: 0,
+            googleMeetRedirects: 0,
+            googleSearchRedirects: 0,
+            googlePlayRedirects: 0
           };
+          
+          // Create a new record in the database with these empty values
+          await db.insert(urlRedirectAnalyticsTable).values({
+            urlId,
+            directRedirects: 0,
+            linkedinRedirects: 0,
+            facebookRedirects: 0,
+            whatsappRedirects: 0,
+            googleMeetRedirects: 0,
+            googleSearchRedirects: 0,
+            googlePlayRedirects: 0
+          }).catch(err => {
+            console.error(`❌ Failed to create empty analytics record:`, err);
+          });
+          
+          return emptyData;
         }
         
         // Map the drizzle column names to match the React component interface
-        console.log(`Found analytics for URL ID ${urlId}:`, results[0]);
+        // BUT use camelCase rather than snake_case to be consistent with API patterns
+        console.log(`✅ Found analytics for URL ID ${urlId}:`, results[0]);
+        
+        // Return data with camelCase field names
         return {
           id: results[0].id,
-          url_id: results[0].urlId,
-          direct_redirects: results[0].directRedirects,
-          linkedin_redirects: results[0].linkedinRedirects,
-          facebook_redirects: results[0].facebookRedirects,
-          whatsapp_redirects: results[0].whatsappRedirects,
-          google_meet_redirects: results[0].googleMeetRedirects,
-          google_search_redirects: results[0].googleSearchRedirects,
-          google_play_redirects: results[0].googlePlayRedirects
+          urlId: results[0].urlId,
+          directRedirects: results[0].directRedirects || 0,
+          linkedinRedirects: results[0].linkedinRedirects || 0,
+          facebookRedirects: results[0].facebookRedirects || 0,
+          whatsappRedirects: results[0].whatsappRedirects || 0,
+          googleMeetRedirects: results[0].googleMeetRedirects || 0,
+          googleSearchRedirects: results[0].googleSearchRedirects || 0,
+          googlePlayRedirects: results[0].googlePlayRedirects || 0
         };
       } catch (dbError) {
         console.error('❌ Database error fetching redirect analytics:', dbError);
@@ -139,14 +162,14 @@ export class UrlRedirectAnalytics {
       console.error('❌ Error fetching redirect analytics:', error);
       return {
         id: null,
-        url_id: urlId,
-        direct_redirects: 0,
-        linkedin_redirects: 0,
-        facebook_redirects: 0,
-        whatsapp_redirects: 0,
-        google_meet_redirects: 0,
-        google_search_redirects: 0,
-        google_play_redirects: 0
+        urlId: urlId,
+        directRedirects: 0,
+        linkedinRedirects: 0,
+        facebookRedirects: 0,
+        whatsappRedirects: 0,
+        googleMeetRedirects: 0,
+        googleSearchRedirects: 0,
+        googlePlayRedirects: 0
       };
     }
   }

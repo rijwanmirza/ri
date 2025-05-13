@@ -7,16 +7,16 @@ import { Loader2 } from 'lucide-react';
 // Properly typed interface for redirect analytics data
 interface UrlRedirectAnalytics {
   id: number;
-  url_id: number;
-  direct_redirects: number;
-  linkedin_redirects: number;
-  facebook_redirects: number;
-  whatsapp_redirects: number;
-  google_meet_redirects: number;
-  google_search_redirects: number;
-  google_play_redirects: number;
-  created_at?: string;
-  updated_at?: string;
+  urlId: number;
+  directRedirects: number;
+  linkedinRedirects: number;
+  facebookRedirects: number;
+  whatsappRedirects: number;
+  googleMeetRedirects: number;
+  googleSearchRedirects: number;
+  googlePlayRedirects: number;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 interface RedirectMethodStatsProps {
@@ -42,13 +42,13 @@ export const RedirectMethodStats: React.FC<RedirectMethodStatsProps> = ({ urlId 
     if (!stats) return [];
 
     return [
-      { name: 'Direct', value: stats.direct_redirects || 0, color: '#4338ca' },
-      { name: 'LinkedIn', value: stats.linkedin_redirects || 0, color: '#0077b5' },
-      { name: 'Facebook', value: stats.facebook_redirects || 0, color: '#3b5998' },
-      { name: 'WhatsApp', value: stats.whatsapp_redirects || 0, color: '#25d366' },
-      { name: 'Google Meet', value: stats.google_meet_redirects || 0, color: '#00897b' },
-      { name: 'Google Search', value: stats.google_search_redirects || 0, color: '#4285f4' },
-      { name: 'Google Play', value: stats.google_play_redirects || 0, color: '#3bccff' },
+      { name: 'Direct', value: stats.directRedirects || 0, color: '#4338ca' },
+      { name: 'LinkedIn', value: stats.linkedinRedirects || 0, color: '#0077b5' },
+      { name: 'Facebook', value: stats.facebookRedirects || 0, color: '#3b5998' },
+      { name: 'WhatsApp', value: stats.whatsappRedirects || 0, color: '#25d366' },
+      { name: 'Google Meet', value: stats.googleMeetRedirects || 0, color: '#00897b' },
+      { name: 'Google Search', value: stats.googleSearchRedirects || 0, color: '#4285f4' },
+      { name: 'Google Play', value: stats.googlePlayRedirects || 0, color: '#3bccff' },
     ].filter(item => item.value > 0); // Only show methods that have clicks
   }, [stats]);
 
@@ -56,13 +56,13 @@ export const RedirectMethodStats: React.FC<RedirectMethodStatsProps> = ({ urlId 
   const totalRedirects = React.useMemo(() => {
     if (!stats) return 0;
     return (
-      (stats.direct_redirects || 0) +
-      (stats.linkedin_redirects || 0) +
-      (stats.facebook_redirects || 0) +
-      (stats.whatsapp_redirects || 0) +
-      (stats.google_meet_redirects || 0) +
-      (stats.google_search_redirects || 0) +
-      (stats.google_play_redirects || 0)
+      (stats.directRedirects || 0) +
+      (stats.linkedinRedirects || 0) +
+      (stats.facebookRedirects || 0) +
+      (stats.whatsappRedirects || 0) +
+      (stats.googleMeetRedirects || 0) +
+      (stats.googleSearchRedirects || 0) +
+      (stats.googlePlayRedirects || 0)
     );
   }, [stats]);
 

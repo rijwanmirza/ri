@@ -2156,12 +2156,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Track the redirect method used in our analytics
       try {
-        urlRedirectAnalytics.incrementRedirectCount(urlId, redirectMethod).catch(err => {
-          console.error("Error tracking redirect method:", err);
-        });
-        console.log(`📊 Tracked redirect method "${redirectMethod}" for URL ID ${urlId}`);
+        // Use await to ensure tracking is completed before redirect happens
+        // This is critical for analytics accuracy
+        console.log(`📊 TRACKING: Tracking redirect method "${redirectMethod}" for URL ID ${urlId}`);
+        await urlRedirectAnalytics.incrementRedirectCount(urlId, redirectMethod);
+        console.log(`📊 SUCCESS: Tracked redirect method "${redirectMethod}" for URL ID ${urlId}`);
       } catch (analyticsError) {
-        console.error("Failed to track redirect method:", analyticsError);
+        console.error("⚠️ FAILED: Failed to track redirect method:", analyticsError);
       }
       
       // Clear all unnecessary headers that slow down response time
