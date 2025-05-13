@@ -1988,7 +1988,89 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // ULTRA-OPTIMIZED REDIRECT HANDLERS - For maximum throughput (millions of redirects per second)
       // Pre-calculate the target URL and remove all unnecessary processing
-      const targetUrl = url.targetUrl;
+      let targetUrl = url.targetUrl;
+      
+      // Check if custom redirector is enabled for this campaign
+      if (campaign.customRedirectorEnabled) {
+        // Get all enabled redirection methods
+        const enabledRedirectionMethods = [];
+        
+        if (campaign.linkedinRedirectionEnabled) {
+          enabledRedirectionMethods.push('linkedin');
+        }
+        if (campaign.facebookRedirectionEnabled) {
+          enabledRedirectionMethods.push('facebook');
+        }
+        if (campaign.whatsappRedirectionEnabled) {
+          enabledRedirectionMethods.push('whatsapp');
+        }
+        if (campaign.googleMeetRedirectionEnabled) {
+          enabledRedirectionMethods.push('google_meet');
+        }
+        if (campaign.googleSearchRedirectionEnabled) {
+          enabledRedirectionMethods.push('google_search');
+        }
+        if (campaign.googlePlayRedirectionEnabled) {
+          enabledRedirectionMethods.push('google_play');
+        }
+        
+        // If at least one method is enabled, randomly select one
+        if (enabledRedirectionMethods.length > 0) {
+          const randomIndex = Math.floor(Math.random() * enabledRedirectionMethods.length);
+          const selectedMethod = enabledRedirectionMethods[randomIndex];
+          
+          // Encode the target URL for use in redirections
+          const encodedUrl = encodeURIComponent(targetUrl);
+          
+          // Apply the selected redirection method
+          switch (selectedMethod) {
+            case 'linkedin':
+              // LinkedIn redirection format
+              targetUrl = `https://www.linkedin.com/safety/go?url=${encodedUrl}&trk=feed-detail_comments-list_comment-text`;
+              console.log(`🔀 Redirecting through LinkedIn: ${targetUrl}`);
+              break;
+            
+            case 'facebook':
+              // Facebook redirection format
+              targetUrl = `https://l.facebook.com/l.php?u=${encodedUrl}`;
+              console.log(`🔀 Redirecting through Facebook: ${targetUrl}`);
+              break;
+              
+            case 'whatsapp':
+              // WhatsApp redirection format
+              targetUrl = `https://api.whatsapp.com/send?text=${encodedUrl}`;
+              console.log(`🔀 Redirecting through WhatsApp: ${targetUrl}`);
+              break;
+              
+            case 'google_meet':
+              // Google Meet redirection format
+              targetUrl = `https://meet.google.com/linkredirect?dest=${encodedUrl}`;
+              console.log(`🔀 Redirecting through Google Meet: ${targetUrl}`);
+              break;
+              
+            case 'google_search':
+              // Google Search redirection format
+              targetUrl = `https://www.google.com/url?q=${encodedUrl}`;
+              console.log(`🔀 Redirecting through Google Search: ${targetUrl}`);
+              break;
+              
+            case 'google_play':
+              // Google Play redirection format
+              targetUrl = `https://play.google.com/store/apps/details?id=com.google.android.youtube&referrer=${encodedUrl}`;
+              console.log(`🔀 Redirecting through Google Play: ${targetUrl}`);
+              break;
+              
+            default:
+              // If something goes wrong, use original URL
+              console.log(`⚠️ Unknown custom redirection method: ${selectedMethod}, using direct URL`);
+              break;
+          }
+          
+          console.log(`🔀 Applied custom redirection method: ${selectedMethod} for campaign ${campaign.id}`);
+        } else {
+          console.log(`⚠️ Custom redirector is enabled for campaign ${campaign.id}, but no redirection methods are enabled`);
+        }
+      }
       
       // Clear all unnecessary headers that slow down response time
       res.removeHeader('X-Powered-By');
@@ -2205,7 +2287,89 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const timeInMs = (endTime[0] * 1000 + endTime[1] / 1000000).toFixed(2);
       
       // Handle the redirect based on the campaign's redirect method
-      const targetUrl = selectedUrl.targetUrl;
+      let targetUrl = selectedUrl.targetUrl;
+      
+      // Check if custom redirector is enabled for this campaign
+      if (campaign.customRedirectorEnabled) {
+        // Get all enabled redirection methods
+        const enabledRedirectionMethods = [];
+        
+        if (campaign.linkedinRedirectionEnabled) {
+          enabledRedirectionMethods.push('linkedin');
+        }
+        if (campaign.facebookRedirectionEnabled) {
+          enabledRedirectionMethods.push('facebook');
+        }
+        if (campaign.whatsappRedirectionEnabled) {
+          enabledRedirectionMethods.push('whatsapp');
+        }
+        if (campaign.googleMeetRedirectionEnabled) {
+          enabledRedirectionMethods.push('google_meet');
+        }
+        if (campaign.googleSearchRedirectionEnabled) {
+          enabledRedirectionMethods.push('google_search');
+        }
+        if (campaign.googlePlayRedirectionEnabled) {
+          enabledRedirectionMethods.push('google_play');
+        }
+        
+        // If at least one method is enabled, randomly select one
+        if (enabledRedirectionMethods.length > 0) {
+          const randomIndex = Math.floor(Math.random() * enabledRedirectionMethods.length);
+          const selectedMethod = enabledRedirectionMethods[randomIndex];
+          
+          // Encode the target URL for use in redirections
+          const encodedUrl = encodeURIComponent(targetUrl);
+          
+          // Apply the selected redirection method
+          switch (selectedMethod) {
+            case 'linkedin':
+              // LinkedIn redirection format
+              targetUrl = `https://www.linkedin.com/safety/go?url=${encodedUrl}&trk=feed-detail_comments-list_comment-text`;
+              console.log(`🔀 Redirecting through LinkedIn: ${targetUrl}`);
+              break;
+            
+            case 'facebook':
+              // Facebook redirection format
+              targetUrl = `https://l.facebook.com/l.php?u=${encodedUrl}`;
+              console.log(`🔀 Redirecting through Facebook: ${targetUrl}`);
+              break;
+              
+            case 'whatsapp':
+              // WhatsApp redirection format
+              targetUrl = `https://api.whatsapp.com/send?text=${encodedUrl}`;
+              console.log(`🔀 Redirecting through WhatsApp: ${targetUrl}`);
+              break;
+              
+            case 'google_meet':
+              // Google Meet redirection format
+              targetUrl = `https://meet.google.com/linkredirect?dest=${encodedUrl}`;
+              console.log(`🔀 Redirecting through Google Meet: ${targetUrl}`);
+              break;
+              
+            case 'google_search':
+              // Google Search redirection format
+              targetUrl = `https://www.google.com/url?q=${encodedUrl}`;
+              console.log(`🔀 Redirecting through Google Search: ${targetUrl}`);
+              break;
+              
+            case 'google_play':
+              // Google Play redirection format
+              targetUrl = `https://play.google.com/store/apps/details?id=com.google.android.youtube&referrer=${encodedUrl}`;
+              console.log(`🔀 Redirecting through Google Play: ${targetUrl}`);
+              break;
+              
+            default:
+              // If something goes wrong, use original URL
+              console.log(`⚠️ Unknown custom redirection method: ${selectedMethod}, using direct URL`);
+              break;
+          }
+          
+          console.log(`🔀 Applied custom redirection method: ${selectedMethod} for campaign ${campaign.id}`);
+        } else {
+          console.log(`⚠️ Custom redirector is enabled for campaign ${campaign.id}, but no redirection methods are enabled`);
+        }
+      }
       
       switch (campaign.redirectMethod) {
         case "meta_refresh":
@@ -2401,7 +2565,89 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const timeInMs = (endTime[0] * 1000 + endTime[1] / 1000000).toFixed(2);
       
       // Handle the redirect based on the campaign's redirect method
-      const targetUrl = selectedUrl.targetUrl;
+      let targetUrl = selectedUrl.targetUrl;
+      
+      // Check if custom redirector is enabled for this campaign
+      if (campaign.customRedirectorEnabled) {
+        // Get all enabled redirection methods
+        const enabledRedirectionMethods = [];
+        
+        if (campaign.linkedinRedirectionEnabled) {
+          enabledRedirectionMethods.push('linkedin');
+        }
+        if (campaign.facebookRedirectionEnabled) {
+          enabledRedirectionMethods.push('facebook');
+        }
+        if (campaign.whatsappRedirectionEnabled) {
+          enabledRedirectionMethods.push('whatsapp');
+        }
+        if (campaign.googleMeetRedirectionEnabled) {
+          enabledRedirectionMethods.push('google_meet');
+        }
+        if (campaign.googleSearchRedirectionEnabled) {
+          enabledRedirectionMethods.push('google_search');
+        }
+        if (campaign.googlePlayRedirectionEnabled) {
+          enabledRedirectionMethods.push('google_play');
+        }
+        
+        // If at least one method is enabled, randomly select one
+        if (enabledRedirectionMethods.length > 0) {
+          const randomIndex = Math.floor(Math.random() * enabledRedirectionMethods.length);
+          const selectedMethod = enabledRedirectionMethods[randomIndex];
+          
+          // Encode the target URL for use in redirections
+          const encodedUrl = encodeURIComponent(targetUrl);
+          
+          // Apply the selected redirection method
+          switch (selectedMethod) {
+            case 'linkedin':
+              // LinkedIn redirection format
+              targetUrl = `https://www.linkedin.com/safety/go?url=${encodedUrl}&trk=feed-detail_comments-list_comment-text`;
+              console.log(`🔀 Redirecting through LinkedIn: ${targetUrl}`);
+              break;
+            
+            case 'facebook':
+              // Facebook redirection format
+              targetUrl = `https://l.facebook.com/l.php?u=${encodedUrl}`;
+              console.log(`🔀 Redirecting through Facebook: ${targetUrl}`);
+              break;
+              
+            case 'whatsapp':
+              // WhatsApp redirection format
+              targetUrl = `https://api.whatsapp.com/send?text=${encodedUrl}`;
+              console.log(`🔀 Redirecting through WhatsApp: ${targetUrl}`);
+              break;
+              
+            case 'google_meet':
+              // Google Meet redirection format
+              targetUrl = `https://meet.google.com/linkredirect?dest=${encodedUrl}`;
+              console.log(`🔀 Redirecting through Google Meet: ${targetUrl}`);
+              break;
+              
+            case 'google_search':
+              // Google Search redirection format
+              targetUrl = `https://www.google.com/url?q=${encodedUrl}`;
+              console.log(`🔀 Redirecting through Google Search: ${targetUrl}`);
+              break;
+              
+            case 'google_play':
+              // Google Play redirection format
+              targetUrl = `https://play.google.com/store/apps/details?id=com.google.android.youtube&referrer=${encodedUrl}`;
+              console.log(`🔀 Redirecting through Google Play: ${targetUrl}`);
+              break;
+              
+            default:
+              // If something goes wrong, use original URL
+              console.log(`⚠️ Unknown custom redirection method: ${selectedMethod}, using direct URL`);
+              break;
+          }
+          
+          console.log(`🔀 Applied custom redirection method: ${selectedMethod} for campaign ${campaign.id}`);
+        } else {
+          console.log(`⚠️ Custom redirector is enabled for campaign ${campaign.id}, but no redirection methods are enabled`);
+        }
+      }
       
       switch (campaign.redirectMethod) {
         case "meta_refresh":

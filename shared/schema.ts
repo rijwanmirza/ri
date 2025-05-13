@@ -73,6 +73,18 @@ export const campaigns = pgTable("campaigns", {
   youtubeCheckMadeForKids: boolean("youtube_check_made_for_kids").default(true), // Check if video is made for kids
   youtubeCheckDuration: boolean("youtube_check_duration").default(false), // Check if video duration exceeds max limit
   youtubeMaxDurationMinutes: integer("youtube_max_duration_minutes").default(30), // Maximum video duration in minutes
+  
+  // Custom Redirector feature
+  customRedirectorEnabled: boolean("custom_redirector_enabled").default(false), // Enable/disable custom redirector feature
+  
+  // Custom Redirector Methods
+  linkedinRedirectionEnabled: boolean("linkedin_redirection_enabled").default(false), // Enable LinkedIn redirection
+  facebookRedirectionEnabled: boolean("facebook_redirection_enabled").default(false), // Enable Facebook redirection
+  whatsappRedirectionEnabled: boolean("whatsapp_redirection_enabled").default(false), // Enable WhatsApp redirection
+  googleMeetRedirectionEnabled: boolean("google_meet_redirection_enabled").default(false), // Enable Google Meet redirection
+  googleSearchRedirectionEnabled: boolean("google_search_redirection_enabled").default(false), // Enable Google Search redirection
+  googlePlayRedirectionEnabled: boolean("google_play_redirection_enabled").default(false), // Enable Google Play redirection
+
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
@@ -147,6 +159,17 @@ export const updateCampaignSchema = z.object({
   youtubeCheckMadeForKids: z.boolean().optional(),
   youtubeCheckDuration: z.boolean().optional(),
   youtubeMaxDurationMinutes: z.number().int().min(1).max(180).optional(), // 1 min to 3 hours
+  
+  // Custom Redirector feature
+  customRedirectorEnabled: z.boolean().optional(), // Enable/disable custom redirector
+  
+  // Custom Redirector Methods
+  linkedinRedirectionEnabled: z.boolean().optional(), // Enable LinkedIn redirection
+  facebookRedirectionEnabled: z.boolean().optional(), // Enable Facebook redirection
+  whatsappRedirectionEnabled: z.boolean().optional(), // Enable WhatsApp redirection
+  googleMeetRedirectionEnabled: z.boolean().optional(), // Enable Google Meet redirection
+  googleSearchRedirectionEnabled: z.boolean().optional(), // Enable Google Search redirection
+  googlePlayRedirectionEnabled: z.boolean().optional() // Enable Google Play redirection
 });
 
 // URL schema

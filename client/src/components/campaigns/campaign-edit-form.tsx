@@ -67,6 +67,15 @@ const campaignEditSchema = z.object({
   youtubeCheckMadeForKids: z.boolean().default(true),
   youtubeCheckDuration: z.boolean().default(false),
   youtubeMaxDurationMinutes: z.number().int().min(1, "Duration must be at least 1 minute").max(360, "Duration can't exceed 360 minutes").default(30),
+  
+  // Custom Redirector fields
+  customRedirectorEnabled: z.boolean().default(false),
+  linkedinRedirectionEnabled: z.boolean().default(false),
+  facebookRedirectionEnabled: z.boolean().default(false), 
+  whatsappRedirectionEnabled: z.boolean().default(false),
+  googleMeetRedirectionEnabled: z.boolean().default(false),
+  googleSearchRedirectionEnabled: z.boolean().default(false),
+  googlePlayRedirectionEnabled: z.boolean().default(false),
 });
 
 type CampaignEditValues = z.infer<typeof campaignEditSchema>;
@@ -117,7 +126,16 @@ export default function CampaignEditForm({ campaign, onSuccess }: CampaignEditFo
       youtubeCheckAgeRestricted: campaign.youtubeCheckAgeRestricted !== false, // Default to true
       youtubeCheckMadeForKids: campaign.youtubeCheckMadeForKids !== false, // Default to true
       youtubeCheckDuration: campaign.youtubeCheckDuration || false, // Default to false
-      youtubeMaxDurationMinutes: campaign.youtubeMaxDurationMinutes || 30 // Default to 30 minutes
+      youtubeMaxDurationMinutes: campaign.youtubeMaxDurationMinutes || 30, // Default to 30 minutes
+      
+      // Custom Redirector settings
+      customRedirectorEnabled: campaign.customRedirectorEnabled || false,
+      linkedinRedirectionEnabled: campaign.linkedinRedirectionEnabled || false,
+      facebookRedirectionEnabled: campaign.facebookRedirectionEnabled || false,
+      whatsappRedirectionEnabled: campaign.whatsappRedirectionEnabled || false,
+      googleMeetRedirectionEnabled: campaign.googleMeetRedirectionEnabled || false,
+      googleSearchRedirectionEnabled: campaign.googleSearchRedirectionEnabled || false,
+      googlePlayRedirectionEnabled: campaign.googlePlayRedirectionEnabled || false
     },
   });
   
@@ -1327,6 +1345,189 @@ export default function CampaignEditForm({ campaign, onSuccess }: CampaignEditFo
                     </div>
                     <FormDescription className="mt-2">
                       When a URL is removed due to these conditions, it will be recorded in YouTube URL Records.
+                    </FormDescription>
+                  </div>
+                )}
+              </div>
+            </div>
+            
+            {/* Custom Redirector Section */}
+            <div className="rounded-lg border p-3 mt-4">
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <h4 className="font-medium">Custom Redirector</h4>
+                  <FormField
+                    control={form.control}
+                    name="customRedirectorEnabled"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-row items-center space-x-2 space-y-0">
+                        <FormControl>
+                          <Switch
+                            checked={field.value === true}
+                            onCheckedChange={(checked) => {
+                              field.onChange(checked);
+                              form.setValue('customRedirectorEnabled', checked === true);
+                            }}
+                          />
+                        </FormControl>
+                        <div className="space-y-0.5">
+                          <FormLabel className="text-sm">
+                            {field.value === true ? "Enabled" : "Disabled"}
+                          </FormLabel>
+                        </div>
+                      </FormItem>
+                    )}
+                  />
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  When enabled, URLs from this campaign will be redirected through various third-party platforms to improve click quality and engagement.
+                </p>
+                
+                {/* Redirection Methods - only show when Custom Redirector is enabled */}
+                {form.watch("customRedirectorEnabled") && (
+                  <div className="mt-3 pt-3 border-t border-gray-100">
+                    <FormLabel className="block mb-2">Enabled Redirection Methods</FormLabel>
+                    <div className="space-y-3">
+                      <FormField
+                        control={form.control}
+                        name="linkedinRedirectionEnabled"
+                        render={({ field }) => (
+                          <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                            <FormControl>
+                              <Checkbox
+                                checked={field.value}
+                                onCheckedChange={field.onChange}
+                              />
+                            </FormControl>
+                            <div className="space-y-1 leading-none">
+                              <FormLabel>
+                                LinkedIn
+                              </FormLabel>
+                              <FormDescription className="text-xs">
+                                Redirect through LinkedIn's safety redirect mechanism
+                              </FormDescription>
+                            </div>
+                          </FormItem>
+                        )}
+                      />
+                      
+                      <FormField
+                        control={form.control}
+                        name="facebookRedirectionEnabled"
+                        render={({ field }) => (
+                          <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                            <FormControl>
+                              <Checkbox
+                                checked={field.value}
+                                onCheckedChange={field.onChange}
+                              />
+                            </FormControl>
+                            <div className="space-y-1 leading-none">
+                              <FormLabel>
+                                Facebook
+                              </FormLabel>
+                              <FormDescription className="text-xs">
+                                Redirect through Facebook's external link handler
+                              </FormDescription>
+                            </div>
+                          </FormItem>
+                        )}
+                      />
+                      
+                      <FormField
+                        control={form.control}
+                        name="whatsappRedirectionEnabled"
+                        render={({ field }) => (
+                          <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                            <FormControl>
+                              <Checkbox
+                                checked={field.value}
+                                onCheckedChange={field.onChange}
+                              />
+                            </FormControl>
+                            <div className="space-y-1 leading-none">
+                              <FormLabel>
+                                WhatsApp
+                              </FormLabel>
+                              <FormDescription className="text-xs">
+                                Redirect through WhatsApp's web redirect service
+                              </FormDescription>
+                            </div>
+                          </FormItem>
+                        )}
+                      />
+                      
+                      <FormField
+                        control={form.control}
+                        name="googleMeetRedirectionEnabled"
+                        render={({ field }) => (
+                          <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                            <FormControl>
+                              <Checkbox
+                                checked={field.value}
+                                onCheckedChange={field.onChange}
+                              />
+                            </FormControl>
+                            <div className="space-y-1 leading-none">
+                              <FormLabel>
+                                Google Meet
+                              </FormLabel>
+                              <FormDescription className="text-xs">
+                                Redirect through Google Meet's safety gateway
+                              </FormDescription>
+                            </div>
+                          </FormItem>
+                        )}
+                      />
+                      
+                      <FormField
+                        control={form.control}
+                        name="googleSearchRedirectionEnabled"
+                        render={({ field }) => (
+                          <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                            <FormControl>
+                              <Checkbox
+                                checked={field.value}
+                                onCheckedChange={field.onChange}
+                              />
+                            </FormControl>
+                            <div className="space-y-1 leading-none">
+                              <FormLabel>
+                                Google Search
+                              </FormLabel>
+                              <FormDescription className="text-xs">
+                                Redirect through Google Search results page
+                              </FormDescription>
+                            </div>
+                          </FormItem>
+                        )}
+                      />
+                      
+                      <FormField
+                        control={form.control}
+                        name="googlePlayRedirectionEnabled"
+                        render={({ field }) => (
+                          <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                            <FormControl>
+                              <Checkbox
+                                checked={field.value}
+                                onCheckedChange={field.onChange}
+                              />
+                            </FormControl>
+                            <div className="space-y-1 leading-none">
+                              <FormLabel>
+                                Google Play
+                              </FormLabel>
+                              <FormDescription className="text-xs">
+                                Redirect through Google Play's external link service
+                              </FormDescription>
+                            </div>
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                    <FormDescription className="mt-2">
+                      The system will randomly select from the enabled redirection methods for each click.
                     </FormDescription>
                   </div>
                 )}
