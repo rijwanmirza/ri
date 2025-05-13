@@ -28,6 +28,7 @@ import TrafficSenderMigration from "@/components/system/traffic-sender-migration
 import ApiKeyManager from "@/components/system/api-key-manager";
 import { ServerMonitor } from "@/components/server-monitor/server-stats";
 import AccessCodeManager from "@/components/system/access-code-manager";
+import DiskSpaceMonitor from "@/components/system/disk-space-monitor";
 
 export default function SystemSettings() {
   const [isDeleting, setIsDeleting] = useState(false);
@@ -109,7 +110,10 @@ export default function SystemSettings() {
       {/* Server Monitoring section */}
       <div className="mb-10">
         <h2 className="text-xl font-bold mb-4">Server Monitoring</h2>
-        <ServerMonitor />
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <ServerMonitor />
+          <DiskSpaceMonitor />
+        </div>
       </div>
       
       {/* API Key Management section */}

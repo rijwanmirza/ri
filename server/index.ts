@@ -15,6 +15,7 @@ import { initKeyManager } from "./auth/key-manager";
 import { initAccessCodeManager } from "./auth/access-code-manager";
 import { handleAccessRoutes, isValidTemporaryLoginPath, isSessionValid } from "./access-control";
 import { processScheduledBudgetUpdates } from "./scheduled-budget-updater";
+import { startDiskSpaceMonitoring } from "./disk-space-monitor";
 import * as spdy from 'spdy';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -225,6 +226,10 @@ app.use((req, res, next) => {
         } else {
           log('YouTube API service not initialized - API key not configured');
         }
+        
+        // Initialize disk space monitoring (check hourly, warn at 85%)
+        startDiskSpaceMonitoring(60, 85);
+        log('Disk space monitoring initialized - checking hourly');
         
         // Traffic Sender service has been removed
       } catch (trafficstarError) {

@@ -5,6 +5,7 @@ import type { Server as SpdyServer } from 'spdy';
 import { storage } from "./storage";
 import { applyClickProtection } from "./click-protection";
 import { getServerStats, getStatsHistory, initServerMonitor } from './server-monitor';
+import { log } from './vite';
 import { requireAuth } from "./auth/middleware";
 import { registerUrlClickRoutes } from "./url-click-routes";
 import { urlClickLogsManager } from "./url-click-logs-manager";
@@ -5220,6 +5221,60 @@ export async function registerRoutes(app: Express): Promise<Server> {
         success: false,
         message: "Failed to fetch server stats history",
         error: error instanceof Error ? error.message : String(error)
+      });
+    }
+  });
+  
+  // Helper function to format bytes to human-readable format
+  function formatBytes(bytes: number, decimals = 2): string {
+    if (bytes === 0) return '0 Bytes';
+    
+    const k = 1024;
+    const dm = decimals < 0 ? 0 : decimals;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+    
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+  }
+  
+  // API endpoint to get disk space information
+  app.get("/api/system/disk-space", async (_req: Request, res: Response) => {
+    try {
+      const stats = await getServerStats();
+      
+      // Format the disk space information for easy reading
+      const formattedFilesystems = stats.diskStats.filesystems.map(fs => ({
+        ...fs,
+        sizeFormatted: formatBytes(fs.size),
+        usedFormatted: formatBytes(fs.used),
+        freeFormatted: formatBytes(fs.free),
+        usedPercentFormatted: `${fs.usedPercent}%`
+      }));
+      
+      res.json({
+        success: true,
+        data: {
+          overall: {
+            total: stats.diskStats.total,
+            used: stats.diskStats.used,
+            free: stats.diskStats.free,
+            usedPercent: stats.diskStats.usedPercent,
+            totalFormatted: formatBytes(stats.diskStats.total),
+            usedFormatted: formatBytes(stats.diskStats.used),
+            freeFormatted: formatBytes(stats.diskStats.free),
+            usedPercentFormatted: `${stats.diskStats.usedPercent}%`
+          },
+          filesystems: formattedFilesystems,
+          timestamp: stats.timestamp
+        }
+      });
+    } catch (error) {
+      log(`Error getting disk space info: ${error}`, 'disk-monitor');
+      res.status(500).json({ 
+        success: false, 
+        message: "Failed to retrieve disk space information", 
+        error: error instanceof Error ? error.message : String(error) 
       });
     }
   });

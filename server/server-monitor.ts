@@ -1,5 +1,6 @@
 import si from 'systeminformation';
 import * as os from 'os';
+import { log } from './vite';
 
 // Interface for server stats
 export interface ServerStats {
@@ -27,6 +28,20 @@ export interface ServerStats {
     rx_sec: number; // bytes received per second
     tx_sec: number; // bytes transmitted per second
     total_connections: number; // total active connections
+  };
+  diskStats: {
+    total: number; // bytes
+    used: number; // bytes
+    free: number; // bytes
+    usedPercent: number; // percentage
+    filesystems: Array<{
+      filesystem: string;
+      mount: string;
+      size: number; // bytes
+      used: number; // bytes
+      free: number; // bytes
+      usedPercent: number; // percentage
+    }>;
   };
   timestamp: Date;
   uptime: number; // seconds
@@ -59,7 +74,7 @@ export async function getServerStats(): Promise<ServerStats> {
     let cpuInfo;
     try {
       // Use the already imported os module
-      console.log("OS module CPU info:", JSON.stringify({
+      log("OS module CPU info: " + JSON.stringify({
         cpus: os.cpus(),
         cpuCount: os.cpus().length,
         arch: os.arch(),
@@ -67,7 +82,7 @@ export async function getServerStats(): Promise<ServerStats> {
         osType: os.type(),
         totalMemory: os.totalmem(),
         freeMemory: os.freemem()
-      }, null, 2));
+      }, null, 2), 'server-monitor');
       
       // If OS module provides CPU info, use it directly
       if (os.cpus() && os.cpus().length > 0) {
@@ -83,7 +98,7 @@ export async function getServerStats(): Promise<ServerStats> {
           physicalCores: Math.max(1, Math.floor(cpuCount / 2)) // Estimate physical cores
         };
         
-        console.log("Using OS module CPU info:", JSON.stringify(cpuInfo, null, 2));
+        log("Using OS module CPU info: " + JSON.stringify(cpuInfo, null, 2), 'server-monitor');
       } else {
         // Fallback to systeminformation if OS module doesn't help
         cpuInfo = await si.cpu();
@@ -114,6 +129,16 @@ export async function getServerStats(): Promise<ServerStats> {
     // Get network statistics
     const networkStats = await si.networkStats();
     const connections = await si.networkConnections();
+    
+    // Get disk space information
+    let fsInfo;
+    try {
+      fsInfo = await si.fsSize();
+      log("Disk space information: " + JSON.stringify(fsInfo, null, 2), 'server-monitor');
+    } catch (err) {
+      log(`Error getting disk space info: ${err}`, 'server-monitor');
+      fsInfo = [];
+    }
     
     // Get system uptime and load average
     const uptime = await si.time();
@@ -219,9 +244,9 @@ export async function getServerStats(): Promise<ServerStats> {
     let osInfo;
     try {
       osInfo = await si.osInfo();
-      console.log("OS information:", JSON.stringify(osInfo, null, 2));
+      log("OS information: " + JSON.stringify(osInfo, null, 2), 'server-monitor');
     } catch (err) {
-      console.error("Error getting OS info:", err);
+      log(`Error getting OS info: ${err}`, 'server-monitor');
       osInfo = {
         platform: os.platform() || 'linux',
         distro: 'Linux',
@@ -232,6 +257,22 @@ export async function getServerStats(): Promise<ServerStats> {
         hostname: os.hostname() || 'replit-server'
       };
     }
+    
+    // Process disk space stats
+    const filesystems = (fsInfo || []).map(fs => ({
+      filesystem: fs.fs,
+      mount: fs.mount,
+      size: fs.size,
+      used: fs.used,
+      free: fs.size - fs.used,
+      usedPercent: Math.round((fs.used / fs.size) * 100)
+    }));
+    
+    // Calculate total disk stats
+    const diskTotal = filesystems.reduce((sum, fs) => sum + fs.size, 0);
+    const diskUsed = filesystems.reduce((sum, fs) => sum + fs.used, 0);
+    const diskFree = diskTotal - diskUsed;
+    const diskUsedPercent = diskTotal > 0 ? Math.round((diskUsed / diskTotal) * 100) : 0;
     
     const stats: ServerStats = {
       cpuUsage: parseFloat(cpu.currentLoad.toFixed(2)),
@@ -253,6 +294,13 @@ export async function getServerStats(): Promise<ServerStats> {
         tx_sec: networkStats.reduce((sum, interface_) => sum + interface_.tx_sec, 0),
         total_connections: connections.length
       },
+      diskStats: {
+        total: diskTotal,
+        used: diskUsed,
+        free: diskFree,
+        usedPercent: diskUsedPercent,
+        filesystems: filesystems
+      },
       timestamp: new Date(),
       uptime: uptime.uptime,
       loadAverage: os.loadavg() || (loadavg.avgLoad ? [loadavg.avgLoad] : [cpu.currentLoad / 100, cpu.currentLoad / 100, cpu.currentLoad / 100]),
@@ -265,7 +313,7 @@ export async function getServerStats(): Promise<ServerStats> {
     
     return stats;
   } catch (error) {
-    console.error("Error fetching server stats:", error);
+    log(`Error fetching server stats: ${error}`, 'server-monitor');
     
     // Return default values if we can't get stats
     return {
@@ -293,6 +341,13 @@ export async function getServerStats(): Promise<ServerStats> {
         rx_sec: 0,
         tx_sec: 0,
         total_connections: 0
+      },
+      diskStats: {
+        total: 0,
+        used: 0,
+        free: 0,
+        usedPercent: 0,
+        filesystems: []
       },
       timestamp: new Date(),
       uptime: 0,
@@ -334,7 +389,7 @@ export function startStatsCollection(intervalMs = 60000): NodeJS.Timeout {
       const stats = await getServerStats();
       recordStatsToHistory(stats);
     } catch (error) {
-      console.error("Error collecting stats:", error);
+      log(`Error collecting stats: ${error}`, 'server-monitor');
     }
   }, intervalMs);
 }
