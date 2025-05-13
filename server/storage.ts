@@ -2261,9 +2261,31 @@ export class DatabaseStorage implements IStorage {
         
         console.log(`🔍 SYSTEM RESET: Looking for backup and temporary files to clean...`);
         
+        // Define protected directories that should never be cleaned
+        const PROTECTED_DIRS = [
+          '/var/www/versions/',    // Version control system backups
+          '.git/',                // Git version control
+          'node_modules/',        // Dependencies
+          'dist/'                 // Built files
+        ];
+        
         // Find and remove .bak, .backup, and .old files
         const { stdout } = await exec("find . -name '*.bak' -o -name '*.backup*' -o -name '*.old' | grep -v 'node_modules'");
-        const backupFiles = stdout.trim().split('\n').filter(Boolean);
+        const allBackupFiles = stdout.trim().split('\n').filter(Boolean);
+        
+        // Filter out files in protected directories
+        const backupFiles = allBackupFiles.filter(file => {
+          // Check if the file is in a protected directory
+          const isProtected = PROTECTED_DIRS.some(dir => file.includes(dir));
+          
+          if (isProtected) {
+            console.log(`🛡️ SYSTEM RESET: Skipping protected file: ${file}`);
+            return false;
+          }
+          return true;
+        });
+        
+        console.log(`🧹 SYSTEM RESET: Found ${backupFiles.length} backup files to clean (excluded ${allBackupFiles.length - backupFiles.length} protected files)`);
         
         for (const file of backupFiles) {
           try {
