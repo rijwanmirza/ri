@@ -2038,7 +2038,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
               
             case 'whatsapp':
               // WhatsApp redirection format
-              targetUrl = `https://l.wl.co/l?u=${encodedUrl}`;
+              targetUrl = `https://api.whatsapp.com/send?text=${encodedUrl}`;
               console.log(`🔀 Redirecting through WhatsApp: ${targetUrl}`);
               break;
               
@@ -2056,7 +2056,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
               
             case 'google_play':
               // Google Play redirection format
-              targetUrl = `https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=&url=${encodedUrl}`;
+              targetUrl = `https://play.google.com/store/apps/details?id=com.google.android.youtube&referrer=${encodedUrl}`;
               console.log(`🔀 Redirecting through Google Play: ${targetUrl}`);
               break;
               
@@ -2337,7 +2337,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
               
             case 'whatsapp':
               // WhatsApp redirection format
-              targetUrl = `https://l.wl.co/l?u=${encodedUrl}`;
+              targetUrl = `https://api.whatsapp.com/send?text=${encodedUrl}`;
               console.log(`🔀 Redirecting through WhatsApp: ${targetUrl}`);
               break;
               
@@ -2355,7 +2355,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
               
             case 'google_play':
               // Google Play redirection format
-              targetUrl = `https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=&url=${encodedUrl}`;
+              targetUrl = `https://play.google.com/store/apps/details?id=com.google.android.youtube&referrer=${encodedUrl}`;
               console.log(`🔀 Redirecting through Google Play: ${targetUrl}`);
               break;
               
@@ -2615,7 +2615,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
               
             case 'whatsapp':
               // WhatsApp redirection format
-              targetUrl = `https://l.wl.co/l?u=${encodedUrl}`;
+              targetUrl = `https://api.whatsapp.com/send?text=${encodedUrl}`;
               console.log(`🔀 Redirecting through WhatsApp: ${targetUrl}`);
               break;
               
@@ -2633,7 +2633,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
               
             case 'google_play':
               // Google Play redirection format
-              targetUrl = `https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=&url=${encodedUrl}`;
+              targetUrl = `https://play.google.com/store/apps/details?id=com.google.android.youtube&referrer=${encodedUrl}`;
               console.log(`🔀 Redirecting through Google Play: ${targetUrl}`);
               break;
               
