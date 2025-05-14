@@ -116,9 +116,10 @@ export function ChildTrafficstarCampaigns({
       console.log(`Debug: Processed payload:`, payload);
       
       try {
+        // Fixed method parameter to make sure it's a valid HTTP method
         const result = await apiRequest(
           `/api/campaigns/${campaignId}/child-trafficstar-campaigns`, 
-          'POST', 
+          "POST", 
           payload
         );
         console.log(`Debug: API response:`, result);
@@ -162,7 +163,7 @@ export function ChildTrafficstarCampaigns({
       console.log(`Debug: Deleting child campaign ID:`, childCampaignId);
       return apiRequest(
         `/api/child-trafficstar-campaigns/${childCampaignId}`, 
-        'DELETE'
+        "DELETE"
       );
     },
     onSuccess: () => {
