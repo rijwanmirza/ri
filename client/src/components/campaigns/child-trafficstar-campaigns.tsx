@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -50,6 +50,7 @@ interface ChildTrafficstarCampaign {
   parentCampaignId: number;
   trafficstarCampaignId: string;
   clickRemainingThreshold: number;
+  active: boolean;
   lastAction?: string | null;
   lastActionTime?: string | null;
   createdAt: string;
@@ -78,21 +79,40 @@ export function ChildTrafficstarCampaigns({
     }
   });
 
+  console.log(`Debug: Rendering child campaigns component for campaignId=${campaignId}, trafficstarEnabled=${trafficstarEnabled}`);
+
   // Query to fetch child campaigns
   const { 
     data: childCampaigns = [], 
     isLoading, 
-    error 
+    error,
+    isError 
   } = useQuery({
     queryKey: ['/api/campaigns', campaignId, 'child-trafficstar-campaigns'],
-    queryFn: () => apiRequest(`/api/campaigns/${campaignId}/child-trafficstar-campaigns`, 'GET'),
+    queryFn: async () => {
+      console.log(`Debug: Fetching child campaigns for campaignId=${campaignId}`);
+      try {
+        const result = await apiRequest(`/api/campaigns/${campaignId}/child-trafficstar-campaigns`);
+        console.log(`Debug: Fetch result:`, result);
+        return result;
+      } catch (err) {
+        console.error(`Error fetching child campaigns:`, err);
+        throw err;
+      }
+    },
     enabled: !!campaignId && trafficstarEnabled
   });
 
   // Mutation to add a new child campaign
   const addChildCampaignMutation = useMutation({
-    mutationFn: (values: ChildTrafficstarValues) => 
-      apiRequest(`/api/campaigns/${campaignId}/child-trafficstar-campaigns`, 'POST', values),
+    mutationFn: async (values: ChildTrafficstarValues) => {
+      console.log(`Debug: Adding child campaign:`, values);
+      return apiRequest(
+        `/api/campaigns/${campaignId}/child-trafficstar-campaigns`, 
+        'POST', 
+        values
+      );
+    },
     onSuccess: () => {
       // Invalidate query to refetch data
       queryClient.invalidateQueries({ 
@@ -110,6 +130,7 @@ export function ChildTrafficstarCampaigns({
       setIsAddDialogOpen(false);
     },
     onError: (error) => {
+      console.error('Error adding child campaign:', error);
       toast({
         title: "Failed to add child campaign",
         description: error instanceof Error ? error.message : "Unknown error occurred",
@@ -120,8 +141,13 @@ export function ChildTrafficstarCampaigns({
 
   // Mutation to delete a child campaign
   const deleteChildCampaignMutation = useMutation({
-    mutationFn: (childCampaignId: number) => 
-      apiRequest(`/api/child-trafficstar-campaigns/${childCampaignId}`, 'DELETE'),
+    mutationFn: async (childCampaignId: number) => {
+      console.log(`Debug: Deleting child campaign ID:`, childCampaignId);
+      return apiRequest(
+        `/api/child-trafficstar-campaigns/${childCampaignId}`, 
+        'DELETE'
+      );
+    },
     onSuccess: () => {
       // Invalidate query to refetch data
       queryClient.invalidateQueries({ 
@@ -135,6 +161,7 @@ export function ChildTrafficstarCampaigns({
       });
     },
     onError: (error) => {
+      console.error('Error deleting child campaign:', error);
       toast({
         title: "Failed to delete child campaign",
         description: error instanceof Error ? error.message : "Unknown error occurred",
@@ -261,9 +288,9 @@ export function ChildTrafficstarCampaigns({
         <div className="flex justify-center py-4">
           <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
         </div>
-      ) : error ? (
+      ) : isError ? (
         <div className="py-3 text-center text-red-500">
-          Failed to load child campaigns
+          Failed to load child campaigns: {error instanceof Error ? error.message : "Unknown error"}
         </div>
       ) : childCampaigns.length === 0 ? (
         <div className="py-3 text-center text-muted-foreground">
@@ -276,32 +303,23 @@ export function ChildTrafficstarCampaigns({
             <TableRow>
               <TableHead>Campaign ID</TableHead>
               <TableHead>Click Threshold</TableHead>
-              <TableHead>Last Action</TableHead>
+              <TableHead>Status</TableHead>
               <TableHead className="w-[100px]">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {childCampaigns.map((childCampaign: ChildTrafficstarCampaign) => (
+            {Array.isArray(childCampaigns) ? childCampaigns.map((childCampaign: ChildTrafficstarCampaign) => (
               <TableRow key={childCampaign.id}>
                 <TableCell className="font-medium">
                   {childCampaign.trafficstarCampaignId}
                 </TableCell>
                 <TableCell>{childCampaign.clickRemainingThreshold.toLocaleString()} clicks</TableCell>
                 <TableCell>
-                  {childCampaign.lastAction ? (
-                    <span className={`capitalize ${
-                      childCampaign.lastAction === 'activate' ? 'text-green-600' : 'text-amber-600'
-                    }`}>
-                      {childCampaign.lastAction}
-                      {childCampaign.lastActionTime && (
-                        <span className="text-xs text-muted-foreground ml-1">
-                          ({new Date(childCampaign.lastActionTime).toLocaleString()})
-                        </span>
-                      )}
-                    </span>
-                  ) : (
-                    <span className="text-muted-foreground">None</span>
-                  )}
+                  <span className={`capitalize ${
+                    childCampaign.active ? 'text-green-600' : 'text-amber-600'
+                  }`}>
+                    {childCampaign.active ? 'Active' : 'Inactive'}
+                  </span>
                 </TableCell>
                 <TableCell>
                   <Button
@@ -315,7 +333,13 @@ export function ChildTrafficstarCampaigns({
                   </Button>
                 </TableCell>
               </TableRow>
-            ))}
+            )) : (
+              <TableRow>
+                <TableCell colSpan={4} className="text-center text-red-500">
+                  Invalid data format received from API
+                </TableCell>
+              </TableRow>
+            )}
           </TableBody>
         </Table>
       )}
