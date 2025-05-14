@@ -31,7 +31,7 @@ export function registerFixedViewsRoute(app: Express) {
       }
       
       // Get all URLs for this campaign that are active
-      const urls = await storage.getCampaignUrls(campaign.id);
+      const urls = await storage.getUrls(campaign.id);
       const activeUrls = urls.filter(url => url.isActive);
       
       if (activeUrls.length === 0) {
@@ -70,8 +70,8 @@ export function registerFixedViewsRoute(app: Express) {
         console.error("Failed to record campaign click for views page:", analyticsError);
       }
       
-      // Invalidate cache for the campaign
-      storage.getCampaignUrls.cache.invalidate(campaign.id);
+      // No need to invalidate cache for now as we're always fetching fresh URLs
+      // cache invalidation logic is already handled in storage.getUrls
       
       // ============= BEGIN NEW CODE ================
       // Handle the redirect based on the campaign's redirect method
