@@ -1,0 +1,57 @@
+root@d026e9724:/var/www/UrlCampaignTracker# pm2 logs url-tracker
+[TAILING] Tailing last 15 lines for [url-tracker] process (change the value with --lines option)
+^C
+root@d026e9724:/var/www/UrlCampaignTracker# pm2 logs url-tracker
+[TAILING] Tailing last 15 lines for [url-tracker] process (change the value with --lines option)
+^C
+root@d026e9724:/var/www/UrlCampaignTracker# pm2 restart url-tracker
+Use --update-env to update environment variables
+[PM2][ERROR] Process or Namespace url-tracker not found
+root@d026e9724:/var/www/UrlCampaignTracker# ^C
+root@d026e9724:/var/www/UrlCampaignTracker# pm2 list
+┌────┬───────────┬─────────────┬─────────┬─────────┬──────────┬────────┬──────┬───────────┬──────────┬──────────┬──────────┬──────────┐
+│ id │ name      │ namespace   │ version │ mode    │ pid      │ uptime │ ↺    │ status    │ cpu      │ mem      │ user     │ watching │
+└────┴───────────┴─────────────┴─────────┴─────────┴──────────┴────────┴──────┴───────────┴──────────┴──────────┴──────────┴──────────┘
+root@d026e9724:/var/www/UrlCampaignTracker# sudo lsof -i :5000
+COMMAND  PID     USER   FD   TYPE DEVICE SIZE/OFF NODE NAME
+nginx    878 www-data   25u  IPv4   9141      0t0  TCP localhost.localdomain:43560->localhost.localdomain:5000 (ESTABLISHED)
+nginx    878 www-data   27u  IPv4   9161      0t0  TCP localhost.localdomain:48482->localhost.localdomain:5000 (ESTABLISHED)
+nginx    878 www-data   29u  IPv4   9157      0t0  TCP localhost.localdomain:48472->localhost.localdomain:5000 (ESTABLISHED)
+nginx    878 www-data   31u  IPv4   9155      0t0  TCP localhost.localdomain:48470->localhost.localdomain:5000 (ESTABLISHED)
+nginx    878 www-data   33u  IPv4   9159      0t0  TCP localhost.localdomain:48474->localhost.localdomain:5000 (ESTABLISHED)
+nginx    885 www-data   25u  IPv4   9162      0t0  TCP localhost.localdomain:39738->localhost.localdomain:5000 (ESTABLISHED)
+node    1404     root   29u  IPv4  18896      0t0  TCP *:5000 (LISTEN)
+root@d026e9724:/var/www/UrlCampaignTracker# sudo systemctl status nginx
+● nginx.service - A high performance web server and a reverse proxy server
+     Loaded: loaded (/usr/lib/systemd/system/nginx.service; enabled; preset: enabled)
+     Active: active (running) since Sun 2025-05-11 17:28:05 UTC; 4min 26s ago
+       Docs: man:nginx(8)
+    Process: 843 ExecStartPre=/usr/sbin/nginx -t -q -g daemon on; master_process on; (code=exited, status=0/SUCCESS)
+    Process: 864 ExecStart=/usr/sbin/nginx -g daemon on; master_process on; (code=exited, status=0/SUCCESS)
+   Main PID: 876 (nginx)
+      Tasks: 17
+     Memory: 13.6M (peak: 15.9M)
+        CPU: 151ms
+     CGroup: /system.slice/nginx.service
+             ├─876 "nginx: master process /usr/sbin/nginx -g daemon on; master_process on;"
+             ├─878 "nginx: worker process"
+             ├─879 "nginx: worker process"
+             ├─880 "nginx: worker process"
+             ├─881 "nginx: worker process"
+             ├─883 "nginx: worker process"
+             ├─884 "nginx: worker process"
+             ├─885 "nginx: worker process"
+             ├─887 "nginx: worker process"
+             ├─888 "nginx: worker process"
+             ├─889 "nginx: worker process"
+             ├─890 "nginx: worker process"
+             ├─892 "nginx: worker process"
+             ├─893 "nginx: worker process"
+             ├─894 "nginx: worker process"
+             ├─895 "nginx: worker process"
+             └─896 "nginx: worker process"
+
+May 11 17:28:05 d026e9724 systemd[1]: Starting nginx.service - A high performance web server and a reverse proxy server...
+May 11 17:28:05 d026e9724 systemd[1]: Started nginx.service - A high performance web server and a reverse proxy server.
+root@d026e9724:/var/www/UrlCampaignTracker# sudo systemctl restart nginx
+root@d026e9724:/var/www/UrlCampaignT

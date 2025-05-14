@@ -1,0 +1,84 @@
+root@d026e9724:/var/www/UrlCampaignTracker# pm2 list
+┌────┬────────────────┬─────────────┬─────────┬─────────┬──────────┬────────┬──────┬───────────┬──────────┬──────────┬──────────┬──────────┐
+│ id │ name           │ namespace   │ version │ mode    │ pid      │ uptime │ ↺    │ status    │ cpu      │ mem      │ user     │ watching │
+├────┼────────────────┼─────────────┼─────────┼─────────┼──────────┼────────┼──────┼───────────┼──────────┼──────────┼──────────┼──────────┤
+│ 0  │ url-tracker    │ default     │ 1.0.0   │ fork    │ 192413   │ 5m     │ 89   │ online    │ 0%       │ 3.7mb    │ root     │ disabled │
+└────┴────────────────┴─────────────┴─────────┴─────────┴──────────┴────────┴──────┴───────────┴──────────┴──────────┴──────────┴──────────┘
+root@d026e9724:/var/www/UrlCampaignTracker# pm2 stop url-tracker
+[PM2] Applying action stopProcessId on app [url-tracker](ids: [ 0 ])
+[PM2] [url-tracker](0) ✓
+┌────┬────────────────┬─────────────┬─────────┬─────────┬──────────┬────────┬──────┬───────────┬──────────┬──────────┬──────────┬──────────┐
+│ id │ name           │ namespace   │ version │ mode    │ pid      │ uptime │ ↺    │ status    │ cpu      │ mem      │ user     │ watching │
+├────┼────────────────┼─────────────┼─────────┼─────────┼──────────┼────────┼──────┼───────────┼──────────┼──────────┼──────────┼──────────┤
+│ 0  │ url-tracker    │ default     │ 1.0.0   │ fork    │ 0        │ 0      │ 89   │ stopped   │ 0%       │ 0b       │ root     │ disabled │
+└────┴────────────────┴─────────────┴─────────┴─────────┴──────────┴────────┴──────┴───────────┴──────────┴──────────┴──────────┴──────────┘
+root@d026e9724:/var/www/UrlCampaignTracker# kill -9 [PID]  # Replace [PID] with process ID you found in step 1kill -9 [PID]  # Replace [PID] with process ID you found in step 1^C
+root@d026e9724:/var/www/UrlCampaignTracker# cd /var/www/UrlCampaignTracker
+./start.sh
+Building the client...
+
+> rest-express@1.0.0 build
+> vite build && esbuild server/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist
+
+vite v5.4.19 building for production...
+transforming (3) src/main.tsxBrowserslist: browsers data (caniuse-lite) is 7 months old. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+✓ 3484 modules transformed.
+../dist/public/index.html                     2.02 kB │ gzip:   0.86 kB
+../dist/public/assets/index-E7MJdXL_.css     67.72 kB │ gzip:  11.77 kB
+../dist/public/assets/index-fwr4b3An.js   1,349.64 kB │ gzip: 372.83 kB
+
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+✓ built in 4.38s
+
+  dist/index.js  638.7kb
+
+⚡ Done in 38ms
+Copying dist to server/public...
+Starting URL Campaign Tracker...
+URL Budget Manager initialized
+TrafficStar API Service initialized
+[youtube-api] INFO: YouTube API Service initialized
+🔍 DEBUG: Loaded saved config with autoDeleteMinutes: 2
+🔍 DEBUG: Gmail reader initialized with autoDeleteMinutes: 2
+5:10:37 PM [gmail-reader] Loaded 0 previously processed email IDs
+TrafficStar Reports API test routes registered
+Server monitoring initialized - collecting stats every minute
+5:10:37 PM [express] serving on port 5000
+🔄 Running fix for missing URL click logs...
+✅ Database connected successfully: 2025-05-11 17:10:37.847267+00
+5:10:37 PM [key-manager] API key manager initialized
+5:10:37 PM [express] API key manager initialized successfully
+5:10:37 PM [access] Access code updated to: c
+5:10:37 PM [access-code-manager] Access code manager initialized with code from database
+5:10:37 PM [express] Access code manager initialized successfully
+🔍 Cache miss - fetching fresh URLs for campaign ID: 1
+⚠️ Falling back to base columns for campaigns query as schema migration is pending
+❌ Error during auto-fix for URL click logs: error: column "pending_budget_update" does not exist
+    at /var/www/UrlCampaignTracker/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async <anonymous> (/var/www/UrlCampaignTracker/node_modules/src/node-postgres/session.ts:64:19)
+    at async fixMissingUrlClickLogs (/var/www/UrlCampaignTracker/server/fix-url-click-logs.ts:19:26) {
+  length: 122,
+  severity: 'ERROR',
+  code: '42703',
+  detail: undefined,
+  hint: undefined,
+  position: '110',
+  internalPosition: undefined,
+  internalQuery: undefined,
+  where: undefined,
+  schema: undefined,
+  table: undefined,
+  column: undefined,
+  dataType: undefined,
+  constraint: undefined,
+  file: 'parse_relation.c',
+  line: '3722',
+  routine: 'errorMissingColumn'
+}
+🔍 Cache miss - fetching fresh URLs for campaign ID: 1

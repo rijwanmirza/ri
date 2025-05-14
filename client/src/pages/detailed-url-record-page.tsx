@@ -22,7 +22,6 @@ import {
 } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { Loader2, Calendar as CalendarIcon, ChevronLeft, ExternalLink, Clock } from "lucide-react";
-import { RedirectMethodStats } from "@/components/analytics/redirect-method-stats";
 import {
   Bar,
   BarChart,
@@ -290,11 +289,6 @@ export default function DetailedUrlRecordPage() {
           </div>
         </CardContent>
       </Card>
-      
-      {/* Redirect Method Analytics */}
-      <div className="mb-6">
-        <RedirectMethodStats urlId={id} />
-      </div>
       
       {/* Filter Card */}
       <Card className="mb-6">
