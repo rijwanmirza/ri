@@ -40,7 +40,7 @@ import {
 // Form validation schema for adding a child TrafficStar campaign
 const childTrafficstarSchema = z.object({
   trafficstarCampaignId: z.string().min(1, "Campaign ID is required"),
-  clickThreshold: z.coerce.number().min(1, "Threshold must be at least 1 click")
+  clickRemainingThreshold: z.coerce.number().min(1, "Threshold must be at least 1 click")
 });
 
 type ChildTrafficstarValues = z.infer<typeof childTrafficstarSchema>;
@@ -49,7 +49,7 @@ interface ChildTrafficstarCampaign {
   id: number;
   parentCampaignId: number;
   trafficstarCampaignId: string;
-  clickThreshold: number;
+  clickRemainingThreshold: number;
   lastAction?: string | null;
   lastActionTime?: string | null;
   createdAt: string;
@@ -74,7 +74,7 @@ export function ChildTrafficstarCampaigns({
     resolver: zodResolver(childTrafficstarSchema),
     defaultValues: {
       trafficstarCampaignId: "",
-      clickThreshold: 1000
+      clickRemainingThreshold: 1000
     }
   });
 
@@ -212,7 +212,7 @@ export function ChildTrafficstarCampaigns({
                 
                 <FormField
                   control={form.control}
-                  name="clickThreshold"
+                  name="clickRemainingThreshold"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Click Threshold</FormLabel>
@@ -286,7 +286,7 @@ export function ChildTrafficstarCampaigns({
                 <TableCell className="font-medium">
                   {childCampaign.trafficstarCampaignId}
                 </TableCell>
-                <TableCell>{childCampaign.clickThreshold.toLocaleString()} clicks</TableCell>
+                <TableCell>{childCampaign.clickRemainingThreshold.toLocaleString()} clicks</TableCell>
                 <TableCell>
                   {childCampaign.lastAction ? (
                     <span className={`capitalize ${

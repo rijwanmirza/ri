@@ -845,10 +845,10 @@ function startMinutelyPauseStatusCheck(campaignId: number, trafficstarCampaignId
  */
 async function handleChildTrafficstarCampaigns(parentCampaignId: number, remainingClicks: number) {
   try {
-    // Get all child campaigns for this parent campaign, ordered by click threshold (ascending)
+    // Get all child campaigns for this parent campaign, ordered by click remaining threshold (ascending)
     const childCampaigns = await db.select().from(childTrafficstarCampaigns)
       .where(eq(childTrafficstarCampaigns.parentCampaignId, parentCampaignId))
-      .orderBy(asc(childTrafficstarCampaigns.clickThreshold));
+      .orderBy(asc(childTrafficstarCampaigns.clickRemainingThreshold));
     
     if (childCampaigns.length === 0) {
       // No child campaigns configured, nothing to do
@@ -867,15 +867,15 @@ async function handleChildTrafficstarCampaigns(parentCampaignId: number, remaini
       
       // Get the current status of the child TrafficStar campaign
       const currentStatus = await getTrafficStarCampaignStatus(childCampaign.trafficstarCampaignId);
-      console.log(`🔍 Child campaign ${childCampaign.id} (TrafficStar ID: ${childCampaign.trafficstarCampaignId}) status: ${currentStatus}, threshold: ${childCampaign.clickThreshold}, remaining clicks: ${remainingClicks}`);
+      console.log(`🔍 Child campaign ${childCampaign.id} (TrafficStar ID: ${childCampaign.trafficstarCampaignId}) status: ${currentStatus}, threshold: ${childCampaign.clickRemainingThreshold}, remaining clicks: ${remainingClicks}`);
       
       // Handle the child campaign based on its threshold and the parent's remaining clicks
-      if (remainingClicks >= childCampaign.clickThreshold) {
+      if (remainingClicks >= childCampaign.clickRemainingThreshold) {
         // The parent campaign has enough remaining clicks to meet the threshold
         
         // Start the child campaign if it's not already active
         if (!statusMatches(currentStatus, 'active')) {
-          console.log(`▶️ Activating child campaign ${childCampaign.id} (TrafficStar ID: ${childCampaign.trafficstarCampaignId}) - parent campaign has ${remainingClicks} remaining clicks, which meets the threshold of ${childCampaign.clickThreshold}`);
+          console.log(`▶️ Activating child campaign ${childCampaign.id} (TrafficStar ID: ${childCampaign.trafficstarCampaignId}) - parent campaign has ${remainingClicks} remaining clicks, which meets the threshold of ${childCampaign.clickRemainingThreshold}`);
           
           try {
             // Set an end time for today at 23:59 UTC
@@ -915,7 +915,7 @@ async function handleChildTrafficstarCampaigns(parentCampaignId: number, remaini
         
         // Pause the child campaign if it's currently active
         if (statusMatches(currentStatus, 'active')) {
-          console.log(`⏸️ Pausing child campaign ${childCampaign.id} (TrafficStar ID: ${childCampaign.trafficstarCampaignId}) - parent campaign has ${remainingClicks} remaining clicks, which is below the threshold of ${childCampaign.clickThreshold}`);
+          console.log(`⏸️ Pausing child campaign ${childCampaign.id} (TrafficStar ID: ${childCampaign.trafficstarCampaignId}) - parent campaign has ${remainingClicks} remaining clicks, which is below the threshold of ${childCampaign.clickRemainingThreshold}`);
           
           try {
             // Pause the campaign
