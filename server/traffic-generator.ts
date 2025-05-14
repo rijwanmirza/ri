@@ -8,8 +8,8 @@
 
 import { trafficStarService } from './trafficstar-service';
 import { db } from './db';
-import { campaigns, urls, type Campaign, type Url } from '../shared/schema';
-import { eq, and, sql } from 'drizzle-orm';
+import { campaigns, urls, childTrafficstarCampaigns, type Campaign, type Url, type ChildTrafficstarCampaign } from '../shared/schema';
+import { eq, and, sql, lte, gte, asc } from 'drizzle-orm';
 import { getSpentValueForDate } from './spent-value';
 import axios from 'axios';
 
@@ -180,6 +180,9 @@ export async function handleCampaignBySpentValue(campaignId: number, trafficstar
         }
         
         console.log(`📊 Campaign ${trafficstarCampaignId} has ${totalRemainingClicks} total remaining clicks across all active URLs`);
+        
+        // Handle child TrafficStar campaigns based on remaining clicks
+        await handleChildTrafficstarCampaigns(campaignId, totalRemainingClicks);
         
         // Get real-time campaign status
         const currentStatus = await getTrafficStarCampaignStatus(trafficstarCampaignId);
@@ -833,6 +836,117 @@ function startMinutelyPauseStatusCheck(campaignId: number, trafficstarCampaignId
   
   // Store the interval so we can clear it later if needed
   pauseStatusChecks.set(campaignId, interval);
+}
+
+/**
+ * Handle child TrafficStar campaigns based on the parent campaign's remaining clicks
+ * @param parentCampaignId The parent campaign ID in our system
+ * @param remainingClicks The total remaining clicks in the parent campaign
+ */
+async function handleChildTrafficstarCampaigns(parentCampaignId: number, remainingClicks: number) {
+  try {
+    // Get all child campaigns for this parent campaign, ordered by click threshold (ascending)
+    const childCampaigns = await db.select().from(childTrafficstarCampaigns)
+      .where(eq(childTrafficstarCampaigns.parentCampaignId, parentCampaignId))
+      .orderBy(asc(childTrafficstarCampaigns.clickThreshold));
+    
+    if (childCampaigns.length === 0) {
+      // No child campaigns configured, nothing to do
+      return;
+    }
+    
+    console.log(`🔄 Found ${childCampaigns.length} child TrafficStar campaigns for parent campaign ${parentCampaignId}`);
+    
+    // Process each child campaign
+    for (const childCampaign of childCampaigns) {
+      // Check if the TrafficStar campaign ID is valid
+      if (!childCampaign.trafficstarCampaignId) {
+        console.log(`⚠️ Child campaign ${childCampaign.id} has no TrafficStar campaign ID - skipping`);
+        continue;
+      }
+      
+      // Get the current status of the child TrafficStar campaign
+      const currentStatus = await getTrafficStarCampaignStatus(childCampaign.trafficstarCampaignId);
+      console.log(`🔍 Child campaign ${childCampaign.id} (TrafficStar ID: ${childCampaign.trafficstarCampaignId}) status: ${currentStatus}, threshold: ${childCampaign.clickThreshold}, remaining clicks: ${remainingClicks}`);
+      
+      // Handle the child campaign based on its threshold and the parent's remaining clicks
+      if (remainingClicks >= childCampaign.clickThreshold) {
+        // The parent campaign has enough remaining clicks to meet the threshold
+        
+        // Start the child campaign if it's not already active
+        if (!statusMatches(currentStatus, 'active')) {
+          console.log(`▶️ Activating child campaign ${childCampaign.id} (TrafficStar ID: ${childCampaign.trafficstarCampaignId}) - parent campaign has ${remainingClicks} remaining clicks, which meets the threshold of ${childCampaign.clickThreshold}`);
+          
+          try {
+            // Set an end time for today at 23:59 UTC
+            const today = new Date();
+            const todayStr = today.toISOString().split('T')[0]; // YYYY-MM-DD
+            const endTimeStr = `${todayStr} 23:59:00`;
+            
+            // First set the end time, then activate
+            await trafficStarService.updateCampaignEndTime(Number(childCampaign.trafficstarCampaignId), endTimeStr);
+            
+            // Activate the campaign
+            const success = await trafficStarService.activateCampaign(Number(childCampaign.trafficstarCampaignId));
+            
+            if (success) {
+              console.log(`✅ Successfully activated child campaign ${childCampaign.id} (TrafficStar ID: ${childCampaign.trafficstarCampaignId})`);
+              
+              // Update the last action timestamp
+              await db.update(childTrafficstarCampaigns)
+                .set({
+                  lastAction: 'activate',
+                  lastActionTime: new Date(),
+                  updatedAt: new Date()
+                })
+                .where(eq(childTrafficstarCampaigns.id, childCampaign.id));
+            } else {
+              console.error(`⚠️ Failed to activate child campaign ${childCampaign.id} (TrafficStar ID: ${childCampaign.trafficstarCampaignId})`);
+            }
+          } catch (error) {
+            console.error(`Error activating child campaign ${childCampaign.id}:`, error);
+          }
+        } else {
+          // Child campaign is already active - nothing to do
+          console.log(`✅ Child campaign ${childCampaign.id} (TrafficStar ID: ${childCampaign.trafficstarCampaignId}) is already active and threshold is met - no action needed`);
+        }
+      } else {
+        // The parent campaign does not have enough remaining clicks to meet the threshold
+        
+        // Pause the child campaign if it's currently active
+        if (statusMatches(currentStatus, 'active')) {
+          console.log(`⏸️ Pausing child campaign ${childCampaign.id} (TrafficStar ID: ${childCampaign.trafficstarCampaignId}) - parent campaign has ${remainingClicks} remaining clicks, which is below the threshold of ${childCampaign.clickThreshold}`);
+          
+          try {
+            // Pause the campaign
+            const success = await pauseTrafficStarCampaign(childCampaign.trafficstarCampaignId);
+            
+            if (success) {
+              console.log(`✅ Successfully paused child campaign ${childCampaign.id} (TrafficStar ID: ${childCampaign.trafficstarCampaignId})`);
+              
+              // Update the last action timestamp
+              await db.update(childTrafficstarCampaigns)
+                .set({
+                  lastAction: 'pause',
+                  lastActionTime: new Date(),
+                  updatedAt: new Date()
+                })
+                .where(eq(childTrafficstarCampaigns.id, childCampaign.id));
+            } else {
+              console.error(`⚠️ Failed to pause child campaign ${childCampaign.id} (TrafficStar ID: ${childCampaign.trafficstarCampaignId})`);
+            }
+          } catch (error) {
+            console.error(`Error pausing child campaign ${childCampaign.id}:`, error);
+          }
+        } else {
+          // Child campaign is already paused - nothing to do
+          console.log(`✅ Child campaign ${childCampaign.id} (TrafficStar ID: ${childCampaign.trafficstarCampaignId}) is already paused and threshold is not met - no action needed`);
+        }
+      }
+    }
+  } catch (error) {
+    console.error(`Error handling child TrafficStar campaigns for parent campaign ${parentCampaignId}:`, error);
+  }
 }
 
 /**

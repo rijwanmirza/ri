@@ -40,6 +40,10 @@ import {
   insertYoutubeUrlRecordSchema,
   insertBlacklistedUrlSchema,
   updateBlacklistedUrlSchema,
+  // Child TrafficStar campaign schemas
+  insertChildTrafficstarCampaignSchema,
+  updateChildTrafficstarCampaignSchema,
+  childTrafficstarCampaigns,
   trafficstarCampaigns,
   campaigns,
   urls,
@@ -6417,6 +6421,123 @@ export async function registerRoutes(app: Express): Promise<Server> {
         message: "Failed to check YouTube URLs", 
         error: error instanceof Error ? error.message : String(error) 
       });
+    }
+  });
+  
+  // Child TrafficStar Campaign Routes
+  
+  // Get all child TrafficStar campaigns for a parent campaign
+  app.get("/api/campaigns/:id/child-trafficstar-campaigns", requireAuth, async (req: Request, res: Response) => {
+    try {
+      const campaignId = parseInt(req.params.id);
+      if (isNaN(campaignId)) {
+        return res.status(400).json({ message: "Invalid campaign ID" });
+      }
+      
+      // Get the campaign
+      const campaign = await storage.getCampaign(campaignId);
+      if (!campaign) {
+        return res.status(404).json({ message: "Campaign not found" });
+      }
+      
+      // Get child campaigns
+      const childCampaigns = await storage.getChildTrafficstarCampaigns(campaignId);
+      
+      return res.json(childCampaigns);
+    } catch (error) {
+      console.error('Error fetching child TrafficStar campaigns:', error);
+      return res.status(500).json({ message: "Failed to fetch child TrafficStar campaigns" });
+    }
+  });
+  
+  // Add a child TrafficStar campaign
+  app.post("/api/campaigns/:id/child-trafficstar-campaigns", requireAuth, async (req: Request, res: Response) => {
+    try {
+      const campaignId = parseInt(req.params.id);
+      if (isNaN(campaignId)) {
+        return res.status(400).json({ message: "Invalid campaign ID" });
+      }
+      
+      // Get the campaign
+      const campaign = await storage.getCampaign(campaignId);
+      if (!campaign) {
+        return res.status(404).json({ message: "Campaign not found" });
+      }
+      
+      // Validate request body
+      const validatedData = insertChildTrafficstarCampaignSchema.parse({
+        ...req.body,
+        parentCampaignId: campaignId
+      });
+      
+      // Insert child campaign
+      const childCampaign = await storage.createChildTrafficstarCampaign(validatedData);
+      
+      return res.status(201).json(childCampaign);
+    } catch (error) {
+      if (error instanceof ZodError) {
+        const validationError = fromZodError(error);
+        return res.status(400).json({ message: validationError.message });
+      }
+      console.error('Error creating child TrafficStar campaign:', error);
+      return res.status(500).json({ message: "Failed to create child TrafficStar campaign" });
+    }
+  });
+  
+  // Update a child TrafficStar campaign
+  app.patch("/api/child-trafficstar-campaigns/:id", requireAuth, async (req: Request, res: Response) => {
+    try {
+      const childCampaignId = parseInt(req.params.id);
+      if (isNaN(childCampaignId)) {
+        return res.status(400).json({ message: "Invalid child campaign ID" });
+      }
+      
+      // Check if child campaign exists
+      const existingChild = await storage.getChildTrafficstarCampaign(childCampaignId);
+      
+      if (!existingChild) {
+        return res.status(404).json({ message: "Child TrafficStar campaign not found" });
+      }
+      
+      // Validate request body
+      const validatedData = updateChildTrafficstarCampaignSchema.parse(req.body);
+      
+      // Update child campaign
+      const updatedChild = await storage.updateChildTrafficstarCampaign(childCampaignId, validatedData);
+      
+      return res.json(updatedChild);
+    } catch (error) {
+      if (error instanceof ZodError) {
+        const validationError = fromZodError(error);
+        return res.status(400).json({ message: validationError.message });
+      }
+      console.error('Error updating child TrafficStar campaign:', error);
+      return res.status(500).json({ message: "Failed to update child TrafficStar campaign" });
+    }
+  });
+  
+  // Delete a child TrafficStar campaign
+  app.delete("/api/child-trafficstar-campaigns/:id", requireAuth, async (req: Request, res: Response) => {
+    try {
+      const childCampaignId = parseInt(req.params.id);
+      if (isNaN(childCampaignId)) {
+        return res.status(400).json({ message: "Invalid child campaign ID" });
+      }
+      
+      // Check if child campaign exists
+      const existingChild = await storage.getChildTrafficstarCampaign(childCampaignId);
+      
+      if (!existingChild) {
+        return res.status(404).json({ message: "Child TrafficStar campaign not found" });
+      }
+      
+      // Delete child campaign
+      await storage.deleteChildTrafficstarCampaign(childCampaignId);
+      
+      return res.json({ message: "Child TrafficStar campaign deleted successfully" });
+    } catch (error) {
+      console.error('Error deleting child TrafficStar campaign:', error);
+      return res.status(500).json({ message: "Failed to delete child TrafficStar campaign" });
     }
   });
   
