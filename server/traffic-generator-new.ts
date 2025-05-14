@@ -192,9 +192,44 @@ export async function getTrafficStarCampaignSpentValue(campaignId: number, traff
 export async function handleCampaignBySpentValue(campaignId: number, trafficstarCampaignId: string, spentValue: number) {
   const THRESHOLD = 10.0; // $10 threshold for different handling
   
-  // Get campaign settings to get custom threshold values
+  // Get campaign settings to get custom threshold values and current state
   const campaignResult = await db.select().from(campaigns).where(eq(campaigns.id, campaignId)).limit(1);
   const campaignSettings = campaignResult[0];
+  
+  // Store current campaign status for state transition checks
+  const currentCampaignStatus = campaignSettings?.lastTrafficSenderStatus || 'unknown';
+  
+  // Always get the real spent value each time this function is called - don't rely on cached values
+  if (spentValue >= THRESHOLD) {
+    console.log(`Campaign ${campaignId} has spent $${spentValue.toFixed(4)} which is ≥ $${THRESHOLD.toFixed(2)} (HIGH SPEND threshold)`);
+    
+    // If we're transitioning from low spend to high spend, ensure we go through the proper states
+    if (currentCampaignStatus === 'low_spend' || 
+        currentCampaignStatus === 'auto_reactivated_low_spend' || 
+        currentCampaignStatus === 'auto_paused_low_clicks') {
+      console.log(`Campaign ${campaignId} is transitioning from ${currentCampaignStatus} to high spend state - forcing proper state transition`);
+    }
+  } else {
+    console.log(`Campaign ${campaignId} has spent $${spentValue.toFixed(4)} which is < $${THRESHOLD.toFixed(2)} (LOW SPEND threshold)`);
+    
+    // If we're transitioning from high spend to low spend, ensure we clear any high spend state
+    if (currentCampaignStatus === 'high_spend' || 
+        currentCampaignStatus === 'high_spend_waiting' || 
+        currentCampaignStatus === 'high_spend_budget_updated') {
+      console.log(`Campaign ${campaignId} is transitioning from ${currentCampaignStatus} to low spend state - forcing proper state transition`);
+      
+      // Force update to low_spend state to reset the process
+      await db.update(campaigns)
+        .set({
+          lastTrafficSenderStatus: 'low_spend',
+          lastTrafficSenderAction: new Date(),
+          updatedAt: new Date()
+        })
+        .where(eq(campaigns.id, campaignId));
+        
+      console.log(`✅ Reset campaign ${campaignId} state from ${currentCampaignStatus} to 'low_spend' due to spent value change`);
+    }
+  }
   
   // Determine whether to use LOW SPEND or HIGH SPEND thresholds based on current spent value
   let MINIMUM_CLICKS_THRESHOLD, REMAINING_CLICKS_THRESHOLD;
