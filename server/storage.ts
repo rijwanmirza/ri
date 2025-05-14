@@ -3481,7 +3481,7 @@ export class DatabaseStorage implements IStorage {
     try {
       const childCampaigns = await db.select().from(childTrafficstarCampaigns)
         .where(eq(childTrafficstarCampaigns.parentCampaignId, parentCampaignId))
-        .orderBy(asc(childTrafficstarCampaigns.clickThreshold));
+        .orderBy(asc(childTrafficstarCampaigns.clickRemainingThreshold));
       
       return childCampaigns;
     } catch (error) {
