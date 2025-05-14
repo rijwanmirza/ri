@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import { Campaign, CampaignPath } from "@shared/schema";
-import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -45,10 +44,31 @@ export function CampaignPaths({ campaign }: CampaignPathsProps) {
   // Add path mutation
   const addPathMutation = useMutation({
     mutationFn: async (path: string) => {
-      return await apiRequest<CampaignPath>(`/api/campaigns/${campaign.id}/paths`, {
+      // Getting the API key from cookies
+      const cookies = document.cookie.split(';').reduce((acc, cookie) => {
+        const [name, value] = cookie.trim().split('=');
+        acc[name] = decodeURIComponent(value);
+        return acc;
+      }, {} as Record<string, string>);
+      
+      const apiKey = cookies.apiKey;
+
+      const response = await fetch(`/api/campaigns/${campaign.id}/paths`, {
         method: "POST",
-        data: { path }
+        headers: {
+          "Content-Type": "application/json",
+          "X-API-Key": apiKey || ""
+        },
+        body: JSON.stringify({ path }),
+        credentials: "include"
       });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to add custom path");
+      }
+
+      return await response.json();
     },
     onSuccess: () => {
       toast({
@@ -62,7 +82,7 @@ export function CampaignPaths({ campaign }: CampaignPathsProps) {
     onError: (error: any) => {
       toast({
         title: "Error adding path",
-        description: error.response?.data?.message || "Failed to add custom path",
+        description: error.message || "Failed to add custom path",
         variant: "destructive"
       });
     }
@@ -71,9 +91,29 @@ export function CampaignPaths({ campaign }: CampaignPathsProps) {
   // Delete path mutation
   const deletePathMutation = useMutation({
     mutationFn: async (pathId: number) => {
-      return await apiRequest<{ message: string }>(`/api/campaign-paths/${pathId}`, {
-        method: "DELETE"
+      // Getting the API key from cookies
+      const cookies = document.cookie.split(';').reduce((acc, cookie) => {
+        const [name, value] = cookie.trim().split('=');
+        acc[name] = decodeURIComponent(value);
+        return acc;
+      }, {} as Record<string, string>);
+      
+      const apiKey = cookies.apiKey;
+
+      const response = await fetch(`/api/campaign-paths/${pathId}`, {
+        method: "DELETE",
+        headers: {
+          "X-API-Key": apiKey || ""
+        },
+        credentials: "include"
       });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || "Failed to delete custom path");
+      }
+
+      return { message: "Path deleted successfully" };
     },
     onSuccess: () => {
       toast({
@@ -85,7 +125,7 @@ export function CampaignPaths({ campaign }: CampaignPathsProps) {
     onError: (error: any) => {
       toast({
         title: "Error deleting path",
-        description: error.response?.data?.message || "Failed to delete custom path",
+        description: error.message || "Failed to delete custom path",
         variant: "destructive"
       });
     }
