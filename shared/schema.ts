@@ -720,3 +720,38 @@ export const updateBlacklistedUrlSchema = createInsertSchema(blacklistedUrls).om
 export type BlacklistedUrl = typeof blacklistedUrls.$inferSelect;
 export type InsertBlacklistedUrl = z.infer<typeof insertBlacklistedUrlSchema>;
 export type UpdateBlacklistedUrl = z.infer<typeof updateBlacklistedUrlSchema>;
+
+// Child TrafficStar campaigns schema - for campaign-specific automation
+export const childTrafficstarCampaigns = pgTable("child_trafficstar_campaigns", {
+  id: serial("id").primaryKey(),
+  parentCampaignId: integer("parent_campaign_id").notNull().references(() => campaigns.id),
+  trafficstarCampaignId: text("trafficstar_campaign_id").notNull(),
+  clickRemainingThreshold: integer("click_remaining_threshold").notNull(), // Threshold to activate/deactivate
+  active: boolean("active").default(false).notNull(), // Whether this child campaign is currently active
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+// Schema for inserting child TrafficStar campaigns
+export const insertChildTrafficstarCampaignSchema = createInsertSchema(childTrafficstarCampaigns).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+  active: true,
+});
+
+// Schema for updating child TrafficStar campaigns
+export const updateChildTrafficstarCampaignSchema = createInsertSchema(childTrafficstarCampaigns).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+}).extend({
+  parentCampaignId: z.number().optional(),
+  trafficstarCampaignId: z.string().optional(),
+  clickRemainingThreshold: z.number().int().min(0).optional(),
+  active: z.boolean().optional(),
+});
+
+export type ChildTrafficstarCampaign = typeof childTrafficstarCampaigns.$inferSelect;
+export type InsertChildTrafficstarCampaign = z.infer<typeof insertChildTrafficstarCampaignSchema>;
+export type UpdateChildTrafficstarCampaign = z.infer<typeof updateChildTrafficstarCampaignSchema>;
