@@ -1,0 +1,218 @@
+./server/storage.ts:          CREATE TABLE IF NOT EXISTS protection_settings (
+./server/public/index.js:          CREATE TABLE IF NOT EXISTS protection_settings (
+./server/public/index.js:      CREATE TABLE IF NOT EXISTS protection_settings (
+./server/public/index.js:        CREATE TABLE IF NOT EXISTS protection_settings (
+./server/public/index.js:        CREATE TABLE IF NOT EXISTS sync_operations (
+./server/public/index.js:          CREATE TABLE IF NOT EXISTS click_protection_test (
+./server/public/index.js:          CREATE TABLE IF NOT EXISTS original_url_records (
+./server/click-protection.ts:      CREATE TABLE IF NOT EXISTS protection_settings (
+./server/routes.ts:        CREATE TABLE IF NOT EXISTS protection_settings (
+./server/routes.ts:        CREATE TABLE IF NOT EXISTS sync_operations (
+./server/routes.ts:          CREATE TABLE IF NOT EXISTS click_protection_test (
+./server/routes.ts:          CREATE TABLE IF NOT EXISTS original_url_records (
+./node_modules/drizzle-kit/api.js:        statement += `CREATE TABLE ${name2} (
+./node_modules/drizzle-kit/api.js:        statement += `CREATE TABLE \`${tableName}\` (
+./node_modules/drizzle-kit/api.js:        statement += `CREATE TABLE \`${tableName}\` (
+./node_modules/drizzle-kit/api.js:        statement += `CREATE TABLE \`${tableName}\` (
+./node_modules/drizzle-kit/api.js:			CREATE TABLE IF NOT EXISTS ${sql.identifier(migrationsSchema)}.${sql.identifier(migrationsTable)} (
+./node_modules/drizzle-kit/api.js:			CREATE TABLE IF NOT EXISTS ${sql.identifier(migrationsTable)} (
+./node_modules/drizzle-kit/api.js:			CREATE TABLE IF NOT EXISTS ${sql.identifier(migrationsTable)} (
+./node_modules/googleapis/build/src/apis/spanner/v1.d.ts:         * The entity name(s) being operated on the DDL statement. E.g. 1. For statement "CREATE TABLE t1(...)", `entity_names` = ["t1"]. 2. For statement "GRANT ROLE r1, r2 ...", `entity_names` = ["r1", "r2"]. 3. For statement "ANALYZE", `entity_names` = [].
+./node_modules/googleapis/build/src/apis/spanner/v1.d.ts:     * KeyRange represents a range of rows in a table or index. A range has a start key and an end key. These keys can be open or closed, indicating if the range includes rows with that key. Keys are represented by lists, where the ith value in the list corresponds to the ith component of the table or index primary key. Individual values are encoded as described here. For example, consider the following table definition: CREATE TABLE UserEvents ( UserName STRING(MAX), EventDate STRING(10) ) PRIMARY KEY(UserName, EventDate); The following keys name rows in this table: "Bob", "2014-09-23" Since the `UserEvents` table's `PRIMARY KEY` clause names two columns, each `UserEvents` key has two elements; the first is the `UserName`, and the second is the `EventDate`. Key ranges with multiple components are interpreted lexicographically by component using the table or index key's declared sort order. For example, the following range returns all events for user `"Bob"` that occurred in the year 2015: "start_closed": ["Bob", "2015-01-01"] "end_closed": ["Bob", "2015-12-31"] Start and end keys can omit trailing key components. This affects the inclusion and exclusion of rows that exactly match the provided key components: if the key is closed, then rows that exactly match the provided components are included; if the key is open, then rows that exactly match are not included. For example, the following range includes all events for `"Bob"` that occurred during and after the year 2000: "start_closed": ["Bob", "2000-01-01"] "end_closed": ["Bob"] The next example retrieves all events for `"Bob"`: "start_closed": ["Bob"] "end_closed": ["Bob"] To retrieve events before the year 2000: "start_closed": ["Bob"] "end_open": ["Bob", "2000-01-01"] The following range includes all rows in the table: "start_closed": [] "end_closed": [] This range returns all users whose `UserName` begins with any character from A to C: "start_closed": ["A"] "end_open": ["D"] This range returns all users whose `UserName` begins with B: "start_closed": ["B"] "end_open": ["C"] Key ranges honor column sort order. For example, suppose a table is defined as follows: CREATE TABLE DescendingSortedTable { Key INT64, ... ) PRIMARY KEY(Key DESC); The following range retrieves all rows with key values between 1 and 100 inclusive: "start_closed": ["100"] "end_closed": ["1"] Note that 100 is passed as the start, and 1 is passed as the end, because `Key` is a descending column in the schema.
+./node_modules/googleapis/build/src/apis/bigquery/v2.d.ts:         * Output only. The type of query statement, if valid. Possible values: * `SELECT`: [`SELECT`](https://cloud.google.com/bigquery/docs/reference/standard-sql/query-syntax#select_list) statement. * `ASSERT`: [`ASSERT`](https://cloud.google.com/bigquery/docs/reference/standard-sql/debugging-statements#assert) statement. * `INSERT`: [`INSERT`](https://cloud.google.com/bigquery/docs/reference/standard-sql/dml-syntax#insert_statement) statement. * `UPDATE`: [`UPDATE`](https://cloud.google.com/bigquery/docs/reference/standard-sql/dml-syntax#update_statement) statement. * `DELETE`: [`DELETE`](https://cloud.google.com/bigquery/docs/reference/standard-sql/data-manipulation-language) statement. * `MERGE`: [`MERGE`](https://cloud.google.com/bigquery/docs/reference/standard-sql/data-manipulation-language) statement. * `CREATE_TABLE`: [`CREATE TABLE`](https://cloud.google.com/bigquery/docs/reference/standard-sql/data-definition-language#create_table_statement) statement, without `AS SELECT`. * `CREATE_TABLE_AS_SELECT`: [`CREATE TABLE AS SELECT`](https://cloud.google.com/bigquery/docs/reference/standard-sql/data-definition-language#create_table_statement) statement. * `CREATE_VIEW`: [`CREATE VIEW`](https://cloud.google.com/bigquery/docs/reference/standard-sql/data-definition-language#create_view_statement) statement. * `CREATE_MODEL`: [`CREATE MODEL`](https://cloud.google.com/bigquery-ml/docs/reference/standard-sql/bigqueryml-syntax-create#create_model_statement) statement. * `CREATE_MATERIALIZED_VIEW`: [`CREATE MATERIALIZED VIEW`](https://cloud.google.com/bigquery/docs/reference/standard-sql/data-definition-language#create_materialized_view_statement) statement. * `CREATE_FUNCTION`: [`CREATE FUNCTION`](https://cloud.google.com/bigquery/docs/reference/standard-sql/data-definition-language#create_function_statement) statement. * `CREATE_TABLE_FUNCTION`: [`CREATE TABLE FUNCTION`](https://cloud.google.com/bigquery/docs/reference/standard-sql/data-definition-language#create_table_function_statement) statement. * `CREATE_PROCEDURE`: [`CREATE PROCEDURE`](https://cloud.google.com/bigquery/docs/reference/standard-sql/data-definition-language#create_procedure) statement. * `CREATE_ROW_ACCESS_POLICY`: [`CREATE ROW ACCESS POLICY`](https://cloud.google.com/bigquery/docs/reference/standard-sql/data-definition-language#create_row_access_policy_statement) statement. * `CREATE_SCHEMA`: [`CREATE SCHEMA`](https://cloud.google.com/bigquery/docs/reference/standard-sql/data-definition-language#create_schema_statement) statement. * `CREATE_SNAPSHOT_TABLE`: [`CREATE SNAPSHOT TABLE`](https://cloud.google.com/bigquery/docs/reference/standard-sql/data-definition-language#create_snapshot_table_statement) statement. * `CREATE_SEARCH_INDEX`: [`CREATE SEARCH INDEX`](https://cloud.google.com/bigquery/docs/reference/standard-sql/data-definition-language#create_search_index_statement) statement. * `DROP_TABLE`: [`DROP TABLE`](https://cloud.google.com/bigquery/docs/reference/standard-sql/data-definition-language#drop_table_statement) statement. * `DROP_EXTERNAL_TABLE`: [`DROP EXTERNAL TABLE`](https://cloud.google.com/bigquery/docs/reference/standard-sql/data-definition-language#drop_external_table_statement) statement. * `DROP_VIEW`: [`DROP VIEW`](https://cloud.google.com/bigquery/docs/reference/standard-sql/data-definition-language#drop_view_statement) statement. * `DROP_MODEL`: [`DROP MODEL`](https://cloud.google.com/bigquery-ml/docs/reference/standard-sql/bigqueryml-syntax-drop-model) statement. * `DROP_MATERIALIZED_VIEW`: [`DROP MATERIALIZED VIEW`](https://cloud.google.com/bigquery/docs/reference/standard-sql/data-definition-language#drop_materialized_view_statement) statement. * `DROP_FUNCTION` : [`DROP FUNCTION`](https://cloud.google.com/bigquery/docs/reference/standard-sql/data-definition-language#drop_function_statement) statement. * `DROP_TABLE_FUNCTION` : [`DROP TABLE FUNCTION`](https://cloud.google.com/bigquery/docs/reference/standard-sql/data-definition-language#drop_table_function) statement. * `DROP_PROCEDURE`: [`DROP PROCEDURE`](https://cloud.google.com/bigquery/docs/reference/standard-sql/data-definition-language#drop_procedure_statement) statement. * `DROP_SEARCH_INDEX`: [`DROP SEARCH INDEX`](https://cloud.google.com/bigquery/docs/reference/standard-sql/data-definition-language#drop_search_index) statement. * `DROP_SCHEMA`: [`DROP SCHEMA`](https://cloud.google.com/bigquery/docs/reference/standard-sql/data-definition-language#drop_schema_statement) statement. * `DROP_SNAPSHOT_TABLE`: [`DROP SNAPSHOT TABLE`](https://cloud.google.com/bigquery/docs/reference/standard-sql/data-definition-language#drop_snapshot_table_statement) statement. * `DROP_ROW_ACCESS_POLICY`: [`DROP [ALL] ROW ACCESS POLICY|POLICIES`](https://cloud.google.com/bigquery/docs/reference/standard-sql/data-definition-language#drop_row_access_policy_statement) statement. * `ALTER_TABLE`: [`ALTER TABLE`](https://cloud.google.com/bigquery/docs/reference/standard-sql/data-definition-language#alter_table_set_options_statement) statement. * `ALTER_VIEW`: [`ALTER VIEW`](https://cloud.google.com/bigquery/docs/reference/standard-sql/data-definition-language#alter_view_set_options_statement) statement. * `ALTER_MATERIALIZED_VIEW`: [`ALTER MATERIALIZED VIEW`](https://cloud.google.com/bigquery/docs/reference/standard-sql/data-definition-language#alter_materialized_view_set_options_statement) statement. * `ALTER_SCHEMA`: [`ALTER SCHEMA`](https://cloud.google.com/bigquery/docs/reference/standard-sql/data-definition-language#alter_schema_set_options_statement) statement. * `SCRIPT`: [`SCRIPT`](https://cloud.google.com/bigquery/docs/reference/standard-sql/procedural-language). * `TRUNCATE_TABLE`: [`TRUNCATE TABLE`](https://cloud.google.com/bigquery/docs/reference/standard-sql/dml-syntax#truncate_table_statement) statement. * `CREATE_EXTERNAL_TABLE`: [`CREATE EXTERNAL TABLE`](https://cloud.google.com/bigquery/docs/reference/standard-sql/data-definition-language#create_external_table_statement) statement. * `EXPORT_DATA`: [`EXPORT DATA`](https://cloud.google.com/bigquery/docs/reference/standard-sql/other-statements#export_data_statement) statement. * `EXPORT_MODEL`: [`EXPORT MODEL`](https://cloud.google.com/bigquery-ml/docs/reference/standard-sql/bigqueryml-syntax-export-model) statement. * `LOAD_DATA`: [`LOAD DATA`](https://cloud.google.com/bigquery/docs/reference/standard-sql/other-statements#load_data_statement) statement. * `CALL`: [`CALL`](https://cloud.google.com/bigquery/docs/reference/standard-sql/procedural-language#call) statement.
+./node_modules/googleapis/build/src/apis/bigquery/v2.d.ts:         * Output only. Total bytes transferred for cross-cloud queries such as Cross Cloud Transfer and CREATE TABLE AS SELECT (CTAS).
+./node_modules/googleapis/build/src/apis/bigquery/v2.d.ts:         * Optional. Details about each partitioning column. This field is output only for all partitioning types other than metastore partitioned tables. BigQuery native tables only support 1 partitioning column. Other table types may support 0, 1 or more partitioning columns. For metastore partitioned tables, the order must match the definition order in the Hive Metastore, where it must match the physical layout of the table. For example, CREATE TABLE a_table(id BIGINT, name STRING) PARTITIONED BY (city STRING, state STRING). In this case the values must be ['city', 'state'] in that order.
+./dist/index.js:          CREATE TABLE IF NOT EXISTS protection_settings (
+./dist/index.js:      CREATE TABLE IF NOT EXISTS protection_settings (
+./dist/index.js:        CREATE TABLE IF NOT EXISTS protection_settings (
+./dist/index.js:        CREATE TABLE IF NOT EXISTS sync_operations (
+./dist/index.js:          CREATE TABLE IF NOT EXISTS click_protection_test (
+./dist/index.js:          CREATE TABLE IF NOT EXISTS original_url_records (
+./migrations/create_click_analytics.js:    CREATE TABLE IF NOT EXISTS click_analytics (
+./migrations/click_protection.js:      CREATE TABLE IF NOT EXISTS protection_settings (
+./migrations/click_protection.js:      CREATE TABLE IF NOT EXISTS sync_operations (
+./fix-blacklisted-urls.js:      await client.query(`ALTER TABLE blacklisted_urls ADD COLUMN target_url TEXT;`);
+./scripts/fix-blacklisted-urls.js:      await client.query(`ALTER TABLE blacklisted_urls ADD COLUMN target_url TEXT;`);
+./scripts/fix-blacklisted-urls.js:      await client.query(`ALTER TABLE blacklisted_urls ADD COLUMN description TEXT;`);
+./server/storage.ts:        ALTER TABLE urls DISABLE TRIGGER protect_original_click_values_trigger
+./server/storage.ts:        ALTER TABLE urls DISABLE TRIGGER prevent_auto_click_update_trigger
+./server/storage.ts:        ALTER TABLE urls ENABLE TRIGGER protect_original_click_values_trigger
+./server/storage.ts:        ALTER TABLE urls ENABLE TRIGGER prevent_auto_click_update_trigger
+./server/public/index.js:      ALTER TABLE campaigns 
+./server/public/index.js:      ALTER TABLE campaigns 
+./server/public/index.js:        ALTER TABLE campaigns 
+./server/public/index.js:        ALTER TABLE urls DISABLE TRIGGER protect_original_click_values_trigger
+./server/public/index.js:        ALTER TABLE urls DISABLE TRIGGER prevent_auto_click_update_trigger
+./server/public/index.js:        ALTER TABLE urls ENABLE TRIGGER protect_original_click_values_trigger
+./server/public/index.js:        ALTER TABLE urls ENABLE TRIGGER prevent_auto_click_update_trigger
+./server/public/index.js:      await db.execute(sql9`ALTER TABLE urls DISABLE TRIGGER protect_original_click_values_trigger`);
+./server/public/index.js:      await db.execute(sql9`ALTER TABLE urls DISABLE TRIGGER prevent_auto_click_update_trigger`);
+./server/public/index.js:      await db.execute(sql9`ALTER TABLE urls ENABLE TRIGGER protect_original_click_values_trigger`);
+./server/public/index.js:      await db.execute(sql9`ALTER TABLE urls ENABLE TRIGGER prevent_auto_click_update_trigger`);
+./server/public/index.js:          ALTER TABLE urls ENABLE TRIGGER protect_original_click_values_trigger
+./server/public/index.js:          ALTER TABLE urls ENABLE TRIGGER prevent_auto_click_update_trigger
+./server/public/index.js:      await db.execute(sql9`ALTER TABLE urls DISABLE TRIGGER protect_original_click_values_trigger`);
+./server/public/index.js:      await db.execute(sql9`ALTER TABLE urls DISABLE TRIGGER prevent_auto_click_update_trigger`);
+./server/public/index.js:      await db.execute(sql9`ALTER TABLE urls ENABLE TRIGGER protect_original_click_values_trigger`);
+./server/public/index.js:      await db.execute(sql9`ALTER TABLE urls ENABLE TRIGGER prevent_auto_click_update_trigger`);
+./server/public/index.js:        ALTER TABLE urls DISABLE TRIGGER protect_original_click_values_trigger
+./server/public/index.js:        ALTER TABLE urls DISABLE TRIGGER prevent_auto_click_update_trigger
+./server/public/index.js:        ALTER TABLE urls ENABLE TRIGGER protect_original_click_values_trigger
+./server/public/index.js:        ALTER TABLE urls ENABLE TRIGGER prevent_auto_click_update_trigger
+./server/public/index.js:          ALTER TABLE urls ENABLE TRIGGER protect_original_click_values_trigger
+./server/public/index.js:          ALTER TABLE urls ENABLE TRIGGER prevent_auto_click_update_trigger
+./server/routes.ts:      // CRITICAL FIX: Execute each ALTER TABLE statement separately
+./server/routes.ts:      await db.execute(sql`ALTER TABLE urls DISABLE TRIGGER protect_original_click_values_trigger`);
+./server/routes.ts:      await db.execute(sql`ALTER TABLE urls DISABLE TRIGGER prevent_auto_click_update_trigger`);
+./server/routes.ts:      await db.execute(sql`ALTER TABLE urls ENABLE TRIGGER protect_original_click_values_trigger`);
+./server/routes.ts:      await db.execute(sql`ALTER TABLE urls ENABLE TRIGGER prevent_auto_click_update_trigger`);
+./server/routes.ts:          ALTER TABLE urls ENABLE TRIGGER protect_original_click_values_trigger
+./server/routes.ts:          ALTER TABLE urls ENABLE TRIGGER prevent_auto_click_update_trigger
+./server/routes.ts:      await db.execute(sql`ALTER TABLE urls DISABLE TRIGGER protect_original_click_values_trigger`);
+./server/routes.ts:      await db.execute(sql`ALTER TABLE urls DISABLE TRIGGER prevent_auto_click_update_trigger`);
+./server/routes.ts:      await db.execute(sql`ALTER TABLE urls ENABLE TRIGGER protect_original_click_values_trigger`);
+./server/routes.ts:      await db.execute(sql`ALTER TABLE urls ENABLE TRIGGER prevent_auto_click_update_trigger`);
+./server/routes.ts:        ALTER TABLE urls DISABLE TRIGGER protect_original_click_values_trigger
+./server/routes.ts:        ALTER TABLE urls DISABLE TRIGGER prevent_auto_click_update_trigger
+./server/routes.ts:        ALTER TABLE urls ENABLE TRIGGER protect_original_click_values_trigger
+./server/routes.ts:        ALTER TABLE urls ENABLE TRIGGER prevent_auto_click_update_trigger
+./server/routes.ts:          ALTER TABLE urls ENABLE TRIGGER protect_original_click_values_trigger
+./server/routes.ts:          ALTER TABLE urls ENABLE TRIGGER prevent_auto_click_update_trigger
+./server/migrations/add-budget-update-time.ts:        ALTER TABLE campaigns 
+./server/migrations/add-trafficstar-fields.ts:      ALTER TABLE campaigns 
+./server/migrations/decimal-multiplier.ts:      ALTER TABLE campaigns 
+./node_modules/drizzle-kit/api.js:        return `ALTER TABLE ${tableNameWithSchema} ENABLE ROW LEVEL SECURITY;`;
+./node_modules/drizzle-kit/api.js:        return `ALTER TABLE ${tableNameWithSchema} DISABLE ROW LEVEL SECURITY;`;
+./node_modules/drizzle-kit/api.js:        return `ALTER TABLE ${tableNameWithSchema} ALTER COLUMN "${columnName}" ADD${identityStatement};`;
+./node_modules/drizzle-kit/api.js:        return `ALTER TABLE ${tableNameWithSchema} ALTER COLUMN "${columnName}" DROP IDENTITY;`;
+./node_modules/drizzle-kit/api.js:            `ALTER TABLE ${tableNameWithSchema} ALTER COLUMN "${columnName}" SET GENERATED ${unsquashedIdentity.type === "always" ? "ALWAYS" : "BY DEFAULT"};`
+./node_modules/drizzle-kit/api.js:            `ALTER TABLE ${tableNameWithSchema} ALTER COLUMN "${columnName}" SET MINVALUE ${unsquashedIdentity.minValue};`
+./node_modules/drizzle-kit/api.js:            `ALTER TABLE ${tableNameWithSchema} ALTER COLUMN "${columnName}" SET MAXVALUE ${unsquashedIdentity.maxValue};`
+./node_modules/drizzle-kit/api.js:            `ALTER TABLE ${tableNameWithSchema} ALTER COLUMN "${columnName}" SET INCREMENT BY ${unsquashedIdentity.increment};`
+./node_modules/drizzle-kit/api.js:            `ALTER TABLE ${tableNameWithSchema} ALTER COLUMN "${columnName}" SET START WITH ${unsquashedIdentity.startWith};`
+./node_modules/drizzle-kit/api.js:            `ALTER TABLE ${tableNameWithSchema} ALTER COLUMN "${columnName}" SET CACHE ${unsquashedIdentity.cache};`
+./node_modules/drizzle-kit/api.js:            `ALTER TABLE ${tableNameWithSchema} ALTER COLUMN "${columnName}" SET ${unsquashedIdentity.cycle ? `CYCLE` : "NO CYCLE"};`
+./node_modules/drizzle-kit/api.js:        return `ALTER TABLE ${tableNameWithSchema} ADD CONSTRAINT "${unsquashed.name}" UNIQUE${unsquashed.nullsNotDistinct ? " NULLS NOT DISTINCT" : ""}("${unsquashed.columns.join('","')}");`;
+./node_modules/drizzle-kit/api.js:        return `ALTER TABLE ${tableNameWithSchema} DROP CONSTRAINT "${unsquashed.name}";`;
+./node_modules/drizzle-kit/api.js:        return `ALTER TABLE ${tableNameWithSchema} ADD CONSTRAINT "${unsquashed.name}" CHECK (${unsquashed.value});`;
+./node_modules/drizzle-kit/api.js:        return `ALTER TABLE ${tableNameWithSchema} DROP CONSTRAINT "${statement.constraintName}";`;
+./node_modules/drizzle-kit/api.js:        return `ALTER TABLE \`${statement.tableName}\` ADD CONSTRAINT \`${unsquashed.name}\` UNIQUE(\`${unsquashed.columns.join("`,`")}\`);`;
+./node_modules/drizzle-kit/api.js:        return `ALTER TABLE \`${statement.tableName}\` DROP INDEX \`${unsquashed.name}\`;`;
+./node_modules/drizzle-kit/api.js:        return `ALTER TABLE \`${tableName}\` ADD CONSTRAINT \`${unsquashed.name}\` CHECK (${unsquashed.value});`;
+./node_modules/drizzle-kit/api.js:        return `ALTER TABLE \`${statement.tableName}\` ADD CONSTRAINT \`${unsquashed.name}\` UNIQUE(\`${unsquashed.columns.join("`,`")}\`);`;
+./node_modules/drizzle-kit/api.js:        return `ALTER TABLE \`${statement.tableName}\` DROP INDEX \`${unsquashed.name}\`;`;
+./node_modules/drizzle-kit/api.js:        return `ALTER TABLE \`${tableName}\` DROP CONSTRAINT \`${statement.constraintName}\`;`;
+./node_modules/drizzle-kit/api.js:            `ALTER TABLE "${withEnum.schema}"."${withEnum.table}" ALTER COLUMN "${withEnum.column}" SET DATA TYPE text;`
+./node_modules/drizzle-kit/api.js:            `ALTER TABLE "${withEnum.schema}"."${withEnum.table}" ALTER COLUMN "${withEnum.column}" SET DATA TYPE "${schema5}"."${name2}" USING "${withEnum.column}"::"${schema5}"."${name2}";`
+./node_modules/drizzle-kit/api.js:        return `ALTER TABLE ${from} RENAME TO ${to};`;
+./node_modules/drizzle-kit/api.js:        return `ALTER TABLE \`${tableNameFrom}\` RENAME TO \`${tableNameTo}\`;`;
+./node_modules/drizzle-kit/api.js:        return `ALTER TABLE \`${tableNameFrom}\` RENAME TO \`${tableNameTo}\`;`;
+./node_modules/drizzle-kit/api.js:        return `ALTER TABLE ${tableNameWithSchema} RENAME COLUMN "${oldColumnName}" TO "${newColumnName}";`;
+./node_modules/drizzle-kit/api.js:        return `ALTER TABLE \`${tableName}\` RENAME COLUMN \`${oldColumnName}\` TO \`${newColumnName}\`;`;
+./node_modules/drizzle-kit/api.js:        return `ALTER TABLE \`${tableName}\` CHANGE \`${oldColumnName}\` \`${newColumnName}\`;`;
+./node_modules/drizzle-kit/api.js:        return `ALTER TABLE \`${tableName}\` RENAME COLUMN "${oldColumnName}" TO "${newColumnName}";`;
+./node_modules/drizzle-kit/api.js:        return `ALTER TABLE ${tableNameWithSchema} DROP COLUMN "${columnName}";`;
+./node_modules/drizzle-kit/api.js:        return `ALTER TABLE \`${tableName}\` DROP COLUMN \`${columnName}\`;`;
+./node_modules/drizzle-kit/api.js:        return `ALTER TABLE \`${tableName}\` DROP COLUMN \`${columnName}\`;`;
+./node_modules/drizzle-kit/api.js:        return `ALTER TABLE \`${tableName}\` DROP COLUMN \`${columnName}\`;`;
+./node_modules/drizzle-kit/api.js:        return `ALTER TABLE ${tableNameWithSchema} ADD COLUMN "${name2}" ${fixedType}${primaryKeyStatement}${defaultStatement}${generatedStatement}${notNullStatement}${identityStatement};`;
+./node_modules/drizzle-kit/api.js:        return `ALTER TABLE \`${tableName}\` ADD \`${name2}\` ${type}${primaryKeyStatement}${autoincrementStatement}${defaultStatement}${generatedStatement}${notNullStatement}${onUpdateStatement};`;
+./node_modules/drizzle-kit/api.js:        return `ALTER TABLE \`${tableName}\` ADD \`${name2}\` ${type}${primaryKeyStatement}${autoincrementStatement}${defaultStatement}${notNullStatement}${onUpdateStatement}${generatedStatement};`;
+./node_modules/drizzle-kit/api.js:        return `ALTER TABLE \`${tableName}\` ADD \`${name2}\` ${type}${primaryKeyStatement}${defaultStatement}${generatedStatement}${notNullStatement}${referenceStatement};`;
+./node_modules/drizzle-kit/api.js:        return `ALTER TABLE ${tableNameWithSchema} ALTER COLUMN "${columnName}" SET DATA TYPE ${newDataType};`;
+./node_modules/drizzle-kit/api.js:        return `ALTER TABLE ${tableNameWithSchema} ALTER COLUMN "${columnName}" SET DEFAULT ${statement.newDefaultValue};`;
+./node_modules/drizzle-kit/api.js:        return `ALTER TABLE ${tableNameWithSchema} ALTER COLUMN "${columnName}" DROP DEFAULT;`;
+./node_modules/drizzle-kit/api.js:        return `ALTER TABLE ${tableNameWithSchema} ALTER COLUMN "${columnName}" DROP EXPRESSION;`;
+./node_modules/drizzle-kit/api.js:          `ALTER TABLE ${tableNameWithSchema} drop column "${columnName}";`,
+./node_modules/drizzle-kit/api.js:          `ALTER TABLE ${tableNameWithSchema} drop column "${columnName}";`,
+./node_modules/drizzle-kit/api.js:          `ALTER TABLE ${tableNameWithSchema} drop column \`${columnName}\`;`,
+./node_modules/drizzle-kit/api.js:        return `ALTER TABLE \`${statement.tableName}\` ADD PRIMARY KEY (\`${statement.columnName}\`);`;
+./node_modules/drizzle-kit/api.js:        return `ALTER TABLE \`${statement.tableName}\` DROP PRIMARY KEY`;
+./node_modules/drizzle-kit/api.js:          `ALTER TABLE \`${tableName}\` ALTER COLUMN "${columnName}" TO "${columnName}"${columnType}${columnNotNull}${columnDefault};`
+./node_modules/drizzle-kit/api.js:        return `ALTER TABLE \`${tableName}\` MODIFY COLUMN \`${columnName}\`${columnType}${columnAutoincrement}${columnGenerated}${columnNotNull}${columnDefault}${columnOnUpdate};`;
+./node_modules/drizzle-kit/api.js:          `ALTER TABLE ${tableNameWithSchema} drop column \`${columnName}\`;`,
+./node_modules/drizzle-kit/api.js:        return `ALTER TABLE \`${statement.tableName}\` ADD PRIMARY KEY (\`${statement.columnName}\`);`;
+./node_modules/drizzle-kit/api.js:        return `ALTER TABLE \`${statement.tableName}\` DROP PRIMARY KEY`;
+./node_modules/drizzle-kit/api.js:        return `ALTER TABLE \`${tableName}\` MODIFY COLUMN \`${columnName}\`${columnType}${columnAutoincrement}${columnNotNull}${columnDefault}${columnOnUpdate}${columnGenerated};`;
+./node_modules/drizzle-kit/api.js:        return `ALTER TABLE ${tableNameWithSchema} ADD CONSTRAINT "${statement.constraintName}" PRIMARY KEY("${columns.join('","')}");`;
+./node_modules/drizzle-kit/api.js:        return `ALTER TABLE ${tableNameWithSchema} DROP CONSTRAINT "${statement.constraintName}";`;
+./node_modules/drizzle-kit/api.js:        return `ALTER TABLE ${tableNameWithSchema} DROP CONSTRAINT "${statement.oldConstraintName}";
+./node_modules/drizzle-kit/api.js:${BREAKPOINT}ALTER TABLE ${tableNameWithSchema} ADD CONSTRAINT "${statement.newConstraintName}" PRIMARY KEY("${newColumns.join('","')}");`;
+./node_modules/drizzle-kit/api.js:        return `ALTER TABLE \`${statement.tableName}\` ADD PRIMARY KEY(\`${columns.join("`,`")}\`);`;
+./node_modules/drizzle-kit/api.js:        return `ALTER TABLE \`${statement.tableName}\` DROP PRIMARY KEY;`;
+./node_modules/drizzle-kit/api.js:        return `ALTER TABLE \`${statement.tableName}\` DROP PRIMARY KEY, ADD PRIMARY KEY(\`${newColumns.join("`,`")}\`);`;
+./node_modules/drizzle-kit/api.js:        return `ALTER TABLE ${tableNameWithSchema} ADD PRIMARY KEY ("${columnName}");`;
+./node_modules/drizzle-kit/api.js:-- ALTER TABLE "${tableName}" DROP CONSTRAINT "<constraint_name>";`;
+./node_modules/drizzle-kit/api.js:        return `ALTER TABLE ${tableNameWithSchema} ALTER COLUMN "${columnName}" SET NOT NULL;`;
+./node_modules/drizzle-kit/api.js:        return `ALTER TABLE ${tableNameWithSchema} ALTER COLUMN "${columnName}" DROP NOT NULL;`;
+./node_modules/drizzle-kit/api.js:        const alterStatement = `ALTER TABLE ${tableNameWithSchema} ADD CONSTRAINT "${name2}" FOREIGN KEY (${fromColumnsString}) REFERENCES ${tableToNameWithSchema}(${toColumnsString})${onDeleteStatement}${onUpdateStatement};`;
+./node_modules/drizzle-kit/api.js:        return `ALTER TABLE \`${tableFrom}\` ALTER COLUMN "${columnFrom}" TO "${columnFrom}"${columnTypeValue}${columnNotNullValue}${columnsDefaultValue} REFERENCES ${tableTo}(${columnTo})${onDeleteStatement}${onUpdateStatement};`;
+./node_modules/drizzle-kit/api.js:        return `ALTER TABLE \`${tableFrom}\` ADD CONSTRAINT \`${name2}\` FOREIGN KEY (${fromColumnsString}) REFERENCES \`${tableTo}\`(${toColumnsString})${onDeleteStatement}${onUpdateStatement};`;
+./node_modules/drizzle-kit/api.js:        let sql2 = `ALTER TABLE ${tableNameWithSchema} DROP CONSTRAINT "${oldFk.name}";
+./node_modules/drizzle-kit/api.js:        const alterStatement = `ALTER TABLE ${tableFromNameWithSchema} ADD CONSTRAINT "${newFk.name}" FOREIGN KEY (${fromColumnsString}) REFERENCES ${tableToNameWithSchema}(${toColumnsString})${onDeleteStatement}${onUpdateStatement};`;
+./node_modules/drizzle-kit/api.js:        return `ALTER TABLE ${tableNameWithSchema} DROP CONSTRAINT "${name2}";
+./node_modules/drizzle-kit/api.js:        return `ALTER TABLE \`${tableFrom}\` DROP FOREIGN KEY \`${name2}\`;
+./node_modules/drizzle-kit/api.js:        return `ALTER TABLE "${schemaFrom}"."${tableName}" SET SCHEMA "${schemaTo}";
+./node_modules/drizzle-kit/api.js:        return `ALTER TABLE ${tableNameWithSchema} SET SCHEMA "${to}";
+./node_modules/drizzle-kit/api.js:        return `ALTER TABLE ${tableNameWithSchema} SET SCHEMA public;
+./node_modules/drizzle-kit/api.js:ALTER TABLE users ALTER COLUMN typed TYPE venum USING typed::text::venum;
+./node_modules/drizzle-kit/api.js:            `As SQLite docs mention: "It is not possible to ALTER TABLE ADD COLUMN a STORED column. One can add a VIRTUAL column, however", source: "https://www.sqlite.org/gencol.html"`
+./node_modules/drizzle-kit/api.js:              `As SQLite docs mention: "It is not possible to ALTER TABLE ADD COLUMN a STORED column. One can add a VIRTUAL column, however", source: "https://www.sqlite.org/gencol.html"`
+./node_modules/drizzle-kit/api.js:              `As SQLite docs mention: "It is not possible to ALTER TABLE ADD COLUMN a STORED column. One can add a VIRTUAL column, however", source: "https://www.sqlite.org/gencol.html"`
+./node_modules/drizzle-kit/api.js:        `ALTER TABLE ${tableNameWithSchema} DROP CONSTRAINT "${pkNameResponse[0].constraint_name}"`
+./node_modules/googleapis/build/src/apis/bigquery/v2.d.ts:         * Output only. The table after rename. Present only for ALTER TABLE RENAME TO query.
+./node_modules/googleapis/build/src/apis/bigquery/v2.d.ts:         * Output only. The type of query statement, if valid. Possible values: * `SELECT`: [`SELECT`](https://cloud.google.com/bigquery/docs/reference/standard-sql/query-syntax#select_list) statement. * `ASSERT`: [`ASSERT`](https://cloud.google.com/bigquery/docs/reference/standard-sql/debugging-statements#assert) statement. * `INSERT`: [`INSERT`](https://cloud.google.com/bigquery/docs/reference/standard-sql/dml-syntax#insert_statement) statement. * `UPDATE`: [`UPDATE`](https://cloud.google.com/bigquery/docs/reference/standard-sql/dml-syntax#update_statement) statement. * `DELETE`: [`DELETE`](https://cloud.google.com/bigquery/docs/reference/standard-sql/data-manipulation-language) statement. * `MERGE`: [`MERGE`](https://cloud.google.com/bigquery/docs/reference/standard-sql/data-manipulation-language) statement. * `CREATE_TABLE`: [`CREATE TABLE`](https://cloud.google.com/bigquery/docs/reference/standard-sql/data-definition-language#create_table_statement) statement, without `AS SELECT`. * `CREATE_TABLE_AS_SELECT`: [`CREATE TABLE AS SELECT`](https://cloud.google.com/bigquery/docs/reference/standard-sql/data-definition-language#create_table_statement) statement. * `CREATE_VIEW`: [`CREATE VIEW`](https://cloud.google.com/bigquery/docs/reference/standard-sql/data-definition-language#create_view_statement) statement. * `CREATE_MODEL`: [`CREATE MODEL`](https://cloud.google.com/bigquery-ml/docs/reference/standard-sql/bigqueryml-syntax-create#create_model_statement) statement. * `CREATE_MATERIALIZED_VIEW`: [`CREATE MATERIALIZED VIEW`](https://cloud.google.com/bigquery/docs/reference/standard-sql/data-definition-language#create_materialized_view_statement) statement. * `CREATE_FUNCTION`: [`CREATE FUNCTION`](https://cloud.google.com/bigquery/docs/reference/standard-sql/data-definition-language#create_function_statement) statement. * `CREATE_TABLE_FUNCTION`: [`CREATE TABLE FUNCTION`](https://cloud.google.com/bigquery/docs/reference/standard-sql/data-definition-language#create_table_function_statement) statement. * `CREATE_PROCEDURE`: [`CREATE PROCEDURE`](https://cloud.google.com/bigquery/docs/reference/standard-sql/data-definition-language#create_procedure) statement. * `CREATE_ROW_ACCESS_POLICY`: [`CREATE ROW ACCESS POLICY`](https://cloud.google.com/bigquery/docs/reference/standard-sql/data-definition-language#create_row_access_policy_statement) statement. * `CREATE_SCHEMA`: [`CREATE SCHEMA`](https://cloud.google.com/bigquery/docs/reference/standard-sql/data-definition-language#create_schema_statement) statement. * `CREATE_SNAPSHOT_TABLE`: [`CREATE SNAPSHOT TABLE`](https://cloud.google.com/bigquery/docs/reference/standard-sql/data-definition-language#create_snapshot_table_statement) statement. * `CREATE_SEARCH_INDEX`: [`CREATE SEARCH INDEX`](https://cloud.google.com/bigquery/docs/reference/standard-sql/data-definition-language#create_search_index_statement) statement. * `DROP_TABLE`: [`DROP TABLE`](https://cloud.google.com/bigquery/docs/reference/standard-sql/data-definition-language#drop_table_statement) statement. * `DROP_EXTERNAL_TABLE`: [`DROP EXTERNAL TABLE`](https://cloud.google.com/bigquery/docs/reference/standard-sql/data-definition-language#drop_external_table_statement) statement. * `DROP_VIEW`: [`DROP VIEW`](https://cloud.google.com/bigquery/docs/reference/standard-sql/data-definition-language#drop_view_statement) statement. * `DROP_MODEL`: [`DROP MODEL`](https://cloud.google.com/bigquery-ml/docs/reference/standard-sql/bigqueryml-syntax-drop-model) statement. * `DROP_MATERIALIZED_VIEW`: [`DROP MATERIALIZED VIEW`](https://cloud.google.com/bigquery/docs/reference/standard-sql/data-definition-language#drop_materialized_view_statement) statement. * `DROP_FUNCTION` : [`DROP FUNCTION`](https://cloud.google.com/bigquery/docs/reference/standard-sql/data-definition-language#drop_function_statement) statement. * `DROP_TABLE_FUNCTION` : [`DROP TABLE FUNCTION`](https://cloud.google.com/bigquery/docs/reference/standard-sql/data-definition-language#drop_table_function) statement. * `DROP_PROCEDURE`: [`DROP PROCEDURE`](https://cloud.google.com/bigquery/docs/reference/standard-sql/data-definition-language#drop_procedure_statement) statement. * `DROP_SEARCH_INDEX`: [`DROP SEARCH INDEX`](https://cloud.google.com/bigquery/docs/reference/standard-sql/data-definition-language#drop_search_index) statement. * `DROP_SCHEMA`: [`DROP SCHEMA`](https://cloud.google.com/bigquery/docs/reference/standard-sql/data-definition-language#drop_schema_statement) statement. * `DROP_SNAPSHOT_TABLE`: [`DROP SNAPSHOT TABLE`](https://cloud.google.com/bigquery/docs/reference/standard-sql/data-definition-language#drop_snapshot_table_statement) statement. * `DROP_ROW_ACCESS_POLICY`: [`DROP [ALL] ROW ACCESS POLICY|POLICIES`](https://cloud.google.com/bigquery/docs/reference/standard-sql/data-definition-language#drop_row_access_policy_statement) statement. * `ALTER_TABLE`: [`ALTER TABLE`](https://cloud.google.com/bigquery/docs/reference/standard-sql/data-definition-language#alter_table_set_options_statement) statement. * `ALTER_VIEW`: [`ALTER VIEW`](https://cloud.google.com/bigquery/docs/reference/standard-sql/data-definition-language#alter_view_set_options_statement) statement. * `ALTER_MATERIALIZED_VIEW`: [`ALTER MATERIALIZED VIEW`](https://cloud.google.com/bigquery/docs/reference/standard-sql/data-definition-language#alter_materialized_view_set_options_statement) statement. * `ALTER_SCHEMA`: [`ALTER SCHEMA`](https://cloud.google.com/bigquery/docs/reference/standard-sql/data-definition-language#alter_schema_set_options_statement) statement. * `SCRIPT`: [`SCRIPT`](https://cloud.google.com/bigquery/docs/reference/standard-sql/procedural-language). * `TRUNCATE_TABLE`: [`TRUNCATE TABLE`](https://cloud.google.com/bigquery/docs/reference/standard-sql/dml-syntax#truncate_table_statement) statement. * `CREATE_EXTERNAL_TABLE`: [`CREATE EXTERNAL TABLE`](https://cloud.google.com/bigquery/docs/reference/standard-sql/data-definition-language#create_external_table_statement) statement. * `EXPORT_DATA`: [`EXPORT DATA`](https://cloud.google.com/bigquery/docs/reference/standard-sql/other-statements#export_data_statement) statement. * `EXPORT_MODEL`: [`EXPORT MODEL`](https://cloud.google.com/bigquery-ml/docs/reference/standard-sql/bigqueryml-syntax-export-model) statement. * `LOAD_DATA`: [`LOAD DATA`](https://cloud.google.com/bigquery/docs/reference/standard-sql/other-statements#load_data_statement) statement. * `CALL`: [`CALL`](https://cloud.google.com/bigquery/docs/reference/standard-sql/procedural-language#call) statement.
+./dist/index.js:      ALTER TABLE campaigns 
+./dist/index.js:      ALTER TABLE campaigns 
+./dist/index.js:        ALTER TABLE campaigns 
+./dist/index.js:        ALTER TABLE urls DISABLE TRIGGER protect_original_click_values_trigger
+./dist/index.js:        ALTER TABLE urls DISABLE TRIGGER prevent_auto_click_update_trigger
+./dist/index.js:        ALTER TABLE urls ENABLE TRIGGER protect_original_click_values_trigger
+./dist/index.js:        ALTER TABLE urls ENABLE TRIGGER prevent_auto_click_update_trigger
+./dist/index.js:      await db.execute(sql9`ALTER TABLE urls DISABLE TRIGGER protect_original_click_values_trigger`);
+./dist/index.js:      await db.execute(sql9`ALTER TABLE urls DISABLE TRIGGER prevent_auto_click_update_trigger`);
+./dist/index.js:      await db.execute(sql9`ALTER TABLE urls ENABLE TRIGGER protect_original_click_values_trigger`);
+./dist/index.js:      await db.execute(sql9`ALTER TABLE urls ENABLE TRIGGER prevent_auto_click_update_trigger`);
+./dist/index.js:          ALTER TABLE urls ENABLE TRIGGER protect_original_click_values_trigger
+./dist/index.js:          ALTER TABLE urls ENABLE TRIGGER prevent_auto_click_update_trigger
+./dist/index.js:      await db.execute(sql9`ALTER TABLE urls DISABLE TRIGGER protect_original_click_values_trigger`);
+./dist/index.js:      await db.execute(sql9`ALTER TABLE urls DISABLE TRIGGER prevent_auto_click_update_trigger`);
+./dist/index.js:      await db.execute(sql9`ALTER TABLE urls ENABLE TRIGGER protect_original_click_values_trigger`);
+./dist/index.js:      await db.execute(sql9`ALTER TABLE urls ENABLE TRIGGER prevent_auto_click_update_trigger`);
+./dist/index.js:        ALTER TABLE urls DISABLE TRIGGER protect_original_click_values_trigger
+./dist/index.js:        ALTER TABLE urls DISABLE TRIGGER prevent_auto_click_update_trigger
+./dist/index.js:        ALTER TABLE urls ENABLE TRIGGER protect_original_click_values_trigger
+./dist/index.js:        ALTER TABLE urls ENABLE TRIGGER prevent_auto_click_update_trigger
+./dist/index.js:          ALTER TABLE urls ENABLE TRIGGER protect_original_click_values_trigger
+./dist/index.js:          ALTER TABLE urls ENABLE TRIGGER prevent_auto_click_update_trigger
+./migrations/add_post_pause_check_minutes.js:      ALTER TABLE campaigns
+./migrations/add_budget_update_time.js:        ALTER TABLE campaigns
+./migrations/add_high_spend_wait_minutes.js:      ALTER TABLE campaigns 
+./migrations/add_traffic_generator_field.js:      ALTER TABLE campaigns 
+./migrations/add_url_budget_fields.js:        ALTER TABLE urls
+./migrations/add_url_budget_fields.js:        ALTER TABLE urls
+./fix-blacklisted-urls.js:      await client.query(`ALTER TABLE blacklisted_urls ADD COLUMN target_url TEXT;`);
+./scripts/fix-blacklisted-urls.js:      await client.query(`ALTER TABLE blacklisted_urls ADD COLUMN target_url TEXT;`);
+./scripts/fix-blacklisted-urls.js:      await client.query(`ALTER TABLE blacklisted_urls ADD COLUMN description TEXT;`);
+./server/public/index.js:      ADD COLUMN trafficstar_campaign_id TEXT,
+./server/public/index.js:      ADD COLUMN auto_manage_trafficstar BOOLEAN DEFAULT FALSE,
+./server/public/index.js:      ADD COLUMN last_trafficstar_sync TIMESTAMP;
+./server/public/index.js:        ADD COLUMN budget_update_time TEXT DEFAULT '00:00:00'
+./server/migrations/add-budget-update-time.ts:        ADD COLUMN budget_update_time TEXT DEFAULT '00:00:00'
+./server/migrations/add-trafficstar-fields.ts:      ADD COLUMN trafficstar_campaign_id TEXT,
+./server/migrations/add-trafficstar-fields.ts:      ADD COLUMN auto_manage_trafficstar BOOLEAN DEFAULT FALSE,
+./server/migrations/add-trafficstar-fields.ts:      ADD COLUMN last_trafficstar_sync TIMESTAMP;
+./node_modules/drizzle-kit/api.js:        return `ALTER TABLE ${tableNameWithSchema} ADD COLUMN "${name2}" ${fixedType}${primaryKeyStatement}${defaultStatement}${generatedStatement}${notNullStatement}${identityStatement};`;
+./node_modules/drizzle-kit/api.js:            `As SQLite docs mention: "It is not possible to ALTER TABLE ADD COLUMN a STORED column. One can add a VIRTUAL column, however", source: "https://www.sqlite.org/gencol.html"`
+./node_modules/drizzle-kit/api.js:              `As SQLite docs mention: "It is not possible to ALTER TABLE ADD COLUMN a STORED column. One can add a VIRTUAL column, however", source: "https://www.sqlite.org/gencol.html"`
+./node_modules/drizzle-kit/api.js:              `As SQLite docs mention: "It is not possible to ALTER TABLE ADD COLUMN a STORED column. One can add a VIRTUAL column, however", source: "https://www.sqlite.org/gencol.html"`
+./dist/index.js:      ADD COLUMN trafficstar_campaign_id TEXT,
+./dist/index.js:      ADD COLUMN auto_manage_trafficstar BOOLEAN DEFAULT FALSE,
+./dist/index.js:      ADD COLUMN last_trafficstar_sync TIMESTAMP;
+./dist/index.js:        ADD COLUMN budget_update_time TEXT DEFAULT '00:00:00'
+./migrations/add_post_pause_check_minutes.js:      ADD COLUMN IF NOT EXISTS post_pause_check_minutes INTEGER DEFAULT 2;
+./migrations/add_budget_update_time.js:        ADD COLUMN last_budget_update_time TIMESTAMP
+./migrations/add_high_spend_wait_minutes.js:      ADD COLUMN high_spend_wait_minutes INTEGER DEFAULT 11
+./migrations/add_traffic_generator_field.js:      ADD COLUMN traffic_generator_enabled BOOLEAN DEFAULT false
+./migrations/add_url_budget_fields.js:        ADD COLUMN pending_budget_update BOOLEAN DEFAULT FALSE NOT NULL
+./migrations/add_url_budget_fields.js:        ADD COLUMN budget_calculated BOOLEAN DEFAULT FALSE NOT NULL
