@@ -154,7 +154,7 @@ export default function TrafficstarPage() {
   // Save API key mutation
   const saveApiKeyMutation = useMutation({
     mutationFn: (data: z.infer<typeof apiKeyFormSchema>) => 
-      apiRequest('/api/trafficstar/config', 'POST', data),
+      apiRequest("POST", '/api/trafficstar/config', data),
     onSuccess: () => {
       toast({
         title: 'TrafficStar API Configured',
@@ -175,7 +175,7 @@ export default function TrafficstarPage() {
   // Pause/activate campaign mutation
   const campaignActionMutation = useMutation({
     mutationFn: (data: { campaignId: number, action: 'pause' | 'activate' }) => 
-      apiRequest('/api/trafficstar/campaigns/action', 'POST', data),
+      apiRequest("POST", '/api/trafficstar/campaigns/action', data),
     onSuccess: () => {
       toast({
         title: 'Campaign Updated',
@@ -199,7 +199,7 @@ export default function TrafficstarPage() {
   // Update campaign budget mutation
   const updateBudgetMutation = useMutation({
     mutationFn: (data: { campaignId: number, maxDaily: number }) => 
-      apiRequest('/api/trafficstar/campaigns/budget', 'POST', data),
+      apiRequest("POST", '/api/trafficstar/campaigns/budget', data),
     onSuccess: () => {
       toast({
         title: 'Budget Updated',

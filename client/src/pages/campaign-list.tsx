@@ -98,7 +98,7 @@ export default function CampaignList() {
   // Delete campaign mutation
   const deleteMutation = useMutation({
     mutationFn: async (id: number) => {
-      return apiRequest('DELETE', `/api/campaigns/${id}`);
+      return apiRequest("DELETE", `/api/campaigns/${id}`);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/campaigns'] });
