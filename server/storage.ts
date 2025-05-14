@@ -25,11 +25,7 @@ import {
   InsertUrlClickRecord,
   urlClickRecords,
   TimeRangeFilter,
-  blacklistedUrls,
-  ChildTrafficstarCampaign,
-  InsertChildTrafficstarCampaign,
-  UpdateChildTrafficstarCampaign,
-  childTrafficstarCampaigns
+  blacklistedUrls
 } from "@shared/schema";
 import { db, pool } from "./db";
 import { eq, and, isNull, asc, desc, sql, inArray, ne, ilike, or, gte, lte } from "drizzle-orm";
@@ -52,13 +48,6 @@ export interface IStorage {
   updateCampaignPath(id: number, path: UpdateCampaignPath): Promise<CampaignPath | undefined>;
   deleteCampaignPath(id: number): Promise<boolean>;
   isPathUnique(path: string, skipId?: number): Promise<boolean>;
-  
-  // Child TrafficStar Campaign operations
-  getChildTrafficstarCampaigns(parentCampaignId: number): Promise<ChildTrafficstarCampaign[]>;
-  getChildTrafficstarCampaign(id: number): Promise<ChildTrafficstarCampaign | undefined>;
-  createChildTrafficstarCampaign(childCampaign: InsertChildTrafficstarCampaign): Promise<ChildTrafficstarCampaign>;
-  updateChildTrafficstarCampaign(id: number, childCampaign: UpdateChildTrafficstarCampaign): Promise<ChildTrafficstarCampaign | undefined>;
-  deleteChildTrafficstarCampaign(id: number): Promise<boolean>;
   
   // URL operations
   getUrls(campaignId: number): Promise<UrlWithActiveStatus[]>;
@@ -3472,80 +3461,6 @@ export class DatabaseStorage implements IStorage {
     } catch (error) {
       console.error(`Error checking if path is unique: ${error}`);
       return false; // Assume not unique on error (to be safe)
-    }
-  }
-  
-  // Child TrafficStar campaign functions
-  
-  async getChildTrafficstarCampaigns(parentCampaignId: number): Promise<ChildTrafficstarCampaign[]> {
-    try {
-      const childCampaigns = await db.select().from(childTrafficstarCampaigns)
-        .where(eq(childTrafficstarCampaigns.parentCampaignId, parentCampaignId))
-        .orderBy(asc(childTrafficstarCampaigns.clickRemainingThreshold));
-      
-      return childCampaigns;
-    } catch (error) {
-      console.error('Error fetching child TrafficStar campaigns:', error);
-      return [];
-    }
-  }
-  
-  async getChildTrafficstarCampaign(id: number): Promise<ChildTrafficstarCampaign | undefined> {
-    try {
-      const [childCampaign] = await db.select().from(childTrafficstarCampaigns)
-        .where(eq(childTrafficstarCampaigns.id, id))
-        .limit(1);
-      
-      return childCampaign;
-    } catch (error) {
-      console.error(`Error fetching child TrafficStar campaign with ID ${id}:`, error);
-      return undefined;
-    }
-  }
-  
-  async createChildTrafficstarCampaign(childCampaign: InsertChildTrafficstarCampaign): Promise<ChildTrafficstarCampaign> {
-    try {
-      const [newChildCampaign] = await db.insert(childTrafficstarCampaigns)
-        .values({
-          ...childCampaign,
-          createdAt: new Date(),
-          updatedAt: new Date()
-        })
-        .returning();
-      
-      return newChildCampaign;
-    } catch (error) {
-      console.error('Error creating child TrafficStar campaign:', error);
-      throw error;
-    }
-  }
-  
-  async updateChildTrafficstarCampaign(id: number, childCampaign: UpdateChildTrafficstarCampaign): Promise<ChildTrafficstarCampaign | undefined> {
-    try {
-      const [updatedChildCampaign] = await db.update(childTrafficstarCampaigns)
-        .set({
-          ...childCampaign,
-          updatedAt: new Date()
-        })
-        .where(eq(childTrafficstarCampaigns.id, id))
-        .returning();
-      
-      return updatedChildCampaign;
-    } catch (error) {
-      console.error(`Error updating child TrafficStar campaign with ID ${id}:`, error);
-      return undefined;
-    }
-  }
-  
-  async deleteChildTrafficstarCampaign(id: number): Promise<boolean> {
-    try {
-      await db.delete(childTrafficstarCampaigns)
-        .where(eq(childTrafficstarCampaigns.id, id));
-      
-      return true;
-    } catch (error) {
-      console.error(`Error deleting child TrafficStar campaign with ID ${id}:`, error);
-      return false;
     }
   }
 }

@@ -12,7 +12,6 @@ import { Switch } from "@/components/ui/switch";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Edit, Loader2, X } from "lucide-react";
 import { CampaignPaths } from "./campaign-paths";
-import { ChildTrafficstarCampaigns } from "./child-trafficstar-campaigns";
 import {
   Form,
   FormControl,
@@ -201,8 +200,8 @@ export default function CampaignEditForm({ campaign, onSuccess }: CampaignEditFo
     mutationFn: async (campaignId: number) => {
       console.log("Scheduling budget update for campaign:", campaignId);
       return await apiRequest(
-        `/api/trafficstar/campaigns/force-budget-update`,
         "POST",
+        `/api/trafficstar/campaigns/force-budget-update`,
         { campaignId }
       );
     },
@@ -229,8 +228,8 @@ export default function CampaignEditForm({ campaign, onSuccess }: CampaignEditFo
       console.log("Updating campaign with values:", values);
       // Fixed the apiRequest call with the correct parameter order
       return await apiRequest(
-        `/api/campaigns/${campaign.id}`,
         "PUT",
+        `/api/campaigns/${campaign.id}`,
         values
       );
     },
@@ -764,30 +763,6 @@ export default function CampaignEditForm({ campaign, onSuccess }: CampaignEditFo
                   </p>
                 </div>
               </div>
-              
-              {/* Show Child TrafficStar Campaigns when TrafficStar integration is enabled */}
-              {form.watch("trafficstarCampaignId") && form.watch("trafficstarCampaignId") !== "none" && (
-                <div className="rounded-lg border p-3 mt-4">
-                  <div className="space-y-2">
-                    <h4 className="font-medium">Child TrafficStar Campaigns</h4>
-                    <p className="text-sm text-muted-foreground">
-                      Add child TrafficStar campaigns that will automatically start/pause based on remaining clicks
-                    </p>
-                    
-                    {/* Only show if we have a campaign ID already */}
-                    {campaign.id ? (
-                      <ChildTrafficstarCampaigns 
-                        campaignId={campaign.id}
-                        trafficstarEnabled={true}
-                      />
-                    ) : (
-                      <p className="text-sm text-muted-foreground">
-                        Save the campaign first to manage child TrafficStar campaigns
-                      </p>
-                    )}
-                  </div>
-                </div>
-              )}
               
               {/* Traffic Generator Section */}
               <div className="rounded-lg border p-3 mt-4">

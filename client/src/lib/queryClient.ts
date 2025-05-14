@@ -8,12 +8,12 @@ async function throwIfResNotOk(res: Response) {
 }
 
 export async function apiRequest<T = any>(
+  method: string,
   url: string,
-  method: string = 'GET',
   data?: unknown | undefined,
   options?: { headers?: Record<string, string> }
 ): Promise<T> {
-  console.log(`🔍 DEBUG: API Request - ${method} ${url} ${data ? JSON.stringify(data) : ''}`);
+  console.log(`🔍 DEBUG: API Request - ${url} ${data ? JSON.stringify(data) : ''}`);
   
   try {
     // Prepare headers
@@ -33,16 +33,11 @@ export async function apiRequest<T = any>(
     
     await throwIfResNotOk(res);
     
-    // For DELETE requests that may not return JSON
-    if (method === 'DELETE' && res.status === 200 && res.headers.get('content-length') === '0') {
-      return {} as T;
-    }
-    
     // Parse and return the JSON response
     const jsonData = await res.json();
     return jsonData as T;
   } catch (error) {
-    console.error(`🔴 ERROR: API Request failed - ${method} ${url}`, error);
+    console.error(`🔴 ERROR: API Request failed - ${url}`, error);
     throw error;
   }
 }
