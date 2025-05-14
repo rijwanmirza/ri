@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Edit, Loader2, X } from "lucide-react";
+import { CampaignPaths } from "./campaign-paths";
 import {
   Form,
   FormControl,
@@ -551,7 +552,7 @@ export default function CampaignEditForm({ campaign, onSuccess }: CampaignEditFo
               name="customPath"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Custom Path (Optional)</FormLabel>
+                  <FormLabel>Legacy Custom Path (Optional)</FormLabel>
                   <FormControl>
                     <Input 
                       placeholder="e.g. my-campaign" 
@@ -560,12 +561,19 @@ export default function CampaignEditForm({ campaign, onSuccess }: CampaignEditFo
                     />
                   </FormControl>
                   <FormDescription>
-                    Create a custom URL path that will be used to access this campaign.
+                    Legacy custom path for backward compatibility. Consider using the new multi-path system below.
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
             />
+
+            {/* Multi-path support - Only show in edit mode */}
+            {campaign.id && (
+              <div className="mt-6">
+                <CampaignPaths campaign={campaign} />
+              </div>
+            )}
             
             {/* Click Multiplier */}
             <FormField
