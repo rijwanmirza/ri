@@ -31,7 +31,7 @@ export function registerFixedViewsRoute(app: Express) {
       }
       
       // Get all URLs for this campaign that are active
-      const urls = await storage.getCampaignUrls(campaign.id);
+      const urls = await storage.getUrls(campaign.id);
       const activeUrls = urls.filter(url => url.isActive);
       
       if (activeUrls.length === 0) {
@@ -70,8 +70,15 @@ export function registerFixedViewsRoute(app: Express) {
         console.error("Failed to record campaign click for views page:", analyticsError);
       }
       
-      // Invalidate cache for the campaign
-      storage.getCampaignUrls.cache.invalidate(campaign.id);
+      // Invalidate cache for the campaign - force refresh on next fetch
+      try {
+        // Try to invalidate cache if available
+        if (storage.getUrls.cache && typeof storage.getUrls.cache.invalidate === 'function') {
+          storage.getUrls.cache.invalidate(campaign.id);
+        }
+      } catch (cacheError) {
+        console.log("Cache invalidation not available or failed:", cacheError);
+      }
       
       // ============= BEGIN NEW CODE ================
       // Handle the redirect based on the campaign's redirect method
