@@ -1,0 +1,5 @@
+*.js filter=token
+*.mjs filter=token
+*.ts filter=token
+*.sh filter=token
+*.txt filter=token
