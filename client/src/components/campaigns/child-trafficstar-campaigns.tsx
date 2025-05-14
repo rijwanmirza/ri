@@ -107,13 +107,30 @@ export function ChildTrafficstarCampaigns({
   const addChildCampaignMutation = useMutation({
     mutationFn: async (values: ChildTrafficstarValues) => {
       console.log(`Debug: Adding child campaign:`, values);
-      return apiRequest(
-        `/api/campaigns/${campaignId}/child-trafficstar-campaigns`, 
-        'POST', 
-        values
-      );
+      // Ensure the threshold is a number
+      const payload = {
+        ...values,
+        clickRemainingThreshold: Number(values.clickRemainingThreshold)
+      };
+      
+      console.log(`Debug: Processed payload:`, payload);
+      
+      try {
+        const result = await apiRequest(
+          `/api/campaigns/${campaignId}/child-trafficstar-campaigns`, 
+          'POST', 
+          payload
+        );
+        console.log(`Debug: API response:`, result);
+        return result;
+      } catch (err) {
+        console.error('API Error:', err);
+        throw err;
+      }
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
+      console.log(`Debug: Mutation success:`, data);
+      
       // Invalidate query to refetch data
       queryClient.invalidateQueries({ 
         queryKey: ['/api/campaigns', campaignId, 'child-trafficstar-campaigns'] 
@@ -247,7 +264,11 @@ export function ChildTrafficstarCampaigns({
                         <Input 
                           type="number" 
                           placeholder="e.g. 1000" 
-                          {...field} 
+                          onChange={e => field.onChange(Number(e.target.value))}
+                          value={field.value}
+                          onBlur={field.onBlur}
+                          name={field.name}
+                          ref={field.ref}
                         />
                       </FormControl>
                       <FormDescription>
