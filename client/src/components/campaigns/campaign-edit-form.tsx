@@ -227,7 +227,7 @@ export default function CampaignEditForm({ campaign, onSuccess }: CampaignEditFo
   const updateCampaignMutation = useMutation({
     mutationFn: async (values: CampaignEditValues) => {
       console.log("Updating campaign with values:", values);
-      // Fixed the apiRequest call with the correct parameter order
+      // Fixed the apiRequest call with the correct parameter order as defined in queryClient.ts
       return await apiRequest(
         `/api/campaigns/${campaign.id}`,
         "PUT",

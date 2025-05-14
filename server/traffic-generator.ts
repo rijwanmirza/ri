@@ -893,13 +893,14 @@ async function handleChildTrafficstarCampaigns(parentCampaignId: number, remaini
               console.log(`✅ Successfully activated child campaign ${childCampaign.id} (TrafficStar ID: ${childCampaign.trafficstarCampaignId})`);
               
               // Update the last action timestamp
-              await db.update(childTrafficstarCampaigns)
-                .set({
-                  lastAction: 'activate',
-                  lastActionTime: new Date(),
-                  updatedAt: new Date()
-                })
-                .where(eq(childTrafficstarCampaigns.id, childCampaign.id));
+              // Fix: Use raw SQL query to update child campaign - avoids ORM issues
+              await db.execute(sql`
+                UPDATE child_trafficstar_campaigns
+                SET last_action = 'activate',
+                    last_action_time = ${new Date()},
+                    updated_at = ${new Date()}
+                WHERE id = ${childCampaign.id}
+              `);
             } else {
               console.error(`⚠️ Failed to activate child campaign ${childCampaign.id} (TrafficStar ID: ${childCampaign.trafficstarCampaignId})`);
             }
@@ -925,13 +926,14 @@ async function handleChildTrafficstarCampaigns(parentCampaignId: number, remaini
               console.log(`✅ Successfully paused child campaign ${childCampaign.id} (TrafficStar ID: ${childCampaign.trafficstarCampaignId})`);
               
               // Update the last action timestamp
-              await db.update(childTrafficstarCampaigns)
-                .set({
-                  lastAction: 'pause',
-                  lastActionTime: new Date(),
-                  updatedAt: new Date()
-                })
-                .where(eq(childTrafficstarCampaigns.id, childCampaign.id));
+              // Fix: Use raw SQL query to update child campaign - avoids ORM issues
+              await db.execute(sql`
+                UPDATE child_trafficstar_campaigns
+                SET last_action = 'pause',
+                    last_action_time = ${new Date()},
+                    updated_at = ${new Date()}
+                WHERE id = ${childCampaign.id}
+              `);
             } else {
               console.error(`⚠️ Failed to pause child campaign ${childCampaign.id} (TrafficStar ID: ${childCampaign.trafficstarCampaignId})`);
             }
