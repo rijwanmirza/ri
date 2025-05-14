@@ -11,6 +11,7 @@ import { registerUrlClickRoutes } from "./url-click-routes";
 import { urlClickLogsManager } from "./url-click-logs-manager";
 import urlBudgetTestApi from "./url-budget-test-api";
 import { urlRedirectAnalytics } from "./url-redirect-analytics";
+import { trackRedirectMethod } from "./fix-redirect-analytics";
 
 import { 
   optimizeResponseHeaders,
@@ -62,6 +63,10 @@ import { redirectLogsManager } from "./redirect-logs-manager";
 import urlBudgetLogger from "./url-budget-logger";
 import { processTrafficGenerator, runTrafficGeneratorForAllCampaigns, debugProcessCampaign } from "./traffic-generator";
 import { registerReportsAPITestRoutes } from "./test-reports-api";
+import { registerFixedViewsRoute } from "./fix-views-route";
+import { registerFixedRedirectRoute } from "./fix-redirect-route";
+import { registerFixedBridgeRoute } from "./fix-bridge-route";
+import { registerTestRedirectAnalyticsRoutes } from "./test-redirect-analytics";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Just create a regular HTTP server for now
@@ -79,6 +84,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // Register the new Reports API test routes
   registerReportsAPITestRoutes(app);
+  
+  // Register our fixed routes with redirect method analytics tracking
+  registerFixedViewsRoute(app);
+  registerFixedRedirectRoute(app);
+  registerFixedBridgeRoute(app);
+  
+  // Register test routes for redirect analytics
+  registerTestRedirectAnalyticsRoutes(app);
   
   // Register URL budget test API routes
   app.use('/api/url-budget-test', urlBudgetTestApi);
