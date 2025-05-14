@@ -1200,6 +1200,91 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // API routes for Campaign Paths
+  app.get("/api/campaigns/:campaignId/paths", async (req: Request, res: Response) => {
+    try {
+      const campaignId = parseInt(req.params.campaignId);
+      if (isNaN(campaignId)) {
+        return res.status(400).json({ message: "Invalid campaign ID" });
+      }
+
+      const paths = await storage.getCampaignPaths(campaignId);
+      res.json(paths);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch campaign paths" });
+    }
+  });
+
+  app.post("/api/campaigns/:campaignId/paths", async (req: Request, res: Response) => {
+    try {
+      const campaignId = parseInt(req.params.campaignId);
+      if (isNaN(campaignId)) {
+        return res.status(400).json({ message: "Invalid campaign ID" });
+      }
+      
+      // Verify the campaign exists
+      const campaign = await storage.getCampaign(campaignId);
+      if (!campaign) {
+        return res.status(404).json({ message: "Campaign not found" });
+      }
+
+      // Validate the path format
+      const { path } = req.body;
+      if (!path || typeof path !== 'string' || path.trim() === '') {
+        return res.status(400).json({ message: "Invalid path - path must be a non-empty string" });
+      }
+      
+      // Clean up the path - remove leading/trailing spaces and special characters
+      const cleanPath = path.trim().replace(/[^a-zA-Z0-9-_]/g, '');
+      if (cleanPath === '') {
+        return res.status(400).json({ message: "Path must contain alphanumeric characters" });
+      }
+
+      // Check if path is unique
+      const isUnique = await storage.isPathUnique(cleanPath);
+      if (!isUnique) {
+        return res.status(400).json({ message: "Path already exists for another campaign" });
+      }
+
+      // Create the path
+      const newPath = await storage.createCampaignPath({
+        campaignId,
+        path: cleanPath
+      });
+
+      res.status(201).json(newPath);
+    } catch (error) {
+      if (error instanceof Error && error.message.includes('already exists')) {
+        return res.status(400).json({ message: error.message });
+      }
+      res.status(500).json({ message: "Failed to create campaign path" });
+    }
+  });
+
+  app.delete("/api/campaign-paths/:id", async (req: Request, res: Response) => {
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "Invalid path ID" });
+      }
+
+      // Check if path exists
+      const path = await storage.getCampaignPath(id);
+      if (!path) {
+        return res.status(404).json({ message: "Path not found" });
+      }
+
+      const deleted = await storage.deleteCampaignPath(id);
+      if (!deleted) {
+        return res.status(500).json({ message: "Failed to delete path" });
+      }
+
+      res.json({ message: "Path deleted successfully" });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to delete campaign path" });
+    }
+  });
+
   // API routes for URLs
   app.get("/api/campaigns/:campaignId/urls", async (req: Request, res: Response) => {
     try {

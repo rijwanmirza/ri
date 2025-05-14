@@ -18,6 +18,10 @@ import {
   InsertCampaignClickRecord,
   campaignClickRecords,
   UrlClickRecord,
+  CampaignPath,
+  InsertCampaignPath,
+  UpdateCampaignPath,
+  campaignPaths,
   InsertUrlClickRecord,
   urlClickRecords,
   TimeRangeFilter,
@@ -36,6 +40,14 @@ export interface IStorage {
   createCampaign(campaign: InsertCampaign): Promise<Campaign>;
   updateCampaign(id: number, campaign: UpdateCampaign): Promise<Campaign | undefined>;
   deleteCampaign(id: number): Promise<boolean>;
+  
+  // Campaign Paths operations
+  getCampaignPaths(campaignId: number): Promise<CampaignPath[]>;
+  getCampaignPath(id: number): Promise<CampaignPath | undefined>;
+  createCampaignPath(path: InsertCampaignPath): Promise<CampaignPath>;
+  updateCampaignPath(id: number, path: UpdateCampaignPath): Promise<CampaignPath | undefined>;
+  deleteCampaignPath(id: number): Promise<boolean>;
+  isPathUnique(path: string, skipId?: number): Promise<boolean>;
   
   // URL operations
   getUrls(campaignId: number): Promise<UrlWithActiveStatus[]>;
@@ -361,17 +373,32 @@ export class DatabaseStorage implements IStorage {
     // Always do a fresh database lookup
     
     try {
-      // Direct database lookup to ensure fresh data
-      const [campaign] = await db.select().from(campaigns).where(eq(campaigns.customPath, customPath));
+      // First check in the legacy customPath field
+      let [campaign] = await db.select().from(campaigns).where(eq(campaigns.customPath, customPath));
+      
+      // If not found in legacy field, try the new campaign_paths table
+      if (!campaign) {
+        const [campaignPath] = await db.select().from(campaignPaths).where(eq(campaignPaths.path, customPath));
+        if (campaignPath) {
+          // Get the campaign using the campaignId from the path
+          const [foundCampaign] = await db.select().from(campaigns).where(eq(campaigns.id, campaignPath.campaignId));
+          campaign = foundCampaign;
+        }
+      }
+      
       if (!campaign) return undefined;
       
       // Get fresh URLs for this campaign
       const urls = await this.getUrls(campaign.id);
       
+      // Optionally get all paths for this campaign
+      const paths = await this.getCampaignPaths(campaign.id);
+      
       // Return fresh data
       return {
         ...campaign,
-        urls
+        urls,
+        paths
       };
     } catch (error) {
       // If we get a column does not exist error, fall back to selecting only the base columns
@@ -3338,6 +3365,102 @@ export class DatabaseStorage implements IStorage {
           dateRange: 'Error retrieving data'
         }
       };
+    }
+  }
+  
+  // Campaign Paths methods
+  async getCampaignPaths(campaignId: number): Promise<CampaignPath[]> {
+    try {
+      return await db.select().from(campaignPaths).where(eq(campaignPaths.campaignId, campaignId));
+    } catch (error) {
+      console.error(`Error getting campaign paths: ${error}`);
+      return [];
+    }
+  }
+  
+  async getCampaignPath(id: number): Promise<CampaignPath | undefined> {
+    try {
+      const [path] = await db.select().from(campaignPaths).where(eq(campaignPaths.id, id));
+      return path;
+    } catch (error) {
+      console.error(`Error getting campaign path: ${error}`);
+      return undefined;
+    }
+  }
+  
+  async createCampaignPath(path: InsertCampaignPath): Promise<CampaignPath> {
+    try {
+      // Check if path is unique first
+      const isUnique = await this.isPathUnique(path.path);
+      if (!isUnique) {
+        throw new Error(`Path '${path.path}' already exists for another campaign`);
+      }
+      
+      const [newPath] = await db.insert(campaignPaths).values(path).returning();
+      return newPath;
+    } catch (error) {
+      console.error(`Error creating campaign path: ${error}`);
+      throw error;
+    }
+  }
+  
+  async updateCampaignPath(id: number, pathUpdate: UpdateCampaignPath): Promise<CampaignPath | undefined> {
+    try {
+      // If path is changing, verify it's unique
+      if (pathUpdate.path) {
+        const isUnique = await this.isPathUnique(pathUpdate.path, id);
+        if (!isUnique) {
+          throw new Error(`Path '${pathUpdate.path}' already exists for another campaign`);
+        }
+      }
+      
+      const [updatedPath] = await db
+        .update(campaignPaths)
+        .set({
+          ...pathUpdate,
+          updatedAt: new Date()
+        })
+        .where(eq(campaignPaths.id, id))
+        .returning();
+      
+      return updatedPath;
+    } catch (error) {
+      console.error(`Error updating campaign path: ${error}`);
+      throw error;
+    }
+  }
+  
+  async deleteCampaignPath(id: number): Promise<boolean> {
+    try {
+      await db.delete(campaignPaths).where(eq(campaignPaths.id, id));
+      return true;
+    } catch (error) {
+      console.error(`Error deleting campaign path: ${error}`);
+      return false;
+    }
+  }
+  
+  async isPathUnique(path: string, skipId?: number): Promise<boolean> {
+    try {
+      // Check if path exists in legacy customPath field
+      const [legacyCampaign] = await db.select().from(campaigns).where(eq(campaigns.customPath, path));
+      if (legacyCampaign) {
+        return false;
+      }
+      
+      // Check if path exists in campaign_paths table
+      let query = db.select().from(campaignPaths).where(eq(campaignPaths.path, path));
+      
+      // If we're checking for a path update, exclude the current path
+      if (skipId) {
+        query = query.where(ne(campaignPaths.id, skipId));
+      }
+      
+      const [existingPath] = await query;
+      return !existingPath;
+    } catch (error) {
+      console.error(`Error checking if path is unique: ${error}`);
+      return false; // Assume not unique on error (to be safe)
     }
   }
 }

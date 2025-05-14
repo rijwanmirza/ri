@@ -1,4 +1,4 @@
-import { pgTable, text, serial, integer, timestamp, pgEnum, numeric, json, boolean, jsonb } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, integer, timestamp, pgEnum, numeric, json, boolean, jsonb, index, uniqueIndex } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
@@ -30,7 +30,7 @@ export const campaigns = pgTable("campaigns", {
   id: serial("id").primaryKey(),
   name: text("name").notNull(),
   redirectMethod: text("redirect_method").default(RedirectMethod.DIRECT).notNull(),
-  customPath: text("custom_path"), // Custom path for campaign URLs
+  customPath: text("custom_path"), // Legacy custom path for campaign URLs (keeping for backward compatibility)
   multiplier: numeric("multiplier", { precision: 10, scale: 2 }).default("1").notNull(), // Multiplier for URL click limits (supports decimals)
   pricePerThousand: numeric("price_per_thousand", { precision: 10, scale: 4 }).default("0").notNull(), // Price per 1000 clicks in dollars (supports 4 decimal places)
   trafficstarCampaignId: text("trafficstar_campaign_id"), // Link to TrafficStar campaign ID
@@ -234,13 +234,46 @@ export type InsertUrl = z.infer<typeof insertUrlSchema>;
 export type UpdateUrl = z.infer<typeof updateUrlSchema>;
 export type BulkUrlAction = z.infer<typeof bulkUrlActionSchema>;
 
+// Campaign paths schema (for multiple custom paths per campaign)
+export const campaignPaths = pgTable("campaign_paths", {
+  id: serial("id").primaryKey(),
+  campaignId: integer("campaign_id").references(() => campaigns.id).notNull(),
+  path: text("path").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+// NOTE: The unique constraint is applied at the PostgreSQL level
+
+// Insert schema for campaign paths
+export const insertCampaignPathSchema = createInsertSchema(campaignPaths).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+// Update schema for campaign paths
+export const updateCampaignPathSchema = createInsertSchema(campaignPaths).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+}).extend({
+  campaignId: z.number().int().optional(),
+  path: z.string().min(1).optional(),
+});
+
 // Extended schemas with campaign relationship
 export type UrlWithActiveStatus = Url & {
   isActive: boolean;
 };
 
+export type CampaignPath = typeof campaignPaths.$inferSelect;
+export type InsertCampaignPath = z.infer<typeof insertCampaignPathSchema>;
+export type UpdateCampaignPath = z.infer<typeof updateCampaignPathSchema>;
+
 export type CampaignWithUrls = Campaign & {
   urls: UrlWithActiveStatus[];
+  paths?: CampaignPath[];
   // Make sure these TrafficStar spent fields are included
   dailySpent?: string | number;
   dailySpentDate?: string | Date;
