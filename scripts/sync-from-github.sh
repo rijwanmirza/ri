@@ -5,7 +5,7 @@
 APP_DIR="/var/www/UrlCampaignTracker"
 LOG_DIR="$APP_DIR/sync_logs"
 GITHUB_REPO="https://github.com/rijwanmirza/ri.git"
-GITHUB_TOKEN="GITHUB_TOKEN_PLACEHOLDER" # Token removed for security
+GITHUB_TOKEN="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"
 DB_NAME="neondb"
 DB_USER="neondb_owner"
 

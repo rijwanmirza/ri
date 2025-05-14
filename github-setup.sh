@@ -3,7 +3,7 @@
 
 # Configuration - Updated with correct database user
 GITHUB_REPO="https://github.com/rijwanmirza/ri.git"
-GITHUB_TOKEN="GITHUB_TOKEN_PLACEHOLDER" # Token removed for security
+GITHUB_TOKEN="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"
 GITHUB_EMAIL="rijwamirza@gmail.com"
 GITHUB_NAME="Rijwan Mirza"
 APP_DIR="/var/www/UrlCampaignTracker"
@@ -285,7 +285,7 @@ const path = require('path');
 
 // Configuration
 const GITHUB_REPO = "https://github.com/rijwanmirza/ri.git";
-const GITHUB_TOKEN = "GITHUB_TOKEN_PLACEHOLDER"; // Token removed for security
+const GITHUB_TOKEN = "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";
 
 // Colors for terminal output
 const colors = {

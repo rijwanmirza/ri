@@ -1,0 +1,118 @@
+root@d026e9724:~# # 1. Go to your application directory
+cd /var/www/UrlCampaignTracker
+
+# 2. Create the PM2 ecosystem configuration file
+cat > ecosystem.config.js << 'EOF'
+module.exports = {
+  apps: [{
+    name: "url-tracker",
+    script: "./node_modules/.bin/tsx",
+    args: "server/index.ts",
+    cwd: "/var/www/UrlCampaignTracker",
+    env: {
+      NODE_ENV: "production"
+    },
+    watch: false,
+    instances: 1,
+    autorestart: true,
+    max_memory_restart: "1G"
+  }]
+};
+EOF
+
+# 3. Stop the current processes
+kill -9 1499521 1499532
+
+# 4. Remove any existing PM2 processes with the same name
+pm2 delete url-tracker
+
+# 5. Start your application with PM2
+pm2 start ecosystem.config.js
+
+# 6. Save your PM2 process list so it restarts after reboot
+pm2 save
+
+# 7. Generate the startup script
+pm2 startup
+
+# 8. Run the command that PM2 outputs after running the above command
+# (Copy and paste the command it gives you)
+
+# 9. Check that everything is running properly
+pm2 list
+[PM2] Applying action deleteProcessId on app [url-tracker](ids: [ 0 ])
+[PM2] [url-tracker](0) ✓
+┌────┬───────────┬─────────────┬─────────┬─────────┬──────────┬────────┬──────┬───────────┬──────────┬──────────┬──────────┬──────────┐
+│ id │ name      │ namespace   │ version │ mode    │ pid      │ uptime │ ↺    │ status    │ cpu      │ mem      │ user     │ watching │
+└────┴───────────┴─────────────┴─────────┴─────────┴──────────┴────────┴──────┴───────────┴──────────┴──────────┴──────────┴──────────┘
+[PM2][ERROR] File ecosystem.config.js malformated
+ReferenceError: module is not defined
+    at file:///var/www/UrlCampaignTracker/ecosystem.config.js:1:1
+    at ModuleJobSync.runSync (node:internal/modules/esm/module_job:387:35)
+    at ModuleLoader.importSyncForRequire (node:internal/modules/esm/loader:323:47)
+    at loadESMFromCJS (node:internal/modules/cjs/loader:1371:24)
+    at Module._compile (node:internal/modules/cjs/loader:1511:5)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1572:16)
+    at Module.load (node:internal/modules/cjs/loader:1275:32)
+    at Module._load (node:internal/modules/cjs/loader:1096:12)
+    at Module.require (node:internal/modules/cjs/loader:1298:19)
+    at require (node:internal/modules/helpers:182:18)
+[PM2] Saving current process list...
+[PM2][WARN] PM2 is not managing any process, skipping save...
+[PM2][WARN] To force saving use: pm2 save --force
+[PM2] Init System found: systemd
+Platform systemd
+Template
+[Unit]
+Description=PM2 process manager
+Documentation=https://pm2.keymetrics.io/
+After=network.target
+
+[Service]
+Type=forking
+User=root
+LimitNOFILE=infinity
+LimitNPROC=infinity
+LimitCORE=infinity
+Environment=PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin
+Environment=PM2_HOME=/root/.pm2
+PIDFile=/root/.pm2/pm2.pid
+Restart=on-failure
+
+ExecStart=/usr/lib/node_modules/pm2/bin/pm2 resurrect
+ExecReload=/usr/lib/node_modules/pm2/bin/pm2 reload all
+ExecStop=/usr/lib/node_modules/pm2/bin/pm2 kill
+
+[Install]
+WantedBy=multi-user.target
+
+Target path
+/etc/systemd/system/pm2-root.service
+Command list
+[ 'systemctl enable pm2-root' ]
+[PM2] Writing init configuration in /etc/systemd/system/pm2-root.service
+[PM2] Making script booting at startup...
+[PM2] [-] Executing: systemctl enable pm2-root...
+[PM2] [v] Command successfully executed.
++---------------------------------------+
+[PM2] Freeze a process list on reboot via:
+$ pm2 save
+
+[PM2] Remove init script via:
+$ pm2 unstartup systemd
+┌────┬───────────┬─────────────┬─────────┬─────────┬──────────┬────────┬──────┬───────────┬──────────┬──────────┬──────────┬──────────┐
+│ id │ name      │ namespace   │ version │ mode    │ pid      │ uptime │ ↺    │ status    │ cpu      │ mem      │ user     │ watching │
+└────┴───────────┴─────────────┴─────────┴─────────┴──────────┴────────┴──────┴───────────┴──────────┴──────────┴──────────┴──────────┘
+root@d026e9724:/var/www/UrlCampaignTracker# pm2 los url-tracker
+[PM2][ERROR] Command not found
+
+usage: pm2 [options] <command>
+
+pm2 -h, --help             all available commands and options
+pm2 examples               display pm2 usage examples
+pm2 <command> -h           help on a specific command
+
+Access pm2 files in ~/.pm2
+root@d026e9724:/var/www/UrlCampaignTracker# pm2 logs url-tracker
+[TAILING] Tailing last 15 lines for [url-tracker] process (change the value with --lines option)
+

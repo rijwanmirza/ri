@@ -1,0 +1,84 @@
+root@d026e9724:/var/www/UrlCampaignTracker# # First, stop all running processes
+pm2 delete all
+killall -9 node
+
+# Check the structure of the urls table to see what columns it has
+PGPASSWORD=npg_U8evoXZz0WOB psql -U neondb_owner -h 78.46.85.93 -p 5432 -d neondb -c "\d urls"
+
+# Add the missing columns to campaigns table
+PGPASSWORD=npg_U8evoXZz0WOB psql -U neondb_owner -h 78.46.85.93 -p 5432 -d neondb -c "
+ALTER TABLE campaigns ADD COLUMN IF NOT EXISTS min_pause_click_threshold INTEGER DEFAULT 5000;
+ALTER TABLE campaigns ADD COLUMN IF NOT EXISTS min_activate_click_threshold INTEGER DEFAULT 15000;
+ALTER TABLE campaigns ADD COLUMN IF NOT EXISTS high_spend_min_pause_click_threshold INTEGER DEFAULT 1000;
+ALTER TABLE campaigns ADD COLUMN IF NOT EXISTS high_spend_min_activate_click_threshold INTEGER DEFAULT 5000;
+"
+
+# Now create a view that only uses columns that actually exist in both tables
+PGPASSWORD=npg_U8evoXZz0WOB psql -U neondb_owner -h 78.46.85.93 -p 5432 -d neondb -c "
+DROP VIEW IF EXISTS campaigns_urls;
+CREATE VIEW campaigns_urls AS
+SELECT
+    c.id AS campaign_id,
+    c.name AS campaign_name,
+    c.custom_path,
+    c.redirect_method,
+    c.multiplier AS campaign_multiplier,
+    c.price_per_thousand,
+    u.id AS url_id,
+    u.name AS url_name,
+    u.click_limit,
+    u.clicks,
+    u.status,
+    COALESCE(u.multiplier, c.multiplier) AS url_multiplier,
+    u.target_url,
+    COALESCE(u.facebook_redirects, 0) as facebook_redirects,
+    COALESCE(u.linkedin_redirects, 0) as linkedin_redirects,
+    COALESCE(u.whatsapp_redirects, 0) as whatsapp_redirects,
+    COALESCE(u.googlemeet_redirects, 0) as googlemeet_redirects,
+    COALESCE(u.googlesearch_redirects, 0) as googlesearch_redirects,
+    COALESCE(u.googleplay_redirects, 0) as googleplay_redirects,
+    COALESCE(u.direct_redirects, 0) as direct_redirects
+FROM campaigns c
+LEFT JOIN urls u ON c.id = u.campaign_id;
+"
+[PM2] Applying action deleteProcessId on app [all](ids: [ 0 ])
+[PM2] [url-tracker](0) ✓
+┌────┬───────────┬─────────────┬─────────┬─────────┬──────────┬────────┬──────┬───────────┬──────────┬──────────┬──────────┬──────────┐
+│ id │ name      │ namespace   │ version │ mode    │ pid      │ uptime │ ↺    │ status    │ cpu      │ mem      │ user     │ watching │
+└────┴───────────┴─────────────┴─────────┴─────────┴──────────┴────────┴──────┴───────────┴──────────┴──────────┴──────────┴──────────┘
+                                              Table "public.urls"
+        Column         |            Type             | Collation | Nullable |             Default
+-----------------------+-----------------------------+-----------+----------+----------------------------------
+ id                    | integer                     |           | not null | nextval('urls_id_seq'::regclass)
+ campaign_id           | integer                     |           |          |
+ name                  | text                        |           | not null |
+ target_url            | text                        |           | not null |
+ click_limit           | integer                     |           | not null |
+ clicks                | integer                     |           | not null | 0
+ status                | text                        |           | not null | 'active'::text
+ created_at            | timestamp without time zone |           | not null | now()
+ updated_at            | timestamp without time zone |           | not null | now()
+ original_click_limit  | integer                     |           | not null | 0
+ pending_budget_update | boolean                     |           | not null | false
+ budget_calculated     | boolean                     |           | not null | false
+Indexes:
+    "urls_pkey" PRIMARY KEY, btree (id)
+Referenced by:
+    TABLE "click_analytics" CONSTRAINT "click_analytics_urlId_fkey" FOREIGN KEY ("urlId") REFERENCES urls(id) ON DELETE CASCADE
+    TABLE "url_click_logs" CONSTRAINT "url_click_logs_url_id_fkey" FOREIGN KEY (url_id) REFERENCES urls(id)
+    TABLE "url_click_records" CONSTRAINT "url_click_records_url_id_fkey" FOREIGN KEY (url_id) REFERENCES urls(id)
+Triggers:
+    prevent_auto_click_update_trigger BEFORE UPDATE ON urls FOR EACH ROW EXECUTE FUNCTION prevent_auto_click_updates()
+    protect_original_click_values_trigger BEFORE UPDATE ON urls FOR EACH ROW EXECUTE FUNCTION protect_original_click_values()
+
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+NOTICE:  view "campaigns_urls" does not exist, skipping
+DROP VIEW
+ERROR:  column u.multiplier does not exist
+LINE 16:     COALESCE(u.multiplier, c.multiplier) AS url_multiplier,
+                      ^
+HINT:  Perhaps you meant to reference the column "c.multiplier".
+root@d026e9724:/var/www/UrlCampaignTracker#

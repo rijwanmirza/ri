@@ -10,6 +10,8 @@ import { requireAuth } from "./auth/middleware";
 import { registerUrlClickRoutes } from "./url-click-routes";
 import { urlClickLogsManager } from "./url-click-logs-manager";
 import urlBudgetTestApi from "./url-budget-test-api";
+import { urlRedirectAnalytics } from "./url-redirect-analytics";
+import { trackRedirectMethod } from "./fix-redirect-analytics";
 
 import { 
   optimizeResponseHeaders,
@@ -61,6 +63,10 @@ import { redirectLogsManager } from "./redirect-logs-manager";
 import urlBudgetLogger from "./url-budget-logger";
 import { processTrafficGenerator, runTrafficGeneratorForAllCampaigns, debugProcessCampaign } from "./traffic-generator";
 import { registerReportsAPITestRoutes } from "./test-reports-api";
+import { registerFixedViewsRoute } from "./fix-views-route";
+import { registerFixedRedirectRoute } from "./fix-redirect-route";
+import { registerFixedBridgeRoute } from "./fix-bridge-route";
+import { registerTestRedirectAnalyticsRoutes } from "./test-redirect-analytics";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Just create a regular HTTP server for now
@@ -78,6 +84,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // Register the new Reports API test routes
   registerReportsAPITestRoutes(app);
+  
+  // Register our fixed routes with redirect method analytics tracking
+  registerFixedViewsRoute(app);
+  registerFixedRedirectRoute(app);
+  registerFixedBridgeRoute(app);
+  
+  // Register test routes for redirect analytics
+  registerTestRedirectAnalyticsRoutes(app);
   
   // Register URL budget test API routes
   app.use('/api/url-budget-test', urlBudgetTestApi);
@@ -1921,6 +1935,81 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ message: "Failed to fetch URL" });
     }
   });
+  
+  // Get redirect analytics for a URL
+  app.get("/api/urls/:id/redirect-analytics", async (req: Request, res: Response) => {
+    try {
+      const urlId = parseInt(req.params.id);
+      if (isNaN(urlId)) {
+        return res.status(400).json({ message: "Invalid URL ID" });
+      }
+      
+      // Check if URL exists
+      const url = await storage.getUrl(urlId);
+      if (!url) {
+        return res.status(404).json({ message: "URL not found" });
+      }
+      
+      // Get redirect analytics for this URL
+      const analytics = await urlRedirectAnalytics.getRedirectAnalytics(urlId);
+      
+      return res.json(analytics);
+    } catch (error) {
+      console.error("Error getting URL redirect analytics:", error);
+      return res.status(500).json({ message: "Failed to get URL redirect analytics" });
+    }
+  });
+  
+  // Reset URL redirect analytics (for testing only)
+  app.delete("/api/urls/:id/redirect-analytics", async (req: Request, res: Response) => {
+    try {
+      const urlId = parseInt(req.params.id);
+      
+      if (isNaN(urlId)) {
+        return res.status(400).json({ message: "Invalid URL ID" });
+      }
+      
+      // Reset analytics for this URL
+      await urlRedirectAnalytics.resetRedirectAnalytics(urlId);
+      
+      return res.json({ message: "Redirect analytics reset successfully" });
+    } catch (error) {
+      console.error("Error resetting URL redirect analytics:", error);
+      return res.status(500).json({ message: "Failed to reset redirect analytics" });
+    }
+  });
+  
+  // Test endpoint to directly increment a redirect method count
+  app.post("/api/urls/:id/test-redirect-method", async (req: Request, res: Response) => {
+    try {
+      const urlId = parseInt(req.params.id);
+      if (isNaN(urlId)) {
+        return res.status(400).json({ message: "Invalid URL ID" });
+      }
+      
+      // Get the method from the request body
+      const { method } = req.body;
+      if (!method) {
+        return res.status(400).json({ message: "Missing redirect method" });
+      }
+      
+      console.log(`🧪 TEST: Directly incrementing redirect count for URL ${urlId} with method ${method}`);
+      
+      // Directly increment the redirect count for testing
+      await urlRedirectAnalytics.incrementRedirectCount(urlId, method);
+      
+      // Get the updated analytics
+      const analytics = await urlRedirectAnalytics.getRedirectAnalytics(urlId);
+      
+      return res.json({ 
+        message: `Redirect count for method "${method}" incremented successfully`,
+        analytics
+      });
+    } catch (error) {
+      console.error("Error testing redirect method:", error);
+      return res.status(500).json({ message: "Failed to test redirect method" });
+    }
+  });
 
   // Redirect endpoint
   app.get("/r/:campaignId/:urlId", async (req: Request, res: Response) => {
@@ -1964,6 +2053,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       } catch (urlLogError) {
         console.error("Error logging URL click:", urlLogError);
       }
+      
+      // Variable to track the redirect method used (will be set in the process)
+      // This will be defined later - removing duplicate declaration
 
       // Record campaign click data that will persist even if URL is deleted
       // This makes click tracking completely independent from URLs
@@ -1989,6 +2081,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // ULTRA-OPTIMIZED REDIRECT HANDLERS - For maximum throughput (millions of redirects per second)
       // Pre-calculate the target URL and remove all unnecessary processing
       let targetUrl = url.targetUrl;
+      let redirectMethod = 'direct'; // Default method
       
       // Check if custom redirector is enabled for this campaign
       if (campaign.customRedirectorEnabled) {
@@ -2018,6 +2111,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         if (enabledRedirectionMethods.length > 0) {
           const randomIndex = Math.floor(Math.random() * enabledRedirectionMethods.length);
           const selectedMethod = enabledRedirectionMethods[randomIndex];
+          redirectMethod = selectedMethod; // Track selected method
           
           // Encode the target URL for use in redirections
           const encodedUrl = encodeURIComponent(targetUrl);
@@ -2062,6 +2156,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
               
             default:
               // If something goes wrong, use original URL
+              redirectMethod = 'direct';
               console.log(`⚠️ Unknown custom redirection method: ${selectedMethod}, using direct URL`);
               break;
           }
@@ -2070,6 +2165,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
         } else {
           console.log(`⚠️ Custom redirector is enabled for campaign ${campaign.id}, but no redirection methods are enabled`);
         }
+      }
+      
+      // Track the redirect method used in our analytics
+      try {
+        // Use await to ensure tracking is completed before redirect happens
+        // This is critical for analytics accuracy
+        console.log(`📊 TRACKING: Tracking redirect method "${redirectMethod}" for URL ID ${urlId}`);
+        await urlRedirectAnalytics.incrementRedirectCount(urlId, redirectMethod);
+        console.log(`📊 SUCCESS: Tracked redirect method "${redirectMethod}" for URL ID ${urlId}`);
+      } catch (analyticsError) {
+        console.error("⚠️ FAILED: Failed to track redirect method:", analyticsError);
       }
       
       // Clear all unnecessary headers that slow down response time
@@ -2190,6 +2296,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
         // Log the redirect in our redirect logs system with Indian timezone
         redirectLogsManager.logRedirect(campaignId, urlId).catch(err => {
           console.error("Error logging redirect for bridge page:", err);
+        });
+        
+        // Track the redirect method used in our analytics
+        // For bridge page, we always count it as direct redirect
+        const bridgeRedirectMethod = 'direct';
+        urlRedirectAnalytics.incrementRedirectCount(urlId, bridgeRedirectMethod).catch(err => {
+          console.error("Error tracking redirect method:", err);
         });
       } catch (analyticsError) {
         // Log but don't block the redirect if click recording fails
