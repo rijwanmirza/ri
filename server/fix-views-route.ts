@@ -87,27 +87,101 @@ export function registerFixedViewsRoute(app: Express) {
       let targetUrl = redirectResult.url;
       // ============= END NEW CODE ================
       
-      // Prepare the page with the iframe
-      const html = `
-        <!DOCTYPE html>
-        <html lang="en">
-        <head>
-          <meta charset="UTF-8">
-          <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <title>${campaign.name || 'Campaign View'}</title>
-          <style>
-            body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; }
-            iframe { border: none; width: 100%; height: 100%; position: absolute; top: 0; left: 0; }
-          </style>
-        </head>
-        <body>
-          <iframe src="${targetUrl}" allowfullscreen></iframe>
-        </body>
-        </html>
-      `;
-      
-      res.setHeader('Content-Type', 'text/html');
-      res.send(html);
+      // Handle the redirect based on the campaign's redirect method
+      // This matches the same behavior as the /c/:campaignId route
+      switch (campaign.redirectMethod) {
+        case "meta_refresh":
+          // Meta refresh redirect - completely invisible
+          res.send(`
+            <!DOCTYPE html>
+            <html>
+              <head>
+                <meta http-equiv="refresh" content="0;url=${targetUrl}">
+                <title></title>
+                <style>body{display:none}</style>
+              </head>
+              <body></body>
+            </html>
+          `);
+          break;
+          
+        case "double_meta_refresh":
+          // For double meta refresh - completely invisible
+          res.send(`
+            <!DOCTYPE html>
+            <html>
+              <head>
+                <meta http-equiv="refresh" content="0;url=${targetUrl}">
+                <title></title>
+                <style>body{display:none}</style>
+                <script>
+                  // Immediate redirect without any visible elements
+                  window.location.href = "${targetUrl}";
+                </script>
+              </head>
+              <body></body>
+            </html>
+          `);
+          break;
+          
+        case "http_307":
+          // HTTP 307 Temporary Redirect
+          res.status(307).header("Location", targetUrl).end();
+          break;
+          
+        case "http2_307_temporary":
+          // HTTP/2.0 307 Temporary Redirect
+          res.setHeader("X-HTTP2-Version", "HTTP/2.0");
+          res.setHeader("Alt-Svc", "h2=\":443\"; ma=86400");
+          res.setHeader("X-Protocol-Version", "h2");
+          res.setHeader("Cache-Control", "no-cache");
+          res.setHeader("Strict-Transport-Security", "max-age=31536000; includeSubDomains");
+          res.setHeader("X-Powered-By", "ViralEngine/2.0");
+          res.status(307).header("Location", targetUrl).end();
+          break;
+          
+        case "http2_forced_307":
+          // This matches the exact format seen in viralplayer.xyz
+          const cookieExpiration = new Date();
+          cookieExpiration.setFullYear(cookieExpiration.getFullYear() + 1);
+          const cookieExpiryString = cookieExpiration.toUTCString();
+          const randomId = Math.random().toString(16).substring(2, 10);
+          
+          // Set headers matching viralplayer.xyz in their specific order
+          res.removeHeader('X-Powered-By');
+          res.setHeader("date", new Date().toUTCString());
+          res.setHeader("content-length", "0");
+          res.setHeader("location", targetUrl);
+          res.setHeader("server", "cloudflare");
+          
+          // Generate a UUID for x-request-id
+          const uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+            const r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+            return v.toString(16);
+          });
+          res.setHeader("x-request-id", uuid);
+          res.setHeader("cf-cache-status", "DYNAMIC");
+          
+          // Set cookies that match the format
+          res.setHeader("set-cookie", [
+            `bc45=fpc0|${randomId}::351:55209; SameSite=Lax; Max-Age=31536000; Expires=${cookieExpiryString}`,
+            `rc45=fpc0|${randomId}::28; SameSite=Lax; Max-Age=31536000; Expires=${cookieExpiryString}`,
+            `uclick=mr7ZxwtaaNs1gOWlamCY4hIUD7craeFLJuyMJz3hmBMFe4/9c70RDu5SgPFmEHXMW9DJfw==; SameSite=Lax; Max-Age=31536000`,
+            `bcid=d0505amc402c73djlgl0; SameSite=Lax; Max-Age=31536000`
+          ]);
+          
+          const cfRay = Math.random().toString(16).substring(2, 11) + "a3fe-EWR";
+          res.setHeader("cf-ray", cfRay);
+          res.setHeader("alt-svc", "h3=\":443\"; ma=86400");
+          res.status(307).end();
+          break;
+          
+        case "direct":
+        default:
+          // Standard redirect (302 Found)
+          res.redirect(targetUrl);
+          break;
+      }
     } catch (error) {
       console.error("Error processing views route:", error);
       res.status(500).json({ message: "Views failed" });

@@ -32,7 +32,7 @@ export async function trackRedirectMethod(url: any, campaign: any): Promise<Redi
     console.log(`🔀 Determining redirect method for URL ID ${url.id}, campaign ID ${campaign.id}`);
     
     // Default to direct redirect if custom redirector is not enabled
-    if (!campaign.useCustomRedirector) {
+    if (!campaign.customRedirectorEnabled) {
       console.log(`🔀 Custom redirector disabled for campaign ${campaign.id}, using direct method`);
       
       // Track the direct redirect in analytics
@@ -47,22 +47,22 @@ export async function trackRedirectMethod(url: any, campaign: any): Promise<Redi
     // Get the enabled redirect methods from the campaign
     const enabledMethods: RedirectMethod[] = [];
     
-    if (campaign.useLinkedinRedirector) {
+    if (campaign.linkedinRedirectionEnabled) {
       enabledMethods.push('linkedin');
     }
-    if (campaign.useFacebookRedirector) {
+    if (campaign.facebookRedirectionEnabled) {
       enabledMethods.push('facebook');
     }
-    if (campaign.useWhatsappRedirector) {
+    if (campaign.whatsappRedirectionEnabled) {
       enabledMethods.push('whatsapp');
     }
-    if (campaign.useGoogleMeetRedirector) {
+    if (campaign.googleMeetRedirectionEnabled) {
       enabledMethods.push('google_meet');
     }
-    if (campaign.useGoogleSearchRedirector) {
+    if (campaign.googleSearchRedirectionEnabled) {
       enabledMethods.push('google_search');
     }
-    if (campaign.useGooglePlayRedirector) {
+    if (campaign.googlePlayRedirectionEnabled) {
       enabledMethods.push('google_play');
     }
     
@@ -88,24 +88,28 @@ export async function trackRedirectMethod(url: any, campaign: any): Promise<Redi
     // Build the redirect URL based on the selected method
     switch (randomMethod) {
       case 'linkedin':
-        redirectUrl = `https://www.linkedin.com/shareArticle?mini=true&url=${encodeURIComponent(targetUrl)}`;
+        // LinkedIn redirection format with feed-detail for better referrer appearance
+        redirectUrl = `https://www.linkedin.com/safety/go?url=${encodeURIComponent(targetUrl)}&trk=feed-detail_comments-list_comment-text`;
         break;
       case 'facebook':
+        // Facebook link sharing redirection format
         redirectUrl = `https://l.facebook.com/l.php?u=${encodeURIComponent(targetUrl)}`;
         break;
       case 'whatsapp':
-        redirectUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(targetUrl)}`;
+        // WhatsApp redirection format - updated to use l.wl.co format exactly as specified
+        redirectUrl = `https://l.wl.co/l?u=${targetUrl}`;
         break;
       case 'google_meet':
+        // Google Meet redirection format
         redirectUrl = `https://meet.google.com/linkredirect?dest=${encodeURIComponent(targetUrl)}`;
         break;
       case 'google_search':
-        // Format: https://www.google.com/url?q=ACTUAL_URL
+        // Google Search redirection format
         redirectUrl = `https://www.google.com/url?q=${encodeURIComponent(targetUrl)}`;
         break;
       case 'google_play':
-        // Format: https://play.google.com/store/apps/details?id=com.example.app&referrer=ACTUAL_URL
-        redirectUrl = `https://play.google.com/store/apps/collection/cluster?clp=ogonCiEKG3Byb21vdGVkX2V4cGVyaWVuY2VfMjAyMTA4MTASBRICU0U%3D:S:ANO1ljJ65K8&gsr=CiqiCicKIQobcHJvbW90ZWRfZXhwZXJpZW5jZV8yMDIxMDgxMBIFAgJTRA%3D%3D:S:ANO1ljLQBdA&redirect=${encodeURIComponent(targetUrl)}`;
+        // Google Play redirection format - exact format as specified
+        redirectUrl = `https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=&url=${targetUrl}`;
         break;
       default:
         // Direct redirect without any intermediary
