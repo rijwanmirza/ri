@@ -41,13 +41,13 @@ export default function BlacklistedUrlsPage() {
   // Fetch blacklisted URLs
   const { data: blacklistedUrls, isLoading, error } = useQuery({
     queryKey: ['/api/blacklisted-urls'],
-    queryFn: () => apiRequest<BlacklistedUrl[]>('GET', '/api/blacklisted-urls'),
+    queryFn: () => apiRequest<BlacklistedUrl[]>("GET", '/api/blacklisted-urls'),
   });
   
   // Create mutation
   const createMutation = useMutation({
     mutationFn: (newBlacklistedUrl: Omit<BlacklistedUrl, 'id' | 'createdAt' | 'updatedAt'>) => 
-      apiRequest('POST', '/api/blacklisted-urls', newBlacklistedUrl),
+      apiRequest("POST", '/api/blacklisted-urls', newBlacklistedUrl),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/blacklisted-urls'] });
       toast({
