@@ -86,9 +86,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   registerReportsAPITestRoutes(app);
   
   // Register our fixed routes with redirect method analytics tracking
+  console.log('⭐ Registering fixed routes with analytics tracking...');
   registerFixedViewsRoute(app);
   registerFixedRedirectRoute(app);
   registerFixedBridgeRoute(app);
+  console.log('✅ Fixed routes registration completed');
   
   // Register test routes for redirect analytics
   registerTestRedirectAnalyticsRoutes(app);

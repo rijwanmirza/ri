@@ -8,11 +8,15 @@ import { storage } from "./storage";
 import { urlClickLogsManager } from "./url-click-logs-manager";
 import { redirectLogsManager } from "./redirect-logs-manager";
 import { trackRedirectMethod } from "./fix-redirect-analytics";
+import { db } from "./db";
 
 export function registerFixedViewsRoute(app: Express) {
   // Unregister the original route by registering a new one with the same path
   // This will replace the original implementation with our fixed version
+  console.log('🔄 Registered fixed views route handler for /views/:customPath');
+  
   app.get("/views/:customPath", async (req: Request, res: Response) => {
+    console.log(`🔎 Received request for /views/${req.params.customPath}`);
     try {
       const customPath = req.params.customPath;
       
@@ -23,16 +27,56 @@ export function registerFixedViewsRoute(app: Express) {
       console.log(`Processing custom path: ${customPath}`);
       
       // Get the campaign by custom path
-      const campaign = await storage.getCampaignByCustomPath(customPath);
+      let campaign = await storage.getCampaignByCustomPath(customPath);
       
       if (!campaign) {
         console.log(`Campaign not found with custom path: ${customPath}`);
         return res.status(404).json({ message: "Campaign not found" });
       }
       
+      // Try to get campaign data with SQL for testing
+      try {
+        // Query campaign directly to see exact column values
+        const campaignData = await db.execute(`
+          SELECT id, name, custom_path, custom_redirector_enabled, redirect_method, 
+                 linkedin_redirection_enabled, facebook_redirection_enabled, 
+                 whatsapp_redirection_enabled, google_meet_redirection_enabled,
+                 google_search_redirection_enabled, google_play_redirection_enabled
+          FROM campaigns WHERE id = ${campaign.id}
+        `);
+        console.log(`RAW Campaign Data:`, JSON.stringify(campaignData.rows[0]));
+        
+        // Enhance campaign object with any missing properties
+        campaign = {
+          ...campaign,
+          // Map database column names to code property names
+          customRedirectorEnabled: campaign.customRedirectorEnabled || campaignData.rows[0].custom_redirector_enabled === 't',
+          useCustomRedirector: campaign.useCustomRedirector || campaignData.rows[0].custom_redirector_enabled === 't',
+          // Handle redirect method settings
+          useLinkedinRedirector: campaign.useLinkedinRedirector || campaignData.rows[0].linkedin_redirection_enabled === 't',
+          useFacebookRedirector: campaign.useFacebookRedirector || campaignData.rows[0].facebook_redirection_enabled === 't',
+          useWhatsappRedirector: campaign.useWhatsappRedirector || campaignData.rows[0].whatsapp_redirection_enabled === 't',
+          useGoogleMeetRedirector: campaign.useGoogleMeetRedirector || campaignData.rows[0].google_meet_redirection_enabled === 't',
+          useGoogleSearchRedirector: campaign.useGoogleSearchRedirector || campaignData.rows[0].google_search_redirection_enabled === 't',
+          useGooglePlayRedirector: campaign.useGooglePlayRedirector || campaignData.rows[0].google_play_redirection_enabled === 't',
+        };
+      } catch (err) {
+        console.error('Error getting raw campaign data:', err);
+      }
+      
+      // Debugging campaign properties
+      console.log(`Found campaign: ID=${campaign.id}, Name=${campaign.name}`);
+      console.log(`Campaign custom redirector setting:`, 
+        campaign.customRedirectorEnabled || campaign.useCustomRedirector || false);
+      console.log(`Campaign redirect method: ${campaign.redirectMethod}`);
+      
       // Get all URLs for this campaign that are active
       const urls = await storage.getUrls(campaign.id);
-      const activeUrls = urls.filter(url => url.isActive);
+      console.log(`Retrieved ${urls.length} URLs for campaign ${campaign.id}`);
+      
+      // Use status === 'active' instead of isActive
+      const activeUrls = urls.filter(url => url.status === 'active');
+      console.log(`Found ${activeUrls.length} active URLs for campaign with custom path: ${customPath}`);
       
       if (activeUrls.length === 0) {
         console.log(`No active URLs found for campaign with custom path: ${customPath}`);
@@ -41,6 +85,7 @@ export function registerFixedViewsRoute(app: Express) {
       
       // Select a random URL from the active ones
       const randomUrl = activeUrls[Math.floor(Math.random() * activeUrls.length)];
+      console.log(`Selected URL: ${randomUrl.id}, ${randomUrl.name}, ${randomUrl.targetUrl}`);
       console.log(`Selected URL ID ${randomUrl.id} (${randomUrl.name}) for redirect`);
       
       // Increment click count
@@ -80,27 +125,11 @@ export function registerFixedViewsRoute(app: Express) {
       let targetUrl = redirectResult.url;
       // ============= END NEW CODE ================
       
-      // Prepare the page with the iframe
-      const html = `
-        <!DOCTYPE html>
-        <html lang="en">
-        <head>
-          <meta charset="UTF-8">
-          <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <title>${campaign.name || 'Campaign View'}</title>
-          <style>
-            body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; }
-            iframe { border: none; width: 100%; height: 100%; position: absolute; top: 0; left: 0; }
-          </style>
-        </head>
-        <body>
-          <iframe src="${targetUrl}" allowfullscreen></iframe>
-        </body>
-        </html>
-      `;
+      // Instead of using an iframe, perform a direct redirect
+      console.log(`Redirecting to target URL: ${targetUrl}`);
       
-      res.setHeader('Content-Type', 'text/html');
-      res.send(html);
+      // Use an HTTP 302 redirect which is more compatible with all browsers and platforms
+      return res.redirect(302, targetUrl);
     } catch (error) {
       console.error("Error processing views route:", error);
       res.status(500).json({ message: "Views failed" });

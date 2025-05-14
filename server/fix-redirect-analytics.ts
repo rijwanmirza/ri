@@ -30,9 +30,23 @@ type RedirectResult = {
 export async function trackRedirectMethod(url: any, campaign: any): Promise<RedirectResult> {
   try {
     console.log(`🔀 Determining redirect method for URL ID ${url.id}, campaign ID ${campaign.id}`);
+    console.log(`🔍 DEBUG Campaign properties:`, JSON.stringify({
+      id: campaign.id,
+      name: campaign.name,
+      useCustomRedirector: campaign.useCustomRedirector,
+      customRedirectorEnabled: campaign.customRedirectorEnabled, 
+      redirectMethod: campaign.redirectMethod,
+      customRedirectorName: campaign.customRedirectorName
+    }));
+    
+    // Check both potential property names for custom redirector setting
+    const isCustomRedirectorEnabled = 
+      campaign.useCustomRedirector === true || 
+      campaign.customRedirectorEnabled === true || 
+      campaign.customRedirectorEnabled === 't';
     
     // Default to direct redirect if custom redirector is not enabled
-    if (!campaign.useCustomRedirector) {
+    if (!isCustomRedirectorEnabled) {
       console.log(`🔀 Custom redirector disabled for campaign ${campaign.id}, using direct method`);
       
       // Track the direct redirect in analytics
@@ -47,23 +61,36 @@ export async function trackRedirectMethod(url: any, campaign: any): Promise<Redi
     // Get the enabled redirect methods from the campaign
     const enabledMethods: RedirectMethod[] = [];
     
-    if (campaign.useLinkedinRedirector) {
+    // Check both potential property names for each redirector
+    // Handle both direct property access and DB column naming
+    if (campaign.useLinkedinRedirector === true || campaign.linkedin_redirection_enabled === true || campaign.linkedin_redirection_enabled === 't') {
       enabledMethods.push('linkedin');
+      console.log('LinkedIn redirector enabled');
     }
-    if (campaign.useFacebookRedirector) {
+    
+    if (campaign.useFacebookRedirector === true || campaign.facebook_redirection_enabled === true || campaign.facebook_redirection_enabled === 't') {
       enabledMethods.push('facebook');
+      console.log('Facebook redirector enabled');
     }
-    if (campaign.useWhatsappRedirector) {
+    
+    if (campaign.useWhatsappRedirector === true || campaign.whatsapp_redirection_enabled === true || campaign.whatsapp_redirection_enabled === 't') {
       enabledMethods.push('whatsapp');
+      console.log('WhatsApp redirector enabled');
     }
-    if (campaign.useGoogleMeetRedirector) {
+    
+    if (campaign.useGoogleMeetRedirector === true || campaign.google_meet_redirection_enabled === true || campaign.google_meet_redirection_enabled === 't') {
       enabledMethods.push('google_meet');
+      console.log('Google Meet redirector enabled');
     }
-    if (campaign.useGoogleSearchRedirector) {
+    
+    if (campaign.useGoogleSearchRedirector === true || campaign.google_search_redirection_enabled === true || campaign.google_search_redirection_enabled === 't') {
       enabledMethods.push('google_search');
+      console.log('Google Search redirector enabled');
     }
-    if (campaign.useGooglePlayRedirector) {
+    
+    if (campaign.useGooglePlayRedirector === true || campaign.google_play_redirection_enabled === true || campaign.google_play_redirection_enabled === 't') {
       enabledMethods.push('google_play');
+      console.log('Google Play redirector enabled');
     }
     
     // If no methods are enabled, default to LinkedIn (safety measure)
