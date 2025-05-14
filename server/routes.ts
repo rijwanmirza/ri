@@ -3857,7 +3857,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const budgetUpdateTimeMigrationNeeded = await isBudgetUpdateTimeMigrationNeeded();
       const trafficStarFieldsMigrationNeeded = await isTrafficStarFieldsMigrationNeeded();
       
-      // Check if the original_url_records table exists
+      // Check if the original_url_records table exists using pool.query
       const originalUrlRecordsTableResult = await pool.query(`
         SELECT EXISTS (
           SELECT FROM information_schema.tables 
