@@ -283,7 +283,7 @@ export default function URLsPage() {
       } else if (action === 'delete') {
         return apiRequest("DELETE", `/api/urls/${id}`);
       } else if (action === 'permanent_delete') {
-        return apiRequest('DELETE', `/api/urls/${id}/permanent`);
+        return apiRequest("DELETE", `/api/urls/${id}/permanent`);
       }
     },
     onSuccess: () => {
