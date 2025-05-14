@@ -3862,7 +3862,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const trafficStarFieldsMigrationNeeded = await isTrafficStarFieldsMigrationNeeded();
       
       // Check if the original_url_records table exists
-      const originalUrlRecordsTableResult = await db.execute(`
+      const originalUrlRecordsTableResult = await pool.query(`
         SELECT EXISTS (
           SELECT FROM information_schema.tables 
           WHERE table_name = 'original_url_records'
