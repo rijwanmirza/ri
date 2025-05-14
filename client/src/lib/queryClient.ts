@@ -9,7 +9,7 @@ async function throwIfResNotOk(res: Response) {
 
 export async function apiRequest<T = any>(
   url: string,
-  method: string = 'GET',
+  method: string = "GET",
   data?: unknown | undefined,
   options?: { headers?: Record<string, string> }
 ): Promise<T> {
@@ -34,7 +34,7 @@ export async function apiRequest<T = any>(
     await throwIfResNotOk(res);
     
     // For DELETE requests that may not return JSON
-    if (method === 'DELETE' && res.status === 200 && res.headers.get('content-length') === '0') {
+    if (method === "DELETE" && res.status === 200 && res.headers.get("content-length") === "0") {
       return {} as T;
     }
     

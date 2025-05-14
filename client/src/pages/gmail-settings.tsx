@@ -183,7 +183,7 @@ export default function GmailSettingsPage() {
         autoDeleteMinutes: values.autoDeleteMinutes
       };
       
-      return apiRequest<{message: string, config: any}>('POST', '/api/gmail-reader/config', configData);
+      return apiRequest<{message: string, config: any}>('/api/gmail-reader/config', "POST", configData);
     },
     onSuccess: () => {
       toast({
@@ -218,7 +218,7 @@ export default function GmailSettingsPage() {
     CredentialsInput
   >({
     mutationFn: (credentials: CredentialsInput) => {
-      return apiRequest<{ success: boolean, message: string }>('POST', '/api/gmail-reader/test-connection', credentials);
+      return apiRequest<{ success: boolean, message: string }>('/api/gmail-reader/test-connection', "POST", credentials);
     },
     onSuccess: (data) => {
       if (data.success) {
