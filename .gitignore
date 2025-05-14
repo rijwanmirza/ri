@@ -1,22 +1,3 @@
-# Environment variables and configs
-.env
-*.env
-config.json
-
-# Logs
-*.log
-url_budget_logs/
-Active_Url_Budget_Logs/
-logs/
-
-# Dependencies
-node_modules/
-
-# Database files
-*.sql
-*.dump
-
-# Secrets
-*credentials*.json
-*token*.json
-*secret*.json
+# Ignore files with sensitive tokens
+attached_assets/Pasted--workspace-Check-if-git-is-initialized-ls-la-git-Try-to-set-your-user-name-directly-if--1747211368491.txt
+# Add other sensitive files if needed
