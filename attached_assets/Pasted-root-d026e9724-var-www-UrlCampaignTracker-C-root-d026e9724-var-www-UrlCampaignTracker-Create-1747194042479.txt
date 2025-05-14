@@ -1,0 +1,64 @@
+root@d026e9724:/var/www/UrlCampaignTracker# ^C
+root@d026e9724:/var/www/UrlCampaignTracker# # Create a proper PM2 configuration with all database environment variables
+cd /var/www/UrlCampaignTracker
+pm2 delete url-tracker
+
+# Create a new ecosystem file with database credentials
+cat > ecosystem.config.js << 'EOF'
+module.exports = {
+  apps: [{
+    name: "url-tracker",
+    script: "/var/www/UrlCampaignTracker/node_modules/.bin/tsx",
+    args: "server/index.ts",
+    cwd: "/var/www/UrlCampaignTracker",
+    env: {
+      NODE_ENV: "production",
+      DATABASE_URL: "postgres://neondb_owner:npg_U8evoXZz0WOB@78.46.85.93:5432/neondb",
+      PGHOST: "78.46.85.93",
+      PGPORT: "5432",
+      PGUSER: "neondb_owner",
+      PGPASSWORD: "npg_U8evoXZz0WOB",
+      PGDATABASE: "neondb"
+    },
+    watch: false,
+    instances: 1,
+    autorestart: true,
+    max_memory_restart: "1G"
+  }]
+};
+EOF
+
+# Start the application with PM2
+pm2 start ecosystem.config.js
+
+# Save the PM2 process list
+pm2 save
+
+# Check the status
+pm2 list
+[PM2] Applying action deleteProcessId on app [url-tracker](ids: [ 0 ])
+[PM2] [url-tracker](0) ✓
+┌────┬───────────┬─────────────┬─────────┬─────────┬──────────┬────────┬──────┬───────────┬──────────┬──────────┬──────────┬──────────┐
+│ id │ name      │ namespace   │ version │ mode    │ pid      │ uptime │ ↺    │ status    │ cpu      │ mem      │ user     │ watching │
+└────┴───────────┴─────────────┴─────────┴─────────┴──────────┴────────┴──────┴───────────┴──────────┴──────────┴──────────┴──────────┘
+[PM2][ERROR] File ecosystem.config.js malformated
+ReferenceError: module is not defined
+    at file:///var/www/UrlCampaignTracker/ecosystem.config.js:1:1
+    at ModuleJobSync.runSync (node:internal/modules/esm/module_job:387:35)
+    at ModuleLoader.importSyncForRequire (node:internal/modules/esm/loader:323:47)
+    at loadESMFromCJS (node:internal/modules/cjs/loader:1371:24)
+    at Module._compile (node:internal/modules/cjs/loader:1511:5)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1572:16)
+    at Module.load (node:internal/modules/cjs/loader:1275:32)
+    at Module._load (node:internal/modules/cjs/loader:1096:12)
+    at Module.require (node:internal/modules/cjs/loader:1298:19)
+    at require (node:internal/modules/helpers:182:18)
+[PM2] Saving current process list...
+[PM2][WARN] PM2 is not managing any process, skipping save...
+[PM2][WARN] To force saving use: pm2 save --force
+┌────┬───────────┬─────────────┬─────────┬─────────┬──────────┬────────┬──────┬───────────┬──────────┬──────────┬──────────┬──────────┐
+│ id │ name      │ namespace   │ version │ mode    │ pid      │ uptime │ ↺    │ status    │ cpu      │ mem      │ user     │ watching │
+└────┴───────────┴─────────────┴─────────┴─────────┴──────────┴────────┴──────┴───────────┴──────────┴──────────┴──────────┴──────────┘
+root@d026e9724:/var/www/UrlCampaignTracker# pm2 logs url-tracker
+[TAILING] Tailing last 15 lines for [url-tracker] process (change the value with --lines option)
+

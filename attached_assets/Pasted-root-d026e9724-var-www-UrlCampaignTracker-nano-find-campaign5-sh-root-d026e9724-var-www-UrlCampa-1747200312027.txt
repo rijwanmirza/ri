@@ -1,0 +1,274 @@
+root@d026e9724:/var/www/UrlCampaignTracker# nano find-campaign5.sh
+root@d026e9724:/var/www/UrlCampaignTracker# chmod +x /var/www/UrlCampaignTracker/find-campaign5.sh
+root@d026e9724:/var/www/UrlCampaignTracker# ./find-campaign5.sh
+Finding all database backup files...
+Found 14 backup files
+
+=====================================
+Checking backup: version_6
+Path: /var/www/versions/version_6/database.sql
+Created on: 2025-05-13
+Creating temporary database to check this backup...
+NOTICE:  schema "temp_check" does not exist, skipping
+DROP SCHEMA
+CREATE SCHEMA
+Extracting campaign data from backup file...
+SET
+CREATE TABLE
+ERROR:  invalid input syntax for type integer: "COPY public.campaigns (id, name, redirect_method, custom_path, created_at, updated_at, multiplier, price_per_thousand, trafficstar_campaign_id, auto_manage_trafficstar, last_trafficstar_sync, budget_update_time, daily_spent, daily_spent_date, last_spent_check, traffic_sender_enabled, last_traffic_sender_action, last_traffic_sender_status, last_budget_update_time, traffic_generator_enabled, traffic_generator_state, traffic_generator_wait_start_time, traffic_generator_wait_minutes, budgeted_url_ids, pending_url_budgets, post_pause_check_minutes, high_spend_wait_minutes, high_spend_budget_calc_time, youtube_api_enabled, youtube_api_interval_minutes, youtube_api_last_check, youtube_check_country_restriction, youtube_check_private, youtube_check_deleted, youtube_check_age_restricted, youtube_check_made_for_kids, youtube_check_duration, youtube_max_duration_minutes, pending_budget_update, minimum_clicks_threshold, remaining_clicks_threshold, owner_id, traffic_source, total_budget, start_date, end_date, min_pause_click_threshold, min_activate_click_threshold, high_spend_pause_threshold, high_spend_activate_threshold) FROM stdin;"
+CONTEXT:  COPY campaigns, line 1, column id: "COPY public.campaigns (id, name, redirect_method, custom_path, created_at, updated_at, multiplier, p..."
+ERROR:  relation "temp_check.campaigns" does not exist
+LINE 5:     FROM temp_check.campaigns WHERE id = 5;
+                 ^
+❌ Campaign ID 5 NOT found in this backup
+DROP SCHEMA
+
+=====================================
+Checking backup: version_5
+Path: /var/www/versions/version_5/database.sql
+Created on: 2025-05-13
+Creating temporary database to check this backup...
+NOTICE:  schema "temp_check" does not exist, skipping
+DROP SCHEMA
+CREATE SCHEMA
+Extracting campaign data from backup file...
+SET
+CREATE TABLE
+ERROR:  invalid input syntax for type integer: "COPY public.campaigns (id, name, redirect_method, custom_path, created_at, updated_at, multiplier, price_per_thousand, trafficstar_campaign_id, auto_manage_trafficstar, last_trafficstar_sync, budget_update_time, daily_spent, daily_spent_date, last_spent_check, traffic_sender_enabled, last_traffic_sender_action, last_traffic_sender_status, last_budget_update_time, traffic_generator_enabled, traffic_generator_state, traffic_generator_wait_start_time, traffic_generator_wait_minutes, budgeted_url_ids, pending_url_budgets, post_pause_check_minutes, high_spend_wait_minutes, high_spend_budget_calc_time, youtube_api_enabled, youtube_api_interval_minutes, youtube_api_last_check, youtube_check_country_restriction, youtube_check_private, youtube_check_deleted, youtube_check_age_restricted, youtube_check_made_for_kids, youtube_check_duration, youtube_max_duration_minutes, pending_budget_update, minimum_clicks_threshold, remaining_clicks_threshold, owner_id, traffic_source, total_budget, start_date, end_date, min_pause_click_threshold, min_activate_click_threshold, high_spend_pause_threshold, high_spend_activate_threshold) FROM stdin;"
+CONTEXT:  COPY campaigns, line 1, column id: "COPY public.campaigns (id, name, redirect_method, custom_path, created_at, updated_at, multiplier, p..."
+ERROR:  relation "temp_check.campaigns" does not exist
+LINE 5:     FROM temp_check.campaigns WHERE id = 5;
+                 ^
+❌ Campaign ID 5 NOT found in this backup
+DROP SCHEMA
+
+=====================================
+Checking backup: version_4
+Path: /var/www/versions/version_4/database.sql
+Created on: 2025-05-12
+Creating temporary database to check this backup...
+NOTICE:  schema "temp_check" does not exist, skipping
+DROP SCHEMA
+CREATE SCHEMA
+Extracting campaign data from backup file...
+SET
+CREATE TABLE
+ERROR:  invalid input syntax for type integer: "COPY public.campaigns (id, name, redirect_method, custom_path, created_at, updated_at, multiplier, price_per_thousand, trafficstar_campaign_id, auto_manage_trafficstar, last_trafficstar_sync, budget_update_time, daily_spent, daily_spent_date, last_spent_check, traffic_sender_enabled, last_traffic_sender_action, last_traffic_sender_status, last_budget_update_time, traffic_generator_enabled, traffic_generator_state, traffic_generator_wait_start_time, traffic_generator_wait_minutes, budgeted_url_ids, pending_url_budgets, post_pause_check_minutes, high_spend_wait_minutes, high_spend_budget_calc_time, youtube_api_enabled, youtube_api_interval_minutes, youtube_api_last_check, youtube_check_country_restriction, youtube_check_private, youtube_check_deleted, youtube_check_age_restricted, youtube_check_made_for_kids, youtube_check_duration, youtube_max_duration_minutes, pending_budget_update, minimum_clicks_threshold, remaining_clicks_threshold, owner_id, traffic_source, total_budget, start_date, end_date, min_pause_click_threshold, min_activate_click_threshold, high_spend_pause_threshold, high_spend_activate_threshold) FROM stdin;"
+CONTEXT:  COPY campaigns, line 1, column id: "COPY public.campaigns (id, name, redirect_method, custom_path, created_at, updated_at, multiplier, p..."
+ERROR:  relation "temp_check.campaigns" does not exist
+LINE 5:     FROM temp_check.campaigns WHERE id = 5;
+                 ^
+❌ Campaign ID 5 NOT found in this backup
+DROP SCHEMA
+
+=====================================
+Checking backup: version_3
+Path: /var/www/versions/version_3/database.sql
+Created on: 2025-05-12
+Creating temporary database to check this backup...
+NOTICE:  schema "temp_check" does not exist, skipping
+DROP SCHEMA
+CREATE SCHEMA
+Extracting campaign data from backup file...
+SET
+CREATE TABLE
+ERROR:  invalid input syntax for type integer: "COPY public.campaigns (id, name, redirect_method, custom_path, created_at, updated_at, multiplier, price_per_thousand, trafficstar_campaign_id, auto_manage_trafficstar, last_trafficstar_sync, budget_update_time, daily_spent, daily_spent_date, last_spent_check, traffic_sender_enabled, last_traffic_sender_action, last_traffic_sender_status, last_budget_update_time, traffic_generator_enabled, traffic_generator_state, traffic_generator_wait_start_time, traffic_generator_wait_minutes, budgeted_url_ids, pending_url_budgets, post_pause_check_minutes, high_spend_wait_minutes, high_spend_budget_calc_time, youtube_api_enabled, youtube_api_interval_minutes, youtube_api_last_check, youtube_check_country_restriction, youtube_check_private, youtube_check_deleted, youtube_check_age_restricted, youtube_check_made_for_kids, youtube_check_duration, youtube_max_duration_minutes, pending_budget_update, minimum_clicks_threshold, remaining_clicks_threshold, owner_id, traffic_source, total_budget, start_date, end_date) FROM stdin;"
+CONTEXT:  COPY campaigns, line 1, column id: "COPY public.campaigns (id, name, redirect_method, custom_path, created_at, updated_at, multiplier, p..."
+ERROR:  relation "temp_check.campaigns" does not exist
+LINE 5:     FROM temp_check.campaigns WHERE id = 5;
+                 ^
+❌ Campaign ID 5 NOT found in this backup
+DROP SCHEMA
+
+=====================================
+Checking backup: version_2
+Path: /var/www/versions/version_2/database.sql
+Created on: 2025-05-11
+Creating temporary database to check this backup...
+NOTICE:  schema "temp_check" does not exist, skipping
+DROP SCHEMA
+CREATE SCHEMA
+Extracting campaign data from backup file...
+SET
+CREATE TABLE
+ERROR:  invalid input syntax for type integer: "COPY public.campaigns (id, name, redirect_method, custom_path, created_at, updated_at, multiplier, price_per_thousand, trafficstar_campaign_id, auto_manage_trafficstar, last_trafficstar_sync, budget_update_time, daily_spent, daily_spent_date, last_spent_check, traffic_sender_enabled, last_traffic_sender_action, last_traffic_sender_status, last_budget_update_time, traffic_generator_enabled, traffic_generator_state, traffic_generator_wait_start_time, traffic_generator_wait_minutes, budgeted_url_ids, pending_url_budgets, post_pause_check_minutes, high_spend_wait_minutes, high_spend_budget_calc_time, youtube_api_enabled, youtube_api_interval_minutes, youtube_api_last_check, youtube_check_country_restriction, youtube_check_private, youtube_check_deleted, youtube_check_age_restricted, youtube_check_made_for_kids, youtube_check_duration, youtube_max_duration_minutes, pending_budget_update, minimum_clicks_threshold, remaining_clicks_threshold) FROM stdin;"
+CONTEXT:  COPY campaigns, line 1, column id: "COPY public.campaigns (id, name, redirect_method, custom_path, created_at, updated_at, multiplier, p..."
+ERROR:  relation "temp_check.campaigns" does not exist
+LINE 5:     FROM temp_check.campaigns WHERE id = 5;
+                 ^
+❌ Campaign ID 5 NOT found in this backup
+DROP SCHEMA
+
+=====================================
+Checking backup: version_1
+Path: /var/www/versions/version_1/database.sql
+Created on: 2025-05-11
+Creating temporary database to check this backup...
+NOTICE:  schema "temp_check" does not exist, skipping
+DROP SCHEMA
+CREATE SCHEMA
+Extracting campaign data from backup file...
+SET
+CREATE TABLE
+ERROR:  invalid input syntax for type integer: "COPY public.campaigns (id, name, redirect_method, custom_path, created_at, updated_at, multiplier, price_per_thousand, trafficstar_campaign_id, auto_manage_trafficstar, last_trafficstar_sync, budget_update_time, daily_spent, daily_spent_date, last_spent_check, traffic_sender_enabled, last_traffic_sender_action, last_traffic_sender_status, last_budget_update_time, traffic_generator_enabled, traffic_generator_state, traffic_generator_wait_start_time, traffic_generator_wait_minutes, budgeted_url_ids, pending_url_budgets, post_pause_check_minutes, high_spend_wait_minutes, high_spend_budget_calc_time, youtube_api_enabled, youtube_api_interval_minutes, youtube_api_last_check, youtube_check_country_restriction, youtube_check_private, youtube_check_deleted, youtube_check_age_restricted, youtube_check_made_for_kids, youtube_check_duration, youtube_max_duration_minutes, pending_budget_update, minimum_clicks_threshold, remaining_clicks_threshold) FROM stdin;"
+CONTEXT:  COPY campaigns, line 1, column id: "COPY public.campaigns (id, name, redirect_method, custom_path, created_at, updated_at, multiplier, p..."
+ERROR:  relation "temp_check.campaigns" does not exist
+LINE 5:     FROM temp_check.campaigns WHERE id = 5;
+                 ^
+❌ Campaign ID 5 NOT found in this backup
+DROP SCHEMA
+
+=====================================
+Checking backup: auto_backup_before_rollback_20250514_040956
+Path: /var/www/versions/auto_backup_before_rollback_20250514_040956/database.sql
+Created on: 2025-05-14
+Creating temporary database to check this backup...
+NOTICE:  schema "temp_check" does not exist, skipping
+DROP SCHEMA
+CREATE SCHEMA
+Extracting campaign data from backup file...
+SET
+CREATE TABLE
+ERROR:  invalid input syntax for type integer: "COPY public.campaigns (id, name, redirect_method, custom_path, created_at, updated_at, multiplier, price_per_thousand, trafficstar_campaign_id, auto_manage_trafficstar, last_trafficstar_sync, budget_update_time, daily_spent, daily_spent_date, last_spent_check, traffic_sender_enabled, last_traffic_sender_action, last_traffic_sender_status, last_budget_update_time, traffic_generator_enabled, traffic_generator_state, traffic_generator_wait_start_time, traffic_generator_wait_minutes, budgeted_url_ids, pending_url_budgets, post_pause_check_minutes, high_spend_wait_minutes, high_spend_budget_calc_time, youtube_api_enabled, youtube_api_interval_minutes, youtube_api_last_check, youtube_check_country_restriction, youtube_check_private, youtube_check_deleted, youtube_check_age_restricted, youtube_check_made_for_kids, youtube_check_duration, youtube_max_duration_minutes, pending_budget_update, minimum_clicks_threshold, remaining_clicks_threshold, owner_id, traffic_source, total_budget, start_date, end_date, min_pause_click_threshold, min_activate_click_threshold, high_spend_pause_threshold, high_spend_activate_threshold) FROM stdin;"
+CONTEXT:  COPY campaigns, line 1, column id: "COPY public.campaigns (id, name, redirect_method, custom_path, created_at, updated_at, multiplier, p..."
+ERROR:  relation "temp_check.campaigns" does not exist
+LINE 5:     FROM temp_check.campaigns WHERE id = 5;
+                 ^
+❌ Campaign ID 5 NOT found in this backup
+DROP SCHEMA
+
+=====================================
+Checking backup: auto_backup_before_rollback_20250514_040651
+Path: /var/www/versions/auto_backup_before_rollback_20250514_040651/database.sql
+Created on: 2025-05-14
+Creating temporary database to check this backup...
+NOTICE:  schema "temp_check" does not exist, skipping
+DROP SCHEMA
+CREATE SCHEMA
+Extracting campaign data from backup file...
+SET
+CREATE TABLE
+ERROR:  invalid input syntax for type integer: "COPY public.campaigns (id, name, redirect_method, custom_path, created_at, updated_at, multiplier, price_per_thousand, trafficstar_campaign_id, auto_manage_trafficstar, last_trafficstar_sync, budget_update_time, daily_spent, daily_spent_date, last_spent_check, traffic_sender_enabled, last_traffic_sender_action, last_traffic_sender_status, last_budget_update_time, traffic_generator_enabled, traffic_generator_state, traffic_generator_wait_start_time, traffic_generator_wait_minutes, budgeted_url_ids, pending_url_budgets, post_pause_check_minutes, high_spend_wait_minutes, high_spend_budget_calc_time, youtube_api_enabled, youtube_api_interval_minutes, youtube_api_last_check, youtube_check_country_restriction, youtube_check_private, youtube_check_deleted, youtube_check_age_restricted, youtube_check_made_for_kids, youtube_check_duration, youtube_max_duration_minutes, pending_budget_update, minimum_clicks_threshold, remaining_clicks_threshold, owner_id, traffic_source, total_budget, start_date, end_date, min_pause_click_threshold, min_activate_click_threshold, high_spend_pause_threshold, high_spend_activate_threshold) FROM stdin;"
+CONTEXT:  COPY campaigns, line 1, column id: "COPY public.campaigns (id, name, redirect_method, custom_path, created_at, updated_at, multiplier, p..."
+ERROR:  relation "temp_check.campaigns" does not exist
+LINE 5:     FROM temp_check.campaigns WHERE id = 5;
+                 ^
+❌ Campaign ID 5 NOT found in this backup
+DROP SCHEMA
+
+=====================================
+Checking backup: auto_backup_before_rollback_20250512_185316
+Path: /var/www/versions/auto_backup_before_rollback_20250512_185316/database.sql
+Created on: 2025-05-12
+Creating temporary database to check this backup...
+NOTICE:  schema "temp_check" does not exist, skipping
+DROP SCHEMA
+CREATE SCHEMA
+Extracting campaign data from backup file...
+SET
+CREATE TABLE
+ERROR:  invalid input syntax for type integer: "COPY public.campaigns (id, name, redirect_method, custom_path, created_at, updated_at, multiplier, price_per_thousand, trafficstar_campaign_id, auto_manage_trafficstar, last_trafficstar_sync, budget_update_time, daily_spent, daily_spent_date, last_spent_check, traffic_sender_enabled, last_traffic_sender_action, last_traffic_sender_status, last_budget_update_time, traffic_generator_enabled, traffic_generator_state, traffic_generator_wait_start_time, traffic_generator_wait_minutes, budgeted_url_ids, pending_url_budgets, post_pause_check_minutes, high_spend_wait_minutes, high_spend_budget_calc_time, youtube_api_enabled, youtube_api_interval_minutes, youtube_api_last_check, youtube_check_country_restriction, youtube_check_private, youtube_check_deleted, youtube_check_age_restricted, youtube_check_made_for_kids, youtube_check_duration, youtube_max_duration_minutes, pending_budget_update, minimum_clicks_threshold, remaining_clicks_threshold) FROM stdin;"
+CONTEXT:  COPY campaigns, line 1, column id: "COPY public.campaigns (id, name, redirect_method, custom_path, created_at, updated_at, multiplier, p..."
+ERROR:  relation "temp_check.campaigns" does not exist
+LINE 5:     FROM temp_check.campaigns WHERE id = 5;
+                 ^
+❌ Campaign ID 5 NOT found in this backup
+DROP SCHEMA
+
+=====================================
+Checking backup: auto_backup_before_rollback_20250512_185201
+Path: /var/www/versions/auto_backup_before_rollback_20250512_185201/database.sql
+Created on: 2025-05-12
+Creating temporary database to check this backup...
+NOTICE:  schema "temp_check" does not exist, skipping
+DROP SCHEMA
+CREATE SCHEMA
+Extracting campaign data from backup file...
+SET
+CREATE TABLE
+ERROR:  invalid input syntax for type integer: "COPY public.campaigns (id, name, redirect_method, custom_path, created_at, updated_at, multiplier, price_per_thousand, trafficstar_campaign_id, auto_manage_trafficstar, last_trafficstar_sync, budget_update_time, daily_spent, daily_spent_date, last_spent_check, traffic_sender_enabled, last_traffic_sender_action, last_traffic_sender_status, last_budget_update_time, traffic_generator_enabled, traffic_generator_state, traffic_generator_wait_start_time, traffic_generator_wait_minutes, budgeted_url_ids, pending_url_budgets, post_pause_check_minutes, high_spend_wait_minutes, high_spend_budget_calc_time, youtube_api_enabled, youtube_api_interval_minutes, youtube_api_last_check, youtube_check_country_restriction, youtube_check_private, youtube_check_deleted, youtube_check_age_restricted, youtube_check_made_for_kids, youtube_check_duration, youtube_max_duration_minutes, pending_budget_update, minimum_clicks_threshold, remaining_clicks_threshold, owner_id, traffic_source, total_budget, start_date, end_date, min_pause_click_threshold, min_activate_click_threshold, high_spend_pause_threshold, high_spend_activate_threshold) FROM stdin;"
+CONTEXT:  COPY campaigns, line 1, column id: "COPY public.campaigns (id, name, redirect_method, custom_path, created_at, updated_at, multiplier, p..."
+ERROR:  relation "temp_check.campaigns" does not exist
+LINE 5:     FROM temp_check.campaigns WHERE id = 5;
+                 ^
+❌ Campaign ID 5 NOT found in this backup
+DROP SCHEMA
+
+=====================================
+Checking backup: auto_backup_before_rollback_20250511_181521
+Path: /var/www/versions/auto_backup_before_rollback_20250511_181521/database.sql
+Created on: 2025-05-11
+Creating temporary database to check this backup...
+NOTICE:  schema "temp_check" does not exist, skipping
+DROP SCHEMA
+CREATE SCHEMA
+Extracting campaign data from backup file...
+SET
+CREATE TABLE
+ERROR:  invalid input syntax for type integer: "COPY public.campaigns (id, name, redirect_method, custom_path, created_at, updated_at, multiplier, price_per_thousand, trafficstar_campaign_id, auto_manage_trafficstar, last_trafficstar_sync, budget_update_time, daily_spent, daily_spent_date, last_spent_check, traffic_sender_enabled, last_traffic_sender_action, last_traffic_sender_status, last_budget_update_time, traffic_generator_enabled, traffic_generator_state, traffic_generator_wait_start_time, traffic_generator_wait_minutes, budgeted_url_ids, pending_url_budgets, post_pause_check_minutes, high_spend_wait_minutes, high_spend_budget_calc_time, youtube_api_enabled, youtube_api_interval_minutes, youtube_api_last_check, youtube_check_country_restriction, youtube_check_private, youtube_check_deleted, youtube_check_age_restricted, youtube_check_made_for_kids, youtube_check_duration, youtube_max_duration_minutes, pending_budget_update, minimum_clicks_threshold, remaining_clicks_threshold) FROM stdin;"
+CONTEXT:  COPY campaigns, line 1, column id: "COPY public.campaigns (id, name, redirect_method, custom_path, created_at, updated_at, multiplier, p..."
+ERROR:  relation "temp_check.campaigns" does not exist
+LINE 5:     FROM temp_check.campaigns WHERE id = 5;
+                 ^
+❌ Campaign ID 5 NOT found in this backup
+DROP SCHEMA
+
+=====================================
+Checking backup: auto_backup_before_rollback_20250511_180051
+Path: /var/www/versions/auto_backup_before_rollback_20250511_180051/database.sql
+Created on: 2025-05-11
+Creating temporary database to check this backup...
+NOTICE:  schema "temp_check" does not exist, skipping
+DROP SCHEMA
+CREATE SCHEMA
+Extracting campaign data from backup file...
+SET
+CREATE TABLE
+ERROR:  invalid input syntax for type integer: "COPY public.campaigns (id, name, redirect_method, custom_path, created_at, updated_at, multiplier, price_per_thousand, trafficstar_campaign_id, auto_manage_trafficstar, last_trafficstar_sync, budget_update_time, daily_spent, daily_spent_date, last_spent_check, traffic_sender_enabled, last_traffic_sender_action, last_traffic_sender_status, last_budget_update_time, traffic_generator_enabled, traffic_generator_state, traffic_generator_wait_start_time, traffic_generator_wait_minutes, budgeted_url_ids, pending_url_budgets, post_pause_check_minutes, high_spend_wait_minutes, high_spend_budget_calc_time, youtube_api_enabled, youtube_api_interval_minutes, youtube_api_last_check, youtube_check_country_restriction, youtube_check_private, youtube_check_deleted, youtube_check_age_restricted, youtube_check_made_for_kids, youtube_check_duration, youtube_max_duration_minutes, pending_budget_update, minimum_clicks_threshold, remaining_clicks_threshold, budget_calculated) FROM stdin;"
+CONTEXT:  COPY campaigns, line 1, column id: "COPY public.campaigns (id, name, redirect_method, custom_path, created_at, updated_at, multiplier, p..."
+ERROR:  relation "temp_check.campaigns" does not exist
+LINE 5:     FROM temp_check.campaigns WHERE id = 5;
+                 ^
+❌ Campaign ID 5 NOT found in this backup
+DROP SCHEMA
+
+=====================================
+Checking backup: auto_backup_before_rollback_20250511_095518
+Path: /var/www/versions/auto_backup_before_rollback_20250511_095518/database.sql
+Created on: 2025-05-11
+Creating temporary database to check this backup...
+NOTICE:  schema "temp_check" does not exist, skipping
+DROP SCHEMA
+CREATE SCHEMA
+Extracting campaign data from backup file...
+SET
+CREATE TABLE
+ERROR:  invalid input syntax for type integer: "COPY public.campaigns (id, name, redirect_method, custom_path, created_at, updated_at, multiplier, price_per_thousand, trafficstar_campaign_id, auto_manage_trafficstar, last_trafficstar_sync, budget_update_time, daily_spent, daily_spent_date, last_spent_check, traffic_sender_enabled, last_traffic_sender_action, last_traffic_sender_status, last_budget_update_time, traffic_generator_enabled, traffic_generator_state, traffic_generator_wait_start_time, traffic_generator_wait_minutes, budgeted_url_ids, pending_url_budgets, post_pause_check_minutes, high_spend_wait_minutes, high_spend_budget_calc_time, youtube_api_enabled, youtube_api_interval_minutes, youtube_api_last_check, youtube_check_country_restriction, youtube_check_private, youtube_check_deleted, youtube_check_age_restricted, youtube_check_made_for_kids, youtube_check_duration, youtube_max_duration_minutes, pending_budget_update, minimum_clicks_threshold, remaining_clicks_threshold) FROM stdin;"
+CONTEXT:  COPY campaigns, line 1, column id: "COPY public.campaigns (id, name, redirect_method, custom_path, created_at, updated_at, multiplier, p..."
+ERROR:  relation "temp_check.campaigns" does not exist
+LINE 5:     FROM temp_check.campaigns WHERE id = 5;
+                 ^
+❌ Campaign ID 5 NOT found in this backup
+DROP SCHEMA
+
+=====================================
+Checking backup: auto_backup_before_rollback_20250511_081549
+Path: /var/www/versions/auto_backup_before_rollback_20250511_081549/database.sql
+Created on: 2025-05-11
+Creating temporary database to check this backup...
+NOTICE:  schema "temp_check" does not exist, skipping
+DROP SCHEMA
+CREATE SCHEMA
+Extracting campaign data from backup file...
+SET
+CREATE TABLE
+ERROR:  invalid input syntax for type integer: "COPY public.campaigns (id, name, redirect_method, custom_path, created_at, updated_at, multiplier, price_per_thousand, trafficstar_campaign_id, auto_manage_trafficstar, last_trafficstar_sync, budget_update_time, daily_spent, daily_spent_date, last_spent_check, traffic_sender_enabled, last_traffic_sender_action, last_traffic_sender_status, last_budget_update_time, traffic_generator_enabled, traffic_generator_state, traffic_generator_wait_start_time, traffic_generator_wait_minutes, budgeted_url_ids, pending_url_budgets, post_pause_check_minutes, high_spend_wait_minutes, high_spend_budget_calc_time, youtube_api_enabled, youtube_api_interval_minutes, youtube_api_last_check, youtube_check_country_restriction, youtube_check_private, youtube_check_deleted, youtube_check_age_restricted, youtube_check_made_for_kids, youtube_check_duration, youtube_max_duration_minutes, pending_budget_update, minimum_clicks_threshold, remaining_clicks_threshold) FROM stdin;"
+CONTEXT:  COPY campaigns, line 1, column id: "COPY public.campaigns (id, name, redirect_method, custom_path, created_at, updated_at, multiplier, p..."
+ERROR:  relation "temp_check.campaigns" does not exist
+LINE 5:     FROM temp_check.campaigns WHERE id = 5;
+                 ^
+❌ Campaign ID 5 NOT found in this backup
+DROP SCHEMA
+
+./find-campaign5.sh: line 73: syntax error: unexpected end of file
+root@d026e9724:/var/www/UrlCampaignTracker#

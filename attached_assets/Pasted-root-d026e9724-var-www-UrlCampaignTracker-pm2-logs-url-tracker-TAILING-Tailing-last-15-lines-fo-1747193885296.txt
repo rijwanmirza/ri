@@ -1,0 +1,51 @@
+root@d026e9724:/var/www/UrlCampaignTracker# pm2 logs url-tracker
+[TAILING] Tailing last 15 lines for [url-tracker] process (change the value with --lines option)
+^C
+root@d026e9724:/var/www/UrlCampaignTracker# # Create a proper ES modules configuration file for PM2
+cd /var/www/UrlCampaignTracker
+pm2 delete url-tracker
+
+# Create the ecosystem config file using ES module syntax
+cat > ecosystem.config.js << 'EOF'
+export default {
+  apps: [{
+    name: "url-tracker",
+    script: "/var/www/UrlCampaignTracker/node_modules/.bin/tsx",
+    args: "server/index.ts",
+    cwd: "/var/www/UrlCampaignTracker",
+    env: {
+      NODE_ENV: "production"
+    },
+    watch: false,
+    instances: 1,
+    autorestart: true,
+    max_memory_restart: "1G"
+  }]
+};
+EOF
+
+# Start the application with PM2
+pm2 start ecosystem.config.js
+
+# Save the PM2 process list
+pm2 save
+
+# Check the status
+pm2 list
+[PM2][ERROR] Process or Namespace url-tracker not found
+[PM2][WARN] Applications  not running, starting...
+[PM2][ERROR] Error: No script path - aborting
+[PM2] Saving current process list...
+[PM2][WARN] PM2 is not managing any process, skipping save...
+[PM2][WARN] To force saving use: pm2 save --force
+┌────┬───────────┬─────────────┬─────────┬─────────┬──────────┬────────┬──────┬───────────┬──────────┬──────────┬──────────┬──────────┐
+│ id │ name      │ namespace   │ version │ mode    │ pid      │ uptime │ ↺    │ status    │ cpu      │ mem      │ user     │ watching │
+└────┴───────────┴─────────────┴─────────┴─────────┴──────────┴────────┴──────┴───────────┴──────────┴──────────┴──────────┴──────────┘
+root@d026e9724:/var/www/UrlCampaignTracker# # Direct command approach (if the ecosystem file doesn't work)
+cd /var/www/UrlCampaignTracker
+pm2 delete url-tracker
+pm2 start /var/www/UrlCampaignTracker/node_modules/.bin/tsx --name "url-tracker" -- server/index.ts
+pm2 save^C
+root@d026e9724:/var/www/UrlCampaignTracker# pm2 logs url-tracker
+[TAILING] Tailing last 15 lines for [url-tracker] process (change the value with --lines option)
+

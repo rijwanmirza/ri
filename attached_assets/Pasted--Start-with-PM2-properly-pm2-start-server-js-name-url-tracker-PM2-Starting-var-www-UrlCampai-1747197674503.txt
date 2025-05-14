@@ -1,0 +1,54 @@
+# Start with PM2 properly
+pm2 start server.js --name url-tracker
+[PM2] Starting /var/www/UrlCampaignTracker/server.js in fork_mode (1 instance)
+[PM2] Done.
+┌────┬────────────────┬─────────────┬─────────┬─────────┬──────────┬────────┬──────┬───────────┬──────────┬──────────┬──────────┬──────────┐
+│ id │ name           │ namespace   │ version │ mode    │ pid      │ uptime │ ↺    │ status    │ cpu      │ mem      │ user     │ watching │
+├────┼────────────────┼─────────────┼─────────┼─────────┼──────────┼────────┼──────┼───────────┼──────────┼──────────┼──────────┼──────────┤
+│ 0  │ url-tracker    │ default     │ 1.0.0   │ fork    │ 1620883  │ 0s     │ 0    │ online    │ 0%       │ 14.4mb   │ root     │ disabled │
+└────┴────────────────┴─────────────┴─────────┴─────────┴──────────┴────────┴──────┴───────────┴──────────┴──────────┴──────────┴──────────┘
+root@d026e9724:/var/www/UrlCampaignTracker# # Check the PM2 status
+pm2 status
+
+# Check the logs
+pm2 logs url-tracker
+┌────┬────────────────┬─────────────┬─────────┬─────────┬──────────┬────────┬──────┬───────────┬──────────┬──────────┬──────────┬──────────┐
+│ id │ name           │ namespace   │ version │ mode    │ pid      │ uptime │ ↺    │ status    │ cpu      │ mem      │ user     │ watching │
+├────┼────────────────┼─────────────┼─────────┼─────────┼──────────┼────────┼──────┼───────────┼──────────┼──────────┼──────────┼──────────┤
+│ 0  │ url-tracker    │ default     │ 1.0.0   │ fork    │ 1620883  │ 5s     │ 0    │ online    │ 0%       │ 54.0mb   │ root     │ disabled │
+└────┴────────────────┴─────────────┴─────────┴─────────┴──────────┴────────┴──────┴───────────┴──────────┴──────────┴──────────┴──────────┘
+[TAILING] Tailing last 15 lines for [url-tracker] process (change the value with --lines option)
+/root/.pm2/logs/url-tracker-out.log last 15 lines:
+0|url-trac | Flushed 0 pending click updates to database
+0|url-trac | Flushed 0 pending click updates to database
+0|url-trac | Flushed 0 pending click updates to database
+0|url-trac | Flushed 0 pending click updates to database
+0|url-trac | Flushed 0 pending click updates to database
+0|url-trac | 4:13:44 AM [access] Access check for path: /views/traffic1
+0|url-trac | Processing custom path request for: traffic1
+0|url-trac | 🔍 Cache miss - fetching fresh URLs for campaign ID: 1
+0|url-trac | Found campaign ID 1 for custom path: traffic1
+0|url-trac | Campaign has 151 total URLs
+0|url-trac | Campaign has 10 active URLs
+0|url-trac | 🔍 Cache miss - fetching fresh URLs for campaign ID: 1
+0|url-trac | Selected URL ID 224 (63868373) for redirect
+0|url-trac | 🧹 Invalidating campaign cache for ID: 1
+0|url-trac | Logged click for URL ID 224: New click received{14-May-2025:09:43:44}
+
+/root/.pm2/logs/url-tracker-error.log last 15 lines:
+0|url-trac | ReferenceError: require is not defined in ES module scope, you can use import instead
+0|url-trac | This file is being treated as an ES module because it has a '.js' file extension and '/var/www/UrlCampaignTracker/package.json' contains "type": "module". To treat it as a CommonJS script, rename it to use the '.cjs' file extension.
+0|url-trac |     at file:///var/www/UrlCampaignTracker/server.js:1:17
+0|url-trac |     at ModuleJob.run (node:internal/modules/esm/module_job:263:25)
+0|url-trac |     at async ModuleLoader.import (node:internal/modules/esm/loader:540:24)
+0|url-trac | ReferenceError: require is not defined in ES module scope, you can use import instead
+0|url-trac | This file is being treated as an ES module because it has a '.js' file extension and '/var/www/UrlCampaignTracker/package.json' contains "type": "module". To treat it as a CommonJS script, rename it to use the '.cjs' file extension.
+0|url-trac |     at file:///var/www/UrlCampaignTracker/server.js:1:17
+0|url-trac |     at ModuleJob.run (node:internal/modules/esm/module_job:263:25)
+0|url-trac |     at async ModuleLoader.import (node:internal/modules/esm/loader:540:24)
+0|url-trac | ReferenceError: require is not defined in ES module scope, you can use import instead
+0|url-trac | This file is being treated as an ES module because it has a '.js' file extension and '/var/www/UrlCampaignTracker/package.json' contains "type": "module". To treat it as a CommonJS script, rename it to use the '.cjs' file extension.
+0|url-trac |     at file:///var/www/UrlCampaignTracker/server.js:1:17
+0|url-trac |     at ModuleJob.run (node:internal/modules/esm/module_job:263:25)
+0|url-trac |     at async ModuleLoader.import (node:internal/modules/esm/loader:540:24)
+
