@@ -92,7 +92,7 @@ export function ChildTrafficstarCampaigns({
     queryFn: async () => {
       console.log(`Debug: Fetching child campaigns for campaignId=${campaignId}`);
       try {
-        const result = await apiRequest("GET", `/api/campaigns/${campaignId}/child-trafficstar-campaigns`);
+        const result = await apiRequest(`/api/campaigns/${campaignId}/child-trafficstar-campaigns`);
         console.log(`Debug: Fetch result:`, result);
         return result;
       } catch (err) {
@@ -116,10 +116,9 @@ export function ChildTrafficstarCampaigns({
       console.log(`Debug: Processed payload:`, payload);
       
       try {
-        // Parameter order: method, url, data
         const result = await apiRequest(
-          "POST",
           `/api/campaigns/${campaignId}/child-trafficstar-campaigns`, 
+          'POST', 
           payload
         );
         console.log(`Debug: API response:`, result);
@@ -162,8 +161,8 @@ export function ChildTrafficstarCampaigns({
     mutationFn: async (childCampaignId: number) => {
       console.log(`Debug: Deleting child campaign ID:`, childCampaignId);
       return apiRequest(
-        "DELETE",
-        `/api/child-trafficstar-campaigns/${childCampaignId}`
+        `/api/child-trafficstar-campaigns/${childCampaignId}`, 
+        'DELETE'
       );
     },
     onSuccess: () => {

@@ -226,7 +226,7 @@ export default function URLsPage() {
   // Bulk action mutations
   const bulkActionMutation = useMutation({
     mutationFn: async ({ urlIds, action }: { urlIds: number[], action: string }) => {
-      return apiRequest("POST", '/api/urls/bulk', { urlIds, action });
+      return apiRequest('POST', '/api/urls/bulk', { urlIds, action });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['urls'] });
@@ -290,11 +290,11 @@ export default function URLsPage() {
   const urlActionMutation = useMutation({
     mutationFn: async ({ id, action, data }: { id: number, action: string, data?: any }) => {
       if (action === 'update') {
-        return apiRequest("PUT", `/api/urls/${id}`, data);
+        return apiRequest('PUT', `/api/urls/${id}`, data);
       } else if (action === 'delete') {
-        return apiRequest("DELETE", `/api/urls/${id}`);
+        return apiRequest('DELETE', `/api/urls/${id}`);
       } else if (action === 'permanent_delete') {
-        return apiRequest("DELETE", `/api/urls/${id}/permanent`);
+        return apiRequest('DELETE', `/api/urls/${id}/permanent`);
       }
     },
     onSuccess: () => {

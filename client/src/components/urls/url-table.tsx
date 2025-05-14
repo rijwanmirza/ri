@@ -138,9 +138,9 @@ export default function UrlTable({ campaign }: UrlTableProps) {
       data?: any 
     }) => {
       if (action === 'update') {
-        return apiRequest("PUT", `/api/urls/${urlId}`, data);
+        return apiRequest('PUT', `/api/urls/${urlId}`, data);
       } else if (action === 'delete') {
-        return apiRequest("DELETE", `/api/urls/${urlId}`);
+        return apiRequest('DELETE', `/api/urls/${urlId}`);
       }
     },
     onSuccess: () => {
@@ -237,7 +237,7 @@ export default function UrlTable({ campaign }: UrlTableProps) {
   // Bulk URL mutation
   const bulkActionMutation = useMutation({
     mutationFn: async (data: { ids: number[], action: string }) => {
-      return apiRequest("POST", '/api/urls/bulk', data);
+      return apiRequest('POST', '/api/urls/bulk', data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [`/api/campaigns/${campaign.id}`] });

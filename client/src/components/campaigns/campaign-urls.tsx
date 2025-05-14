@@ -252,7 +252,7 @@ export default function CampaignUrls({ campaignId, urls, onRefresh, campaign }: 
   // Bulk action mutation
   const bulkActionMutation = useMutation({
     mutationFn: async ({ urlIds, action }: { urlIds: number[], action: string }) => {
-      return apiRequest("POST", '/api/urls/bulk', { urlIds, action });
+      return apiRequest('POST', '/api/urls/bulk', { urlIds, action });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [`/api/campaigns/${campaignId}`] });
