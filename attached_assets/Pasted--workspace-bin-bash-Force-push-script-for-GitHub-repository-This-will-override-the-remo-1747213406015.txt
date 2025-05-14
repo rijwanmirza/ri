@@ -1,0 +1,82 @@
+~/workspace$ #!/bin/bash
+
+# Force push script for GitHub repository
+# This will override the remote repository with our local changes
+
+echo "🚀 Starting force push to GitHub..."
+
+# Configure Git (if needed)
+git config --global user.name "rijwan mirza"
+git config --global user.email "rijwamirza@gmail.com"
+
+# Add all files
+echo "📦 Adding all files..."
+git add .
+
+# Commit changes
+echo "💾 Committing changes..."
+git commit -m "Add redirect analytics tracking"
+
+# Force push to GitHub
+echo "📤 Force pushing to GitHub..."
+git push -f origin main
+
+echo "✅ Force push completed!"
+🚀 Starting force push to GitHub...
+📦 Adding all files...
+fatal: Unable to create '/home/runner/workspace/.git/index.lock': File exists.
+
+Another git process seems to be running in this repository, e.g.
+an editor opened by 'git commit'. Please make sure all processes
+are terminated then try again. If it still fails, a git process
+may have crashed in this repository earlier:
+remove the file manually to continue.
+💾 Committing changes...
+fatal: Unable to create '/home/runner/workspace/.git/index.lock': File exists.
+
+Another git process seems to be running in this repository, e.g.
+an editor opened by 'git commit'. Please make sure all processes
+are terminated then try again. If it still fails, a git process
+may have crashed in this repository earlier:
+remove the file manually to continue.
+📤 Force pushing to GitHub...
+Enumerating objects: 20, done.
+Counting objects: 100% (20/20), done.
+Delta compression using up to 8 threads
+Compressing objects: 100% (15/15), done.
+Writing objects: 100% (15/15), 2.66 KiB | 2.66 MiB/s, done.
+Total 15 (delta 10), reused 0 (delta 0), pack-reused 0 (from 0)
+remote: Resolving deltas: 100% (10/10), completed with 5 local objects.
+remote: error: GH013: Repository rule violations found for refs/heads/main.
+remote: 
+remote: - GITHUB PUSH PROTECTION
+remote:   —————————————————————————————————————————
+remote:     Resolve the following violations before pushing again
+remote: 
+remote:     - Push cannot contain secrets
+remote: 
+remote:     
+remote:      (?) Learn how to resolve a blocked push
+remote:      https://docs.github.com/code-security/secret-scanning/working-with-secret-scanning-and-push-protection/working-with-push-protection-from-the-command-line#resolving-a-blocked-push
+remote:     
+remote:      (?) This repository does not have Secret Scanning enabled, but is eligible. Enable Secret Scanning to view and manage detected secrets.
+remote:      Visit the repository settings page, https://github.com/rijwanmirza/ri/settings/security_analysis
+remote:     
+remote:     
+remote:       —— GitHub Personal Access Token ——————————————————————
+remote:        locations:
+remote:          - commit: ee8281807b8aa9a577af613039dfbdc06320d6f5
+remote:            path: attached_assets/Pasted--workspace-Check-if-git-is-initialized-ls-la-git-Try-to-set-your-user-name-directly-if--1747211368491.txt:15
+remote:          - commit: 9b816fc11ee149443fddefd8061c8bed763ade49
+remote:            path: scripts/github.mjs:8
+remote:     
+remote:        (?) To push, remove secret from commit(s) or follow this URL to allow the secret.
+remote:        https://github.com/rijwanmirza/ri/security/secret-scanning/unblock-secret/2x4y9nn4Q9cruYhONcI4iS9IH5A
+remote:     
+remote: 
+remote: 
+To https://github.com/rijwanmirza/ri.git
+ ! [remote rejected] main -> main (push declined due to repository rule violations)
+error: failed to push some refs to 'https://github.com/rijwanmirza/ri.git'
+✅ Force push completed!
+~/workspace$ 
