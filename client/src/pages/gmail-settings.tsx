@@ -183,7 +183,7 @@ export default function GmailSettingsPage() {
         autoDeleteMinutes: values.autoDeleteMinutes
       };
       
-      return apiRequest<{message: string, config: any}>('/api/gmail-reader/config', "POST", configData);
+      return apiRequest<{message: string, config: any}>("POST", '/api/gmail-reader/config', configData);
     },
     onSuccess: () => {
       toast({
@@ -218,7 +218,7 @@ export default function GmailSettingsPage() {
     CredentialsInput
   >({
     mutationFn: (credentials: CredentialsInput) => {
-      return apiRequest<{ success: boolean, message: string }>('/api/gmail-reader/test-connection', "POST", credentials);
+      return apiRequest<{ success: boolean, message: string }>("POST", '/api/gmail-reader/test-connection', credentials);
     },
     onSuccess: (data) => {
       if (data.success) {
@@ -270,7 +270,7 @@ export default function GmailSettingsPage() {
   // Start Gmail reader mutation
   const startMutation = useMutation<{message: string}, Error, void>({
     mutationFn: () => {
-      return apiRequest<{message: string}>('POST', '/api/gmail-reader/start');
+      return apiRequest<{message: string}>("POST", '/api/gmail-reader/start');
     },
     onSuccess: () => {
       toast({
@@ -292,7 +292,7 @@ export default function GmailSettingsPage() {
   // Stop Gmail reader mutation
   const stopMutation = useMutation<{message: string}, Error, void>({
     mutationFn: () => {
-      return apiRequest<{message: string}>('POST', '/api/gmail-reader/stop');
+      return apiRequest<{message: string}>("POST", '/api/gmail-reader/stop');
     },
     onSuccess: () => {
       toast({
@@ -314,7 +314,7 @@ export default function GmailSettingsPage() {
   // Reset tracking system mutation
   const resetTrackingMutation = useMutation<{message: string, details: any}, Error, void>({
     mutationFn: () => {
-      return apiRequest<{message: string, details: any}>('POST', '/api/gmail-reader/reset-tracking');
+      return apiRequest<{message: string, details: any}>("POST", '/api/gmail-reader/reset-tracking');
     },
     onSuccess: (data) => {
       toast({
@@ -342,7 +342,7 @@ export default function GmailSettingsPage() {
   >({
     mutationFn: (params) => {
       return apiRequest<{ message: string, entriesRemoved: number, entriesKept: number }>(
-        'POST', 
+        "POST", 
         '/api/gmail-reader/cleanup-logs', 
         params
       );

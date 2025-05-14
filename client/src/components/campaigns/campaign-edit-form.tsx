@@ -201,8 +201,8 @@ export default function CampaignEditForm({ campaign, onSuccess }: CampaignEditFo
     mutationFn: async (campaignId: number) => {
       console.log("Scheduling budget update for campaign:", campaignId);
       return await apiRequest(
-        `/api/trafficstar/campaigns/force-budget-update`,
         "POST",
+        `/api/trafficstar/campaigns/force-budget-update`,
         { campaignId }
       );
     },
@@ -227,10 +227,10 @@ export default function CampaignEditForm({ campaign, onSuccess }: CampaignEditFo
   const updateCampaignMutation = useMutation({
     mutationFn: async (values: CampaignEditValues) => {
       console.log("Updating campaign with values:", values);
-      // Fixed the apiRequest call with the correct parameter order as defined in queryClient.ts
+      // Parameter order: method, url, data
       return await apiRequest(
-        `/api/campaigns/${campaign.id}`,
         "PUT",
+        `/api/campaigns/${campaign.id}`,
         values
       );
     },
