@@ -5,7 +5,7 @@ import path from 'path';
 
 // Configuration
 const GITHUB_REPO = "https://github.com/rijwanmirza/ri.git";
-const GITHUB_TOKEN = "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";
+const GITHUB_TOKEN = "GITHUB_TOKEN_GOES_HERE"; // Replace with your token before using
 const GITHUB_EMAIL = "rijwamirza@gmail.com";
 const GITHUB_NAME = "Rijwan Mirza";
 

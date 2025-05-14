@@ -20,3 +20,4 @@ node_modules/
 *credentials*.json
 *token*.json
 *secret*.json
+attached_assets/
