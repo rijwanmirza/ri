@@ -1,6 +1,0 @@
-{
-  "name": "test-complete-1747337534821",
-  "id": 351,
-  "createdAt": "2025-05-15T19:32:15.632Z",
-  "campaignId": 1
-}

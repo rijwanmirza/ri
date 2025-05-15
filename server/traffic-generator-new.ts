@@ -9,25 +9,14 @@
 import { trafficStarService } from './trafficstar-service';
 import { db } from './db';
 import { campaigns, urls, type Campaign, type Url } from '../shared/schema';
-import { eq, and, or, sql } from 'drizzle-orm';
+import { eq, and, sql } from 'drizzle-orm';
 import { parseSpentValue } from './trafficstar-spent-helper';
 import axios from 'axios';
 import urlBudgetLogger from './url-budget-logger';
-import { getUrlsAddedAfterBudgetCalc } from './url-status-helper';
-import { fixedCheckForNewUrlsAfterBudgetCalculation } from './high-spend-fix';
 
 // Extended URL type with active status
 interface UrlWithActiveStatus extends Url {
   isActive: boolean;
-}
-
-/**
- * Helper function to get the TrafficStar campaign ID consistently
- * This eliminates the reference to the non-existent campaign.trafficstar_campaign_id field
- * while maintaining backward compatibility
- */
-function getTrafficStarId(campaign: Campaign): string {
-  return campaign.trafficstarCampaignId || '';
 }
 
 /**
@@ -681,20 +670,20 @@ export async function handleCampaignBySpentValue(campaignId: number, trafficstar
  * @param campaignId The campaign ID in our system 
  * @param trafficstarCampaignId The TrafficStar campaign ID
  */
-// Using our fixed function implementation from high-spend-fix.ts
 async function checkForNewUrlsAfterBudgetCalculation(campaignId: number, trafficstarCampaignId: string) {
-  return fixedCheckForNewUrlsAfterBudgetCalculation(campaignId, trafficstarCampaignId);
-}
-
-// Original implementation kept as reference but disabled
-async function _originalCheckForNewUrlsAfterBudgetCalculation(campaignId: number, trafficstarCampaignId: string) {
   try {
     console.log(`🔍 Checking for new URLs added after budget calculation for campaign ${campaignId}`);
     
     // Get the campaign with its budget calculation timestamp
+    // Only fetch active URLs for the campaign to improve performance
     const campaign = await db.query.campaigns.findFirst({
       where: (c, { eq }) => eq(c.id, campaignId),
-    }) as Campaign | null;
+      with: { 
+        urls: {
+          where: (urls, { eq }) => eq(urls.status, 'active')
+        } 
+      }
+    }) as (Campaign & { urls: UrlWithActiveStatus[] }) | null;
     
     if (!campaign || !campaign.highSpendBudgetCalcTime) {
       console.log(`Campaign ${campaignId} doesn't have a high-spend budget calculation timestamp - skipping new URL check`);
@@ -704,23 +693,11 @@ async function _originalCheckForNewUrlsAfterBudgetCalculation(campaignId: number
     const calcTime = campaign.highSpendBudgetCalcTime;
     console.log(`Campaign ${campaignId} budget calculation time: ${calcTime.toISOString()}`);
     
-    // Get only URLs with status 'active' or 'complete' that were added after budget calculation
-    // This fixes the bug where URLs that were completed during the 9-minute window weren't counted
-    const statusFilter = or(
-      eq(urls.status, 'active'),
-      eq(urls.status, 'complete')
-    );
-    
-    const newUrls = await db.select()
-      .from(urls)
-      .where(
-        and(
-          eq(urls.campaignId, campaignId),
-          sql`${urls.createdAt} > ${calcTime}`,
-          eq(urls.budgetCalculated, false),
-          statusFilter
-        )
-      );
+    // Find URLs added after budget calculation time
+    const newUrls = campaign.urls.filter(url => {
+      // For each URL, check if it was created after the budget calculation
+      return url.status === 'active' && url.createdAt > calcTime;
+    });
     
     if (newUrls.length === 0) {
       console.log(`No new URLs found added after budget calculation for campaign ${campaignId}`);
@@ -728,7 +705,6 @@ async function _originalCheckForNewUrlsAfterBudgetCalculation(campaignId: number
     }
     
     console.log(`⚠️ Found ${newUrls.length} new URLs added after budget calculation`);
-    console.log(`Status breakdown: ${newUrls.filter(url => url.status === 'active').length} active, ${newUrls.filter(url => url.status === 'complete').length} complete`);
     
     // Check if there's a running timer for this campaign
     // The timer should be based on the FIRST URL added after budget calc, not the newest
@@ -757,7 +733,7 @@ async function _originalCheckForNewUrlsAfterBudgetCalculation(campaignId: number
       return;
     }
     
-    console.log(`✅ ${DELAY_MINUTES}-minute wait period has elapsed - processing ${newUrls.length} new URLs (both active and complete)`);
+    console.log(`✅ ${DELAY_MINUTES}-minute wait period has elapsed - processing ${newUrls.length} new URLs`);
     
     // Get the current budget from TrafficStar
     const campaignData = await trafficStarService.getCampaign(Number(trafficstarCampaignId));
@@ -774,15 +750,12 @@ async function _originalCheckForNewUrlsAfterBudgetCalculation(campaignId: number
     let newUrlsBudget = 0;
     
     for (const url of newUrls) {
-      // For completed URLs, use their full clickLimit
-      // For active URLs, use their full clickLimit as well
-      // This fixes the bug where completed URLs weren't included in budget
-      const clicksToConsider = url.clickLimit;
-      newUrlsClicksTotal += clicksToConsider;
+      // For newly added URLs, use full clickLimit instead of remaining clicks
+      newUrlsClicksTotal += url.clickLimit;
       
       // Calculate individual URL budget (price)
-      const urlBudget = (clicksToConsider / 1000) * parseFloat(campaign.pricePerThousand);
-      console.log(`New URL ${url.id} (${url.status}): budget: $${urlBudget.toFixed(4)} (${clicksToConsider} clicks)`);
+      const urlBudget = (url.clickLimit / 1000) * parseFloat(campaign.pricePerThousand);
+      console.log(`New URL ${url.id} budget: $${urlBudget.toFixed(4)} (${url.clickLimit} clicks)`);
       
       // Log this URL's budget calculation
       await urlBudgetLogger.logUrlBudget(url.id, urlBudget, campaign.id);
@@ -808,7 +781,7 @@ async function _originalCheckForNewUrlsAfterBudgetCalculation(campaignId: number
     // Update the TrafficStar campaign budget
     await trafficStarService.updateCampaignBudget(Number(trafficstarCampaignId), updatedBudget);
     
-    console.log(`✅ Successfully updated budget for campaign ${trafficstarCampaignId} to include new URLs (both active and complete)`);
+    console.log(`✅ Successfully updated budget for campaign ${trafficstarCampaignId} to include new URLs`);
     
     // Update database with latest calculation time
     // We keep the status as 'high_spend_budget_updated' so that any new URLs added
@@ -841,9 +814,15 @@ async function handleNewUrlsAfterBudgetCalc(campaignId: number, trafficstarCampa
     console.log(`Checking for URLs added after high-spend budget calculation for campaign ${campaignId}`);
     
     // Get the campaign with its budget calculation timestamp
+    // Only fetch active URLs for the campaign to improve performance
     const campaign = await db.query.campaigns.findFirst({
       where: (c, { eq }) => eq(c.id, campaignId),
-    }) as Campaign | null;
+      with: { 
+        urls: {
+          where: (urls, { eq }) => eq(urls.status, 'active')
+        } 
+      }
+    }) as (Campaign & { urls: UrlWithActiveStatus[] }) | null;
     
     if (!campaign || !campaign.highSpendBudgetCalcTime) {
       console.log(`Campaign ${campaignId} doesn't have a high-spend budget calculation timestamp - skipping new URL check`);
@@ -853,23 +832,11 @@ async function handleNewUrlsAfterBudgetCalc(campaignId: number, trafficstarCampa
     const calcTime = campaign.highSpendBudgetCalcTime;
     console.log(`Campaign ${campaignId} budget calculation time: ${calcTime.toISOString()}`);
     
-    // Get only URLs with status 'active' or 'complete' that were added after budget calculation
-    // This fixes the bug where URLs that were completed during the 9-minute window weren't counted
-    const statusFilter = or(
-      eq(urls.status, 'active'),
-      eq(urls.status, 'complete')
-    );
-    
-    const newUrls = await db.select()
-      .from(urls)
-      .where(
-        and(
-          eq(urls.campaignId, campaignId),
-          sql`${urls.createdAt} > ${calcTime}`,
-          eq(urls.budgetCalculated, false),
-          statusFilter
-        )
-      );
+    // Find URLs added after budget calculation time
+    const newUrls = campaign.urls.filter(url => {
+      // For each URL, check if it was created after the budget calculation
+      return url.status === 'active' && url.createdAt > calcTime;
+    });
     
     if (newUrls.length === 0) {
       console.log(`No new URLs found added after budget calculation for campaign ${campaignId}`);
@@ -877,7 +844,6 @@ async function handleNewUrlsAfterBudgetCalc(campaignId: number, trafficstarCampa
     }
     
     console.log(`Found ${newUrls.length} URLs added after high-spend budget calculation for campaign ${campaignId}`);
-    console.log(`Status breakdown: ${newUrls.filter(url => url.status === 'active').length} active, ${newUrls.filter(url => url.status === 'complete').length} complete`);
     
     // Check if the 9-minute waiting period has elapsed from the OLDEST new URL
     // This ensures all URLs added within the 9-minute window get processed together
@@ -906,7 +872,7 @@ async function handleNewUrlsAfterBudgetCalc(campaignId: number, trafficstarCampa
       return;
     }
     
-    console.log(`${DELAY_MINUTES}-minute wait period has elapsed - processing ${newUrls.length} new URLs (both active and complete)`);
+    console.log(`${DELAY_MINUTES}-minute wait period has elapsed - processing ${newUrls.length} new URLs`);
     
     // Get the current campaign budget from TrafficStar
     const updatedSpentValue = await getTrafficStarCampaignSpentValue(campaignId, trafficstarCampaignId);
@@ -923,9 +889,7 @@ async function handleNewUrlsAfterBudgetCalc(campaignId: number, trafficstarCampa
     console.log(`Processing new URLs for campaign ${campaignId} with current spent value: $${updatedSpentValue.toFixed(4)}`);
     
     for (const url of newUrls) {
-      // For completed URLs, use their full clickLimit
-      // For active URLs, use their full clickLimit as well
-      // This fixes the bug where completed URLs weren't included in budget
+      // For newly added URLs, use total click limit instead of remaining clicks
       const totalClicks = url.clickLimit;
       totalNewClicks += totalClicks;
       
@@ -933,7 +897,7 @@ async function handleNewUrlsAfterBudgetCalc(campaignId: number, trafficstarCampa
       const urlBudget = (totalClicks / 1000) * parseFloat(campaign.pricePerThousand);
       additionalBudget += urlBudget;
       
-      console.log(`URL ID ${url.id} (${url.status}): ${totalClicks} clicks = $${urlBudget.toFixed(4)} additional budget`);
+      console.log(`URL ID ${url.id}: ${totalClicks} clicks = $${urlBudget.toFixed(4)} additional budget`);
       
       // Log this URL's budget calculation to the campaign-specific URL budget log file
       await urlBudgetLogger.logUrlBudget(url.id, urlBudget, campaignId);
@@ -956,7 +920,7 @@ async function handleNewUrlsAfterBudgetCalc(campaignId: number, trafficstarCampa
     // Update the TrafficStar campaign budget with the new total
     await trafficStarService.updateCampaignBudget(Number(trafficstarCampaignId), newTotalBudget);
     
-    console.log(`✅ Updated campaign ${trafficstarCampaignId} budget to $${newTotalBudget.toFixed(4)} after processing ${newUrls.length} new URLs (both active and complete)`);
+    console.log(`✅ Updated campaign ${trafficstarCampaignId} budget to $${newTotalBudget.toFixed(4)} after processing ${newUrls.length} new URLs`);
     
     // Update campaign status to reflect the batch update
     await db.update(campaigns)
@@ -1662,12 +1626,12 @@ export async function processTrafficGenerator(campaignId: number, forceMode?: st
       return;
     }
     
-    if (!campaign.trafficstarCampaignId) {
+    if (!campaign.trafficstarCampaignId || campaign.trafficstar_campaign_id) {
       console.error(`Campaign ${campaignId} has no TrafficStar ID - skipping`);
       return;
     }
     
-    console.log(`Processing Traffic Generator for campaign ${campaignId} with TrafficStar ID ${campaign.trafficstarCampaignId}`);
+    console.log(`Processing Traffic Generator for campaign ${campaignId} with TrafficStar ID ${campaign.trafficstarCampaignId || campaign.trafficstar_campaign_id}`);
     
     // Handle force mode for testing
     if (forceMode === 'force_activate') {
@@ -1810,7 +1774,7 @@ export async function pauseTrafficStarForEmptyCampaigns() {
     
     // Process each campaign
     for (const campaign of campaignsWithTrafficStar) {
-      if (!campaign.trafficstarCampaignId) continue;
+      if (!campaign.trafficstarCampaignId || campaign.trafficstar_campaign_id) continue;
       
       // Skip campaigns that are in a wait period after enabling
       if (campaign.lastTrafficSenderStatus === 'auto_reactivated_low_spend' || 
@@ -1839,11 +1803,11 @@ export async function pauseTrafficStarForEmptyCampaigns() {
           )
         );
       
-      console.log(`Campaign ${campaign.id} (TrafficStar ID: ${campaign.trafficstarCampaignId}) has ${activeUrls.length} active URLs`);
+      console.log(`Campaign ${campaign.id} (TrafficStar ID: ${campaign.trafficstarCampaignId || campaign.trafficstar_campaign_id}) has ${activeUrls.length} active URLs`);
       
       // If there are no active URLs, pause the TrafficStar campaign
       if (activeUrls.length === 0) {
-        console.log(`Campaign ${campaign.id} has NO active URLs - will pause TrafficStar campaign ${campaign.trafficstarCampaignId}`);
+        console.log(`Campaign ${campaign.id} has NO active URLs - will pause TrafficStar campaign ${campaign.trafficstarCampaignId || campaign.trafficstar_campaign_id}`);
         
         // Check the current status of the TrafficStar campaign
         const currentStatus = await getTrafficStarCampaignStatus(campaign.trafficstarCampaignId || campaign.trafficstar_campaign_id);
@@ -1985,7 +1949,7 @@ export async function debugProcessCampaign(campaignId: number) {
       return { success: false, error: `Campaign ${campaignId} not found` };
     }
     
-    if (!campaign.trafficstarCampaignId) {
+    if (!campaign.trafficstarCampaignId || campaign.trafficstar_campaign_id) {
       return { success: false, error: `Campaign ${campaignId} has no TrafficStar ID` };
     }
     
