@@ -13,7 +13,9 @@ import { eq } from "drizzle-orm";
  * Handle /views/:customPath route with support for path-specific custom redirector toggle
  */
 export function registerUpdatedViewsHandler(app: any) {
+  console.log("🚀 REGISTERING NEW VIEWS HANDLER IMPLEMENTATION 🚀");
   app.get("/views/:customPath", async (req: Request, res: Response) => {
+    console.log("🔄 NEW HANDLER CALLED FOR PATH: " + req.params.customPath);
     try {
       const startTime = process.hrtime();
       const customPath = req.params.customPath;

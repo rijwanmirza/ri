@@ -97,10 +97,12 @@ app.use((req, res, next) => {
     requireAuth(req, res, next);
   });
   
-  const server = await registerRoutes(app);
-  
-  // Register the updated views route handler with per-path custom redirector toggle support
+  // Register the updated views route handler with per-path custom redirector toggle support FIRST
+  // This ensures our custom handler takes precedence over any similar routes in registerRoutes
   registerUpdatedViewsHandler(app);
+  
+  // Register main routes AFTER our custom handler
+  const server = await registerRoutes(app);
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
     const status = err.status || err.statusCode || 500;
