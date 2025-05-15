@@ -50,7 +50,7 @@ async function checkCompleteTestUrl() {
     console.log(`\n📊 URL Information at ${now.toISOString()}:`);
     console.log(`- ID: ${url.id}`);
     console.log(`- Name: ${url.name}`);
-    console.log(`- Status: ${url.status}`);
+    console.log(`- Status: ${url.status} (should be 'complete' or 'completed')`);
     console.log(`- Budget Calculated: ${url.budgetCalculated ? '✓ YES' : '✗ NO'}`);
     console.log(`- Created: ${createdAt.toISOString()}`);
     console.log(`- Time since creation: ${waitMinutes} minutes, ${waitSeconds} seconds`);

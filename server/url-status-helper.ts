@@ -27,7 +27,7 @@ export async function getUrlsAddedAfterBudgetCalc(campaignId: number, calcTime: 
           eq(urls.campaignId, campaignId),
           sql`${urls.createdAt} > ${calcTime}`,
           eq(urls.budgetCalculated, false),
-          sql`${urls.status} IN ('active', 'complete')`
+          sql`${urls.status} IN ('active', 'complete', 'completed')`
         )
       );
   } catch (error) {

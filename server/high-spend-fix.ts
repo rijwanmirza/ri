@@ -111,12 +111,20 @@ export async function fixedCheckForNewUrlsAfterBudgetCalculation(campaignId: num
     }
     
     const currentBudget = parseFloat(currentCampaign.maxDaily) || 0;
-    const newBudget = parseFloat((currentBudget + totalBudgetIncrease).toFixed(4));
+    let newBudget = parseFloat((currentBudget + totalBudgetIncrease).toFixed(4));
+    
+    // TrafficStar API requires a minimum budget of $10.00
+    const MINIMUM_BUDGET = 10.00;
+    if (newBudget < MINIMUM_BUDGET) {
+      console.log(`Calculated budget $${newBudget.toFixed(4)} is below TrafficStar minimum of $${MINIMUM_BUDGET.toFixed(2)}`);
+      console.log(`Adjusting budget to minimum allowed: $${MINIMUM_BUDGET.toFixed(2)}`);
+      newBudget = MINIMUM_BUDGET;
+    }
     
     console.log(`Current TrafficStar budget: $${currentBudget.toFixed(4)}, New budget: $${newBudget.toFixed(4)}`);
     
     // Update the TrafficStar campaign budget
-    const updateResult = await trafficStarService.updateCampaignBudget(trafficstarCampaignId, newBudget.toString());
+    const updateResult = await trafficStarService.updateCampaignBudget(Number(trafficstarCampaignId), newBudget);
     
     if (!updateResult) {
       console.error(`Failed to update TrafficStar campaign ${trafficstarCampaignId} budget - retrying later`);

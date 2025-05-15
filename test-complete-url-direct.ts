@@ -46,8 +46,9 @@ async function addAndCompleteTestUrl() {
       .values({
         campaignId,
         name: TEST_URL_NAME,
-        url: 'https://www.youtube.com/watch?v=test-complete',
+        targetUrl: 'https://www.youtube.com/watch?v=test-complete',
         clickLimit: TEST_URL_CLICKS,
+        originalClickLimit: TEST_URL_CLICKS,
         clicks: 0,
         status: 'active',
         createdAt: new Date(),
