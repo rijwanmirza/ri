@@ -9,7 +9,7 @@
 import { trafficStarService } from './trafficstar-service';
 import { db } from './db';
 import { campaigns, urls, type Campaign, type Url } from '../shared/schema';
-import { eq, and, or, sql, gt } from 'drizzle-orm';
+import { eq, and, sql } from 'drizzle-orm';
 import { parseSpentValue } from './trafficstar-spent-helper';
 import axios from 'axios';
 import urlBudgetLogger from './url-budget-logger';
@@ -1782,7 +1782,7 @@ export async function pauseTrafficStarForEmptyCampaigns() {
     // Get all campaigns with TrafficStar campaign IDs
     const campaignsWithTrafficStar = await db.select()
       .from(campaigns)
-      .where(sql`trafficstar_campaign_id is not null AND traffic_generator_enabled = true`);
+      .where(sql`"trafficstarCampaignId" is not null AND traffic_generator_enabled = true`);
     
     if (!campaignsWithTrafficStar || campaignsWithTrafficStar.length === 0) {
       console.log('No campaigns with TrafficStar integration found');
@@ -1822,11 +1822,11 @@ export async function pauseTrafficStarForEmptyCampaigns() {
           )
         );
       
-      console.log(`Campaign ${campaign.id} (TrafficStar ID: ${campaign.trafficstarCampaignId || campaign.trafficstar_campaign_id}) has ${activeUrls.length} active URLs`);
+      console.log(`Campaign ${campaign.id} (TrafficStar ID: ${campaign.trafficstarCampaignId}) has ${activeUrls.length} active URLs`);
       
       // If there are no active URLs, pause the TrafficStar campaign
       if (activeUrls.length === 0) {
-        console.log(`Campaign ${campaign.id} has NO active URLs - will pause TrafficStar campaign ${campaign.trafficstarCampaignId || campaign.trafficstar_campaign_id}`);
+        console.log(`Campaign ${campaign.id} has NO active URLs - will pause TrafficStar campaign ${campaign.trafficstarCampaignId}`);
         
         // Check the current status of the TrafficStar campaign
         const currentStatus = await getTrafficStarCampaignStatus(campaign.trafficstarCampaignId || campaign.trafficstar_campaign_id);
