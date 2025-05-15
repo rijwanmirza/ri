@@ -5,6 +5,8 @@ import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { PlusCircle, Loader2, X, Trash2 } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 import {
   Card,
   CardContent,
@@ -146,6 +148,52 @@ export function CampaignPaths({ campaign }: CampaignPathsProps) {
   const handleDeletePath = (pathId: number) => {
     deletePathMutation.mutate(pathId);
   };
+  
+  // Toggle custom redirector mutation
+  const toggleRedirectorMutation = useMutation({
+    mutationFn: async ({ pathId, enabled }: { pathId: number, enabled: boolean }) => {
+      // Getting the API key from cookies
+      const cookies = document.cookie.split(';').reduce((acc, cookie) => {
+        const [name, value] = cookie.trim().split('=');
+        acc[name] = decodeURIComponent(value);
+        return acc;
+      }, {} as Record<string, string>);
+      
+      const apiKey = cookies.apiKey;
+
+      const response = await fetch(`/api/campaign-paths/${pathId}/redirector`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          "X-API-Key": apiKey || ""
+        },
+        body: JSON.stringify({ useCustomRedirector: enabled }),
+        credentials: "include"
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || "Failed to update custom redirector setting");
+      }
+
+      return await response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [`/api/campaigns/${campaign.id}/paths`] });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error updating redirector setting",
+        description: error.message || "Failed to update custom redirector setting",
+        variant: "destructive"
+      });
+    }
+  });
+  
+  // Toggle function for the switch
+  const toggleCustomRedirector = (pathId: number, enabled: boolean) => {
+    toggleRedirectorMutation.mutate({ pathId, enabled });
+  };
 
   return (
     <Card className="mb-6">
@@ -184,6 +232,17 @@ export function CampaignPaths({ campaign }: CampaignPathsProps) {
                 <div className="flex items-center space-x-3">
                   <div className="text-muted-foreground text-sm">
                     /views/{path.path}
+                  </div>
+                  <div className="flex items-center mr-2">
+                    <Switch
+                      id={`custom-redirector-${path.id}`}
+                      checked={path.useCustomRedirector}
+                      onCheckedChange={(checked) => toggleCustomRedirector(path.id, checked)}
+                      aria-label="Enable Custom Redirector"
+                    />
+                    <Label htmlFor={`custom-redirector-${path.id}`} className="ml-2 text-xs">
+                      {path.useCustomRedirector ? "Redirector On" : "Redirector Off"}
+                    </Label>
                   </div>
                   <AlertDialog>
                     <AlertDialogTrigger asChild>

@@ -239,6 +239,7 @@ export const campaignPaths = pgTable("campaign_paths", {
   id: serial("id").primaryKey(),
   campaignId: integer("campaign_id").references(() => campaigns.id).notNull(),
   path: text("path").notNull(),
+  useCustomRedirector: boolean("use_custom_redirector").default(true), // Controls whether this path uses custom redirection
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
@@ -260,6 +261,7 @@ export const updateCampaignPathSchema = createInsertSchema(campaignPaths).omit({
 }).extend({
   campaignId: z.number().int().optional(),
   path: z.string().min(1).optional(),
+  useCustomRedirector: z.boolean().optional(),
 });
 
 // Extended schemas with campaign relationship

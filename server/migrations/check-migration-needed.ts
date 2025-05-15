@@ -1,57 +1,94 @@
-import { db, pool } from "../db";
+import { pool } from "../db";
 
-/**
- * Check if the budgetUpdateTime column migration is needed
+/** 
+ * Check if budget update time field migration is needed
+ * @returns {Promise<boolean>} true if migration is needed, false otherwise
  */
 export async function isBudgetUpdateTimeMigrationNeeded(): Promise<boolean> {
   try {
-    // Check if column exists
-    const checkQuery = `
-      SELECT column_name
-      FROM information_schema.columns
-      WHERE table_name = 'campaigns'
-      AND column_name = 'budget_update_time'
-    `;
-
-    // Use pool.query instead of db.execute
-    const result = await pool.query(checkQuery);
-
-    // Force the result to be false since we know the column has been added
-    console.log("Budget update time migration check result:", result);
-
-    // Always return false to stop the annoying popup - we know the column exists
-    return false;
+    // Connect to the database
+    const client = await pool.connect();
+    
+    try {
+      // Check if the budget_update_time column exists in the campaigns table
+      const result = await client.query(`
+        SELECT column_name 
+        FROM information_schema.columns 
+        WHERE table_name = 'campaigns' 
+        AND column_name = 'budget_update_time';
+      `);
+      
+      // If the column doesn't exist, we need to perform the migration
+      return result.rows.length === 0;
+    } finally {
+      // Release the client back to the pool
+      client.release();
+    }
   } catch (error) {
-    console.error("Error checking if budget update time migration is needed:", error);
-    // Return false to avoid the annoying popup - we manually verified the column exists
-    return false;
+    console.error('Error checking for budget update time field:', error);
+    // If there's an error, assume migration is needed
+    return true;
   }
 }
 
-/**
- * Check if the TrafficStar fields migration is needed
+/** 
+ * Check if TrafficStar fields migration is needed
+ * @returns {Promise<boolean>} true if migration is needed, false otherwise
  */
 export async function isTrafficStarFieldsMigrationNeeded(): Promise<boolean> {
   try {
-    // Check if column exists
-    const checkQuery = `
-      SELECT column_name
-      FROM information_schema.columns
-      WHERE table_name = 'campaigns'
-      AND column_name = 'trafficstar_campaign_id'
-    `;
-
-    // Use pool.query instead of db.execute
-    const result = await pool.query(checkQuery);
-
-    // Force the result to be false since we know the column has been added
-    console.log("TrafficStar fields migration check result:", result);
-
-    // Always return false to avoid annoying popups
-    return false;
+    // Connect to the database
+    const client = await pool.connect();
+    
+    try {
+      // Check if the trafficstar_campaign_id column exists in the campaigns table
+      const result = await client.query(`
+        SELECT column_name 
+        FROM information_schema.columns 
+        WHERE table_name = 'campaigns' 
+        AND column_name = 'trafficstar_campaign_id';
+      `);
+      
+      // If the column doesn't exist, we need to perform the migration
+      return result.rows.length === 0;
+    } finally {
+      // Release the client back to the pool
+      client.release();
+    }
   } catch (error) {
-    console.error("Error checking if TrafficStar fields migration is needed:", error);
-    // Return false to avoid the annoying popup - we manually verified the column exists
-    return false;
+    console.error('Error checking for TrafficStar fields:', error);
+    // If there's an error, assume migration is needed
+    return true;
+  }
+}
+
+/** 
+ * Check if custom redirector toggle migration is needed
+ * @returns {Promise<boolean>} true if migration is needed, false otherwise
+ */
+export async function isCustomRedirectorToggleMigrationNeeded(): Promise<boolean> {
+  try {
+    // Connect to the database
+    const client = await pool.connect();
+    
+    try {
+      // Check if the use_custom_redirector column exists in the campaign_paths table
+      const result = await client.query(`
+        SELECT column_name 
+        FROM information_schema.columns 
+        WHERE table_name = 'campaign_paths' 
+        AND column_name = 'use_custom_redirector';
+      `);
+      
+      // If the column doesn't exist, we need to perform the migration
+      return result.rows.length === 0;
+    } finally {
+      // Release the client back to the pool
+      client.release();
+    }
+  } catch (error) {
+    console.error('Error checking for custom redirector toggle field:', error);
+    // If there's an error, assume migration is needed
+    return true;
   }
 }

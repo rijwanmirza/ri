@@ -1284,6 +1284,45 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ message: "Failed to delete campaign path" });
     }
   });
+  
+  // API endpoint to toggle custom redirector for a campaign path
+  app.patch("/api/campaign-paths/:id/redirector", async (req: Request, res: Response) => {
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "Invalid path ID" });
+      }
+      
+      // Check if path exists
+      const path = await storage.getCampaignPath(id);
+      if (!path) {
+        return res.status(404).json({ message: "Path not found" });
+      }
+      
+      const { useCustomRedirector } = req.body;
+      if (typeof useCustomRedirector !== 'boolean') {
+        return res.status(400).json({ message: "Invalid useCustomRedirector value - must be boolean" });
+      }
+      
+      // Update the path
+      const updatedPath = await storage.updateCampaignPath(id, { useCustomRedirector });
+      
+      if (!updatedPath) {
+        return res.status(500).json({ message: "Failed to update custom redirector setting" });
+      }
+      
+      res.json({ 
+        message: "Custom redirector setting updated successfully",
+        path: updatedPath 
+      });
+    } catch (error) {
+      console.error('Error updating custom redirector setting:', error);
+      res.status(500).json({ 
+        message: "Failed to update custom redirector setting", 
+        error: error instanceof Error ? error.message : String(error) 
+      });
+    }
+  });
 
   // API routes for URLs
   app.get("/api/campaigns/:campaignId/urls", async (req: Request, res: Response) => {
@@ -3844,18 +3883,48 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
+  // Database migration - add custom redirector toggle to campaign_paths table
+  app.post("/api/system/migrate-custom-redirector-toggle", async (_req: Request, res: Response) => {
+    try {
+      // Import the migration function
+      const { addCustomRedirectorToggle } = await import("./migrations/add-custom-redirector-toggle");
+      
+      // Execute the migration
+      const result = await addCustomRedirectorToggle();
+      
+      if (result.success) {
+        console.log("✅ Custom redirector toggle migration successful:", result.message);
+        res.status(200).json({
+          message: "Custom redirector toggle migration completed successfully",
+          details: result.message
+        });
+      } else {
+        console.error("❌ Custom redirector toggle migration failed:", result.message);
+        res.status(500).json({
+          message: "Custom redirector toggle migration failed",
+          details: result.message
+        });
+      }
+    } catch (error) {
+      console.error("Failed to add custom redirector toggle:", error);
+      res.status(500).json({ message: "Failed to add custom redirector toggle to campaign_paths table" });
+    }
+  });
+  
   // Check migration status - Find out if migrations are needed
   app.get("/api/system/check-migrations", async (_req: Request, res: Response) => {
     try {
       // Import the migration check functions
       const { 
         isBudgetUpdateTimeMigrationNeeded, 
-        isTrafficStarFieldsMigrationNeeded 
+        isTrafficStarFieldsMigrationNeeded,
+        isCustomRedirectorToggleMigrationNeeded
       } = await import("./migrations/check-migration-needed");
       
       // Check migration status
       const budgetUpdateTimeMigrationNeeded = await isBudgetUpdateTimeMigrationNeeded();
       const trafficStarFieldsMigrationNeeded = await isTrafficStarFieldsMigrationNeeded();
+      const customRedirectorToggleMigrationNeeded = await isCustomRedirectorToggleMigrationNeeded();
       
       // Check if the original_url_records table exists using pool.query
       const originalUrlRecordsTableResult = await pool.query(`
@@ -3868,18 +3937,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Print debug info to help troubleshoot
       console.log("Budget update time migration check result:", budgetUpdateTimeMigrationNeeded);
       console.log("TrafficStar fields migration check result:", trafficStarFieldsMigrationNeeded);
+      console.log("Custom redirector toggle migration check result:", customRedirectorToggleMigrationNeeded);
       console.log("Original URL records table result:", originalUrlRecordsTableResult);
       
-      // No migrations are needed since Traffic Sender has been removed
-      const migrationNeeded = false;
+      // Check if any migrations are needed
+      const migrationNeeded = customRedirectorToggleMigrationNeeded;
       
       res.status(200).json({
         budgetUpdateTimeMigrationNeeded: false, // These are already done
         trafficStarFieldsMigrationNeeded: false, // These are already done
         trafficSenderFieldsMigrationNeeded: false, // Traffic Sender has been removed
+        customRedirectorToggleMigrationNeeded,
         originalUrlRecordsTableExists: true,
-        migrationNeeded: false,
-        message: "All migrations are already applied - no action needed"
+        migrationNeeded,
+        message: migrationNeeded 
+          ? "Migration needed for custom redirector toggle feature" 
+          : "All migrations are already applied - no action needed"
       });
     } catch (error) {
       console.error("Failed to check migration status:", error);

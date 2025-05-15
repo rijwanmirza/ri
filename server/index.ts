@@ -16,6 +16,7 @@ import { initAccessCodeManager } from "./auth/access-code-manager";
 import { handleAccessRoutes, isValidTemporaryLoginPath, isSessionValid } from "./access-control";
 import { processScheduledBudgetUpdates } from "./scheduled-budget-updater";
 import { startDiskSpaceMonitoring } from "./disk-space-monitor";
+import { registerUpdatedViewsHandler } from "./updated-views-route-handler";
 import * as spdy from 'spdy';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -97,6 +98,9 @@ app.use((req, res, next) => {
   });
   
   const server = await registerRoutes(app);
+  
+  // Register the updated views route handler with per-path custom redirector toggle support
+  registerUpdatedViewsHandler(app);
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
     const status = err.status || err.statusCode || 500;
