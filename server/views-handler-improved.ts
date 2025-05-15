@@ -1,5 +1,8 @@
 /**
- * Updated views route handler that supports per-path custom redirector toggle
+ * Updated views route handler that supports both legacy paths and new multi-path system
+ * - Supports legacy paths stored in campaigns.customPath
+ * - Supports new paths stored in campaignPaths table
+ * - Respects path-specific custom redirector toggle settings
  */
 import { Request, Response } from "express";
 import { storage } from "./storage";
@@ -10,12 +13,12 @@ import { campaigns, campaignPaths } from "../shared/schema";
 import { eq } from "drizzle-orm";
 
 /**
- * Handle /views/:customPath route with support for path-specific custom redirector toggle
+ * Handle /views/:customPath route with support for both legacy paths and the new multi-path system
  */
-export function registerUpdatedViewsHandler(app: any) {
-  console.log("🚀 REGISTERING NEW VIEWS HANDLER IMPLEMENTATION 🚀");
+export function registerViewsHandler(app: any) {
+  console.log("🚀 REGISTERING IMPROVED VIEWS HANDLER WITH LEGACY PATH SUPPORT 🚀");
+  
   app.get("/views/:customPath", async (req: Request, res: Response) => {
-    console.log("🔄 NEW HANDLER CALLED FOR PATH: " + req.params.customPath);
     try {
       const startTime = process.hrtime();
       const customPath = req.params.customPath;
@@ -26,47 +29,44 @@ export function registerUpdatedViewsHandler(app: any) {
       
       console.log(`Processing custom path request for: ${customPath}`);
       
-      // Get the campaign path directly first
+      // First try to find the path in the campaign_paths table
       const [campaignPath] = await db.select().from(campaignPaths).where(eq(campaignPaths.path, customPath));
       
-      // If no path found in campaign_paths table, check for legacy custom paths in campaigns table
-      if (!campaignPath) {
+      let campaign;
+      let pathType = 'NEW';
+      let useCustomRedirector = false;
+      
+      if (campaignPath) {
+        // Path found in the new multi-path system
+        console.log(`Found path ID ${campaignPath.id} (${campaignPath.path}) in campaign_paths table`);
+        
+        // Get the campaign
+        [campaign] = await db.select().from(campaigns).where(eq(campaigns.id, campaignPath.campaignId));
+        
+        if (!campaign) {
+          console.log(`Campaign ID ${campaignPath.campaignId} not found for path ID ${campaignPath.id}`);
+          return res.status(404).json({ message: "Campaign not found" });
+        }
+        
+        // Use the path-specific setting
+        useCustomRedirector = !!campaignPath.useCustomRedirector;
+      } else {
+        // No path found in campaign_paths table, check legacy paths
         console.log(`No path found in campaign_paths table for: ${customPath}, checking legacy paths...`);
         
         // Check if this is a legacy path in the campaigns table
-        const [legacyCampaign] = await db.select().from(campaigns).where(eq(campaigns.customPath, customPath));
+        [campaign] = await db.select().from(campaigns).where(eq(campaigns.customPath, customPath));
         
-        if (legacyCampaign) {
-          console.log(`Found legacy path match in campaign ID ${legacyCampaign.id} with customPath=${legacyCampaign.customPath}`);
-          
-          // Create a synthetic campaignPath object using the legacy path
-          const syntheticPath = {
-            id: 0, // Use 0 to indicate it's a synthetic path
-            campaignId: legacyCampaign.id,
-            path: customPath,
-            createdAt: new Date(),
-            updatedAt: new Date(),
-            // Use the campaign's custom redirector setting for the legacy path
-            useCustomRedirector: legacyCampaign.customRedirectorEnabled
-          };
-          
-          // Continue processing with the synthetic path
-          return processCampaignPath(syntheticPath, legacyCampaign);
+        if (!campaign) {
+          console.log(`No legacy path found for: ${customPath}`);
+          return res.status(404).json({ message: "Campaign path not found" });
         }
         
-        console.log(`No legacy path found for: ${customPath}`);
-        return res.status(404).json({ message: "Campaign path not found" });
-      }
-      
-      // Helper function to process a campaign path (either new or legacy)
-      async function processCampaignPath(campaignPath: any, existingCampaign?: any) {
-      
-      // Get the campaign for this path (if not already provided from legacy path)
-      const campaign = existingCampaign || (await db.select().from(campaigns).where(eq(campaigns.id, campaignPath.campaignId)))[0];
-      
-      if (!campaign) {
-        console.log(`Campaign ID ${campaignPath.campaignId} not found for path ID ${campaignPath.id}`);
-        return res.status(404).json({ message: "Campaign not found" });
+        console.log(`Found legacy path match in campaign ID ${campaign.id} with customPath=${campaign.customPath}`);
+        pathType = 'LEGACY';
+        
+        // For legacy paths, use the campaign-level custom redirector setting
+        useCustomRedirector = !!campaign.customRedirectorEnabled;
       }
       
       console.log(`Found campaign ID ${campaign.id} for path: ${customPath}`);
@@ -119,18 +119,12 @@ export function registerUpdatedViewsHandler(app: any) {
       // Handle the redirect based on the campaign's redirect method
       let targetUrl = selectedUrl.targetUrl;
       
-      // IMPORTANT: Determine if custom redirector should be used for this specific path
-      // For normal paths, use the path's setting. For legacy paths, we already set this when creating the synthetic path.
-      let useCustomRedirector = !!campaignPath.useCustomRedirector;
-      
-      // For debugging, identify if this is a legacy path
-      const pathType = campaignPath.id === 0 ? 'LEGACY' : 'NEW';
-      
+      // Log the redirect settings
       console.log(`📍 ${pathType} PATH SETTING: Custom redirector for path ${customPath} is ${useCustomRedirector ? 'ENABLED' : 'DISABLED'}`);
       console.log(`Campaign level setting: ${campaign.customRedirectorEnabled ? 'ENABLED' : 'DISABLED'}`);
       console.log(`FINAL DECISION: Custom redirector is ${useCustomRedirector ? 'ENABLED' : 'DISABLED'} for this path`);
       
-      // Check if custom redirector is enabled for this campaign and this specific path
+      // Check if custom redirector is enabled for this specific path
       if (useCustomRedirector) {
         // Get all enabled redirection methods
         const enabledRedirectionMethods = [];
@@ -318,19 +312,11 @@ export function registerUpdatedViewsHandler(app: any) {
           res.redirect(targetUrl);
           break;
       }
-      
-      // Return from the processCampaignPath function
-      return;
-    } // End of processCampaignPath function
-    
-    // Call the processCampaignPath function with the found path
-    return processCampaignPath(campaignPath);
-    
     } catch (error) {
       console.error('Error in views route handler:', error);
       res.status(500).json({ message: "Failed to process redirect" });
     }
   });
 
-  console.log("✅ Registered updated views route handler with per-path custom redirector support");
+  console.log("✅ Registered improved views handler with support for legacy paths and custom redirector toggle");
 }

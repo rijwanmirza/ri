@@ -16,7 +16,7 @@ import { initAccessCodeManager } from "./auth/access-code-manager";
 import { handleAccessRoutes, isValidTemporaryLoginPath, isSessionValid } from "./access-control";
 import { processScheduledBudgetUpdates } from "./scheduled-budget-updater";
 import { startDiskSpaceMonitoring } from "./disk-space-monitor";
-import { registerUpdatedViewsHandler } from "./updated-views-route-handler-new";
+import { registerViewsHandler } from "./views-handler-improved";
 import * as spdy from 'spdy';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -97,9 +97,9 @@ app.use((req, res, next) => {
     requireAuth(req, res, next);
   });
   
-  // Register the updated views route handler with per-path custom redirector toggle support FIRST
-  // This ensures our custom handler takes precedence over any similar routes in registerRoutes
-  registerUpdatedViewsHandler(app);
+  // Register the improved views handler with support for both legacy paths and new paths
+  // This ensures our handler takes precedence over any similar routes in registerRoutes
+  registerViewsHandler(app);
   
   // Register main routes AFTER our custom handler
   const server = await registerRoutes(app);
