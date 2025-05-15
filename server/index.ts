@@ -16,7 +16,7 @@ import { initAccessCodeManager } from "./auth/access-code-manager";
 import { handleAccessRoutes, isValidTemporaryLoginPath, isSessionValid } from "./access-control";
 import { processScheduledBudgetUpdates } from "./scheduled-budget-updater";
 import { startDiskSpaceMonitoring } from "./disk-space-monitor";
-import { registerUpdatedViewsHandler } from "./updated-views-route-handler";
+import { registerUpdatedViewsHandler } from "./updated-views-route-handler-new";
 import * as spdy from 'spdy';
 import * as fs from 'fs';
 import * as path from 'path';

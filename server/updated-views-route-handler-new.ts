@@ -24,45 +24,35 @@ export function registerUpdatedViewsHandler(app: any) {
       
       console.log(`Processing custom path request for: ${customPath}`);
       
-      // Skip the database lookup and query the campaign and path directly 
-      // (more reliable for this specific fix)
-      
-      // First find the path
+      // Get the campaign path directly first
       const [campaignPath] = await db.select().from(campaignPaths).where(eq(campaignPaths.path, customPath));
       
       if (!campaignPath) {
-        console.log(`Path not found for custom path: ${customPath}`);
+        console.log(`No campaign path found for: ${customPath}`);
         return res.status(404).json({ message: "Campaign path not found" });
       }
       
-      console.log(`FOUND PATH: ID ${campaignPath.id}, path=${campaignPath.path}, useCustomRedirector=${campaignPath.useCustomRedirector}`);
+      console.log(`FOUND PATH in DB: ID ${campaignPath.id}, path=${campaignPath.path}, useCustomRedirector=${campaignPath.useCustomRedirector}`);
       
-      // Then get the associated campaign
+      // Get the campaign for this path
       const [campaign] = await db.select().from(campaigns).where(eq(campaigns.id, campaignPath.campaignId));
       
       if (!campaign) {
-        console.log(`Campaign not found for path ID: ${campaignPath.id}`);
+        console.log(`Campaign ID ${campaignPath.campaignId} not found for path ID ${campaignPath.id}`);
         return res.status(404).json({ message: "Campaign not found" });
       }
       
-      console.log(`Found campaign ID ${campaign.id} for custom path: ${customPath}`);
+      console.log(`Found campaign ID ${campaign.id} for path: ${customPath}`);
       
-      // Get fresh URLs for this campaign with direct query
+      // Get URLs for this campaign
       const urls = await storage.getUrls(campaign.id);
       
-      // Create the full campaign object manually
-      const fullCampaign = {
-        ...campaign,
-        urls,
-        currentPath: campaignPath  // Keep this reference for later use
-      };
       console.log(`Campaign has ${urls.length} total URLs`);
-      console.log(`Campaign has ${urls.filter((url: any) => url.isActive).length} active URLs`);
+      console.log(`Campaign has ${urls.filter(url => url.isActive).length} active URLs`);
       
-      // Use our optimized method to get a URL based on weighted distribution
+      // Get a random URL based on weighting
       const selectedUrl = await storage.getRandomWeightedUrl(campaign.id);
       
-      // If no active URLs are available, show an error message
       if (!selectedUrl) {
         console.log(`No active URLs available for campaign ID ${campaign.id}`);
         return res.status(410).json({ message: "All URLs in this campaign have reached their click limits" });
@@ -70,12 +60,11 @@ export function registerUpdatedViewsHandler(app: any) {
       
       console.log(`Selected URL ID ${selectedUrl.id} (${selectedUrl.name}) for redirect`);
       
-      // Increment click count
+      // Increment click count for this URL
       await storage.incrementUrlClicks(selectedUrl.id);
       
-      // Also log the click to the URL click logs system for time-based filtering
+      // Log the click in our URL click logs system
       try {
-        // Log to URL click logs (with Indian timezone)
         urlClickLogsManager.logClick(selectedUrl.id).catch(err => {
           console.error("Error logging URL click for custom path:", err);
         });
@@ -84,20 +73,15 @@ export function registerUpdatedViewsHandler(app: any) {
       }
       
       // Record campaign click data that will persist even if URL is deleted
-      // This makes click tracking completely independent from URLs
       try {
-        // Asynchronously record permanent campaign click without blocking the redirect
-        // Using the storage method that ensures click data persists
         storage.recordCampaignClick(campaign.id, selectedUrl.id).catch(err => {
           console.error("Error recording campaign click for custom path:", err);
         });
         
-        // Log the redirect in our redirect logs system with Indian timezone
         redirectLogsManager.logRedirect(campaign.id, selectedUrl.id).catch(err => {
           console.error("Error logging redirect for custom path:", err);
         });
       } catch (analyticsError) {
-        // Log but don't block the redirect if click recording fails
         console.error("Failed to record campaign click for custom path:", analyticsError);
       }
       
@@ -108,21 +92,13 @@ export function registerUpdatedViewsHandler(app: any) {
       // Handle the redirect based on the campaign's redirect method
       let targetUrl = selectedUrl.targetUrl;
       
-      // Determine if custom redirector should be used for this specific path
-      // Start with the campaign-level setting
-      let useCustomRedirector = campaign.customRedirectorEnabled;
+      // IMPORTANT: Determine if custom redirector should be used for this specific path
+      // Use campaignPath.useCustomRedirector directly from database
+      let useCustomRedirector = !!campaignPath.useCustomRedirector;
       
-      // SIMPLIFIED LOGIC: We already have the exact path from our initial database query
-      // Use the path's useCustomRedirector setting directly (this is the most reliable approach)
-      useCustomRedirector = !!campaignPath.useCustomRedirector;
-      
-      console.log(`📍 DIRECT FROM DATABASE: Using path ID ${campaignPath.id} (${campaignPath.path}) setting: ${useCustomRedirector ? 'ENABLED' : 'DISABLED'}`);
-      console.log(`Path-specific custom redirector setting for ${customPath}: ${useCustomRedirector ? 'ENABLED' : 'DISABLED'}`);
-      
-      // Additional debug info
-      console.log(`Campaign level setting was: ${campaign.customRedirectorEnabled ? 'ENABLED' : 'DISABLED'}`);
-      console.log(`Final decision: Custom redirector is ${useCustomRedirector ? 'ENABLED' : 'DISABLED'} for this path`);
-      
+      console.log(`📍 PATH SETTING: Custom redirector for path ${customPath} is ${useCustomRedirector ? 'ENABLED' : 'DISABLED'}`);
+      console.log(`Campaign level setting: ${campaign.customRedirectorEnabled ? 'ENABLED' : 'DISABLED'}`);
+      console.log(`FINAL DECISION: Custom redirector is ${useCustomRedirector ? 'ENABLED' : 'DISABLED'} for this path`);
       
       // Check if custom redirector is enabled for this campaign and this specific path
       if (useCustomRedirector) {

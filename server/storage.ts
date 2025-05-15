@@ -378,11 +378,19 @@ export class DatabaseStorage implements IStorage {
       
       // If not found in legacy field, try the new campaign_paths table
       if (!campaign) {
+        // First try to find campaign path with exact match
         const [campaignPath] = await db.select().from(campaignPaths).where(eq(campaignPaths.path, customPath));
+        
         if (campaignPath) {
+          console.log(`Found custom path ID ${campaignPath.id} with useCustomRedirector=${campaignPath.useCustomRedirector}`);
+          
           // Get the campaign using the campaignId from the path
           const [foundCampaign] = await db.select().from(campaigns).where(eq(campaigns.id, campaignPath.campaignId));
           campaign = foundCampaign;
+          
+          // Store the current path that was used to access this campaign
+          // This will allow us to know which specific path's settings to use
+          (campaign as any).currentPath = campaignPath;
         }
       }
       
