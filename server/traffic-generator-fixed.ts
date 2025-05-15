@@ -14,20 +14,10 @@ import { parseSpentValue } from './trafficstar-spent-helper';
 import axios from 'axios';
 import urlBudgetLogger from './url-budget-logger';
 import { getUrlsAddedAfterBudgetCalc } from './url-status-helper';
-import { fixedCheckForNewUrlsAfterBudgetCalculation } from './high-spend-fix';
 
 // Extended URL type with active status
 interface UrlWithActiveStatus extends Url {
   isActive: boolean;
-}
-
-/**
- * Helper function to get the TrafficStar campaign ID consistently
- * This eliminates the reference to the non-existent campaign.trafficstar_campaign_id field
- * while maintaining backward compatibility
- */
-function getTrafficStarId(campaign: Campaign): string {
-  return campaign.trafficstarCampaignId || '';
 }
 
 /**
@@ -681,13 +671,7 @@ export async function handleCampaignBySpentValue(campaignId: number, trafficstar
  * @param campaignId The campaign ID in our system 
  * @param trafficstarCampaignId The TrafficStar campaign ID
  */
-// Using our fixed function implementation from high-spend-fix.ts
 async function checkForNewUrlsAfterBudgetCalculation(campaignId: number, trafficstarCampaignId: string) {
-  return fixedCheckForNewUrlsAfterBudgetCalculation(campaignId, trafficstarCampaignId);
-}
-
-// Original implementation kept as reference but disabled
-async function _originalCheckForNewUrlsAfterBudgetCalculation(campaignId: number, trafficstarCampaignId: string) {
   try {
     console.log(`🔍 Checking for new URLs added after budget calculation for campaign ${campaignId}`);
     
@@ -1810,7 +1794,7 @@ export async function pauseTrafficStarForEmptyCampaigns() {
     
     // Process each campaign
     for (const campaign of campaignsWithTrafficStar) {
-      if (!campaign.trafficstarCampaignId) continue;
+      if (!campaign.trafficstarCampaignId || campaign.trafficstar_campaign_id) continue;
       
       // Skip campaigns that are in a wait period after enabling
       if (campaign.lastTrafficSenderStatus === 'auto_reactivated_low_spend' || 
@@ -1985,7 +1969,7 @@ export async function debugProcessCampaign(campaignId: number) {
       return { success: false, error: `Campaign ${campaignId} not found` };
     }
     
-    if (!campaign.trafficstarCampaignId) {
+    if (!campaign.trafficstarCampaignId || campaign.trafficstar_campaign_id) {
       return { success: false, error: `Campaign ${campaignId} has no TrafficStar ID` };
     }
     
