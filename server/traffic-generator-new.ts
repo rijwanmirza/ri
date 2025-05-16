@@ -675,12 +675,16 @@ async function checkForNewUrlsAfterBudgetCalculation(campaignId: number, traffic
     console.log(`🔍 Checking for new URLs added after budget calculation for campaign ${campaignId}`);
     
     // Get the campaign with its budget calculation timestamp
-    // Only fetch active URLs for the campaign to improve performance
+    // Fetch both active URLs and recently completed URLs for the campaign
     const campaign = await db.query.campaigns.findFirst({
       where: (c, { eq }) => eq(c.id, campaignId),
       with: { 
         urls: {
-          where: (urls, { eq }) => eq(urls.status, 'active')
+          // Include both active URLs and completed URLs
+          where: (urls, { or, eq }) => or(
+            eq(urls.status, 'active'),
+            eq(urls.status, 'completed')
+          )
         } 
       }
     }) as (Campaign & { urls: UrlWithActiveStatus[] }) | null;
