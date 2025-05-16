@@ -672,15 +672,15 @@ export async function handleCampaignBySpentValue(campaignId: number, trafficstar
  */
 async function checkForNewUrlsAfterBudgetCalculation(campaignId: number, trafficstarCampaignId: string) {
   try {
-    console.log(`🔍 Checking for new URLs added after budget calculation for campaign ${campaignId}`);
+    console.log(`🔍 Checking for URLs (active and completed) added after budget calculation for campaign ${campaignId}`);
     
     // Get the campaign with its budget calculation timestamp
-    // Fetch both active URLs and recently completed URLs for the campaign
+    // Fetch both active URLs and completed URLs for the campaign
     const campaign = await db.query.campaigns.findFirst({
       where: (c, { eq }) => eq(c.id, campaignId),
       with: { 
         urls: {
-          // Include both active URLs and completed URLs
+          // Include both active URLs and completed URLs to properly account for budget
           where: (urls, { or, eq }) => or(
             eq(urls.status, 'active'),
             eq(urls.status, 'completed')
@@ -697,18 +697,21 @@ async function checkForNewUrlsAfterBudgetCalculation(campaignId: number, traffic
     const calcTime = campaign.highSpendBudgetCalcTime;
     console.log(`Campaign ${campaignId} budget calculation time: ${calcTime.toISOString()}`);
     
-    // Find URLs added after budget calculation time
+    // Find URLs added after budget calculation time (both active and completed)
     const newUrls = campaign.urls.filter(url => {
-      // For each URL, check if it was created after the budget calculation
-      return url.status === 'active' && url.createdAt > calcTime;
+      // Include both active and completed URLs created after budget calculation
+      return (url.status === 'active' || url.status === 'completed') && url.createdAt > calcTime;
     });
     
     if (newUrls.length === 0) {
-      console.log(`No new URLs found added after budget calculation for campaign ${campaignId}`);
+      console.log(`No new URLs (active or completed) found after budget calculation for campaign ${campaignId}`);
       return;
     }
     
-    console.log(`⚠️ Found ${newUrls.length} new URLs added after budget calculation`);
+    // Log the counts of active and completed URLs for clarity
+    const activeUrlCount = newUrls.filter(url => url.status === 'active').length;
+    const completedUrlCount = newUrls.filter(url => url.status === 'completed').length;
+    console.log(`⚠️ Found ${newUrls.length} new URLs after budget calculation: ${activeUrlCount} active, ${completedUrlCount} completed`);
     
     // Check if there's a running timer for this campaign
     // The timer should be based on the FIRST URL added after budget calc, not the newest
@@ -737,7 +740,7 @@ async function checkForNewUrlsAfterBudgetCalculation(campaignId: number, traffic
       return;
     }
     
-    console.log(`✅ ${DELAY_MINUTES}-minute wait period has elapsed - processing ${newUrls.length} new URLs`);
+    console.log(`✅ ${DELAY_MINUTES}-minute wait period has elapsed - processing ${newUrls.length} URLs (both active and completed)`);
     
     // Get the current budget from TrafficStar
     const campaignData = await trafficStarService.getCampaign(Number(trafficstarCampaignId));
@@ -749,17 +752,17 @@ async function checkForNewUrlsAfterBudgetCalculation(campaignId: number, traffic
     const currentBudget = parseFloat(campaignData.max_daily.toString());
     console.log(`Current TrafficStar budget for campaign ${trafficstarCampaignId}: $${currentBudget.toFixed(4)}`);
     
-    // Calculate new URLs budget
+    // Calculate new URLs budget (both active and completed)
     let newUrlsClicksTotal = 0;
     let newUrlsBudget = 0;
     
     for (const url of newUrls) {
-      // For newly added URLs, use full clickLimit instead of remaining clicks
+      // For newly added URLs (active or completed), use full clickLimit instead of remaining clicks
       newUrlsClicksTotal += url.clickLimit;
       
       // Calculate individual URL budget (price)
       const urlBudget = (url.clickLimit / 1000) * parseFloat(campaign.pricePerThousand);
-      console.log(`New URL ${url.id} budget: $${urlBudget.toFixed(4)} (${url.clickLimit} clicks)`);
+      console.log(`URL ${url.id} (status: ${url.status}) budget: $${urlBudget.toFixed(4)} (${url.clickLimit} clicks)`);
       
       // Log this URL's budget calculation
       await urlBudgetLogger.logUrlBudget(url.id, urlBudget, campaign.id);
