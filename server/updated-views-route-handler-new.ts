@@ -58,11 +58,19 @@ export function registerUpdatedViewsHandler(app: any) {
         return res.status(404).json({ message: "Campaign path not found" });
       }
       
-      // Helper function to process a campaign path (either new or legacy)
-      async function processCampaignPath(campaignPath: any, existingCampaign?: any) {
-      
-      // Get the campaign for this path (if not already provided from legacy path)
-      const campaign = existingCampaign || (await db.select().from(campaigns).where(eq(campaigns.id, campaignPath.campaignId)))[0];
+      // Process the campaign path (either new or legacy)
+      await processCampaignPath(campaignPath);
+      return;
+    } catch (error) {
+      console.error('Error in views route handler:', error);
+      res.status(500).json({ message: "Failed to process redirect" });
+    }
+  });
+
+  // Helper function to process a campaign path (either new or legacy)
+  async function processCampaignPath(campaignPath: any, existingCampaign?: any) {
+    // Get the campaign for this path (if not already provided from legacy path)
+    const campaign = existingCampaign || (await db.select().from(campaigns).where(eq(campaigns.id, campaignPath.campaignId)))[0];
       
       if (!campaign) {
         console.log(`Campaign ID ${campaignPath.campaignId} not found for path ID ${campaignPath.id}`);
@@ -203,7 +211,17 @@ export function registerUpdatedViewsHandler(app: any) {
             default:
               // If something goes wrong, use original URL
               console.log(`⚠️ Unknown custom redirection method: ${selectedMethod}, using direct URL`);
+              selectedMethod = 'direct';
               break;
+          }
+          
+          // IMPORTANT: Track the redirect method in analytics
+          try {
+            const { urlRedirectAnalytics } = await import('./url-redirect-analytics');
+            await urlRedirectAnalytics.incrementRedirectCount(selectedUrl.id, selectedMethod);
+            console.log(`📊 Tracked ${selectedMethod} redirect for URL ID ${selectedUrl.id}`);
+          } catch (analyticsError) {
+            console.error(`❌ Failed to track redirect method analytics: ${analyticsError}`);
           }
           
           console.log(`🔀 Applied custom redirection method: ${selectedMethod} for campaign ${campaign.id}`);

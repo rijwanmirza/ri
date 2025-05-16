@@ -226,8 +226,26 @@ export const RedirectMethodStats: React.FC<RedirectMethodStatsProps> = ({ urlId 
             <button 
               onClick={async () => {
                 try {
-                  // First increment analytics with the test API
-                  await fetch(`/api/test-redirect-analytics/${urlId}/direct`);
+                  // Generate a random redirect method from all available methods
+                  const redirectMethods = ['linkedin', 'facebook', 'whatsapp', 'google_meet', 'google_search', 'google_play', 'direct'];
+                  const randomMethod = redirectMethods[Math.floor(Math.random() * redirectMethods.length)];
+                  
+                  console.log(`Testing redirect method: ${randomMethod}`);
+                  
+                  // Track the redirect method directly
+                  const addMethodResponse = await fetch(`/api/urls/${urlId}/add-redirect-method`, {
+                    method: 'POST',
+                    headers: {
+                      'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ method: randomMethod })
+                  });
+                  
+                  if (addMethodResponse.ok) {
+                    console.log(`Successfully tracked ${randomMethod} redirect for URL ID ${urlId}`);
+                  } else {
+                    console.error(`Failed to track redirect method:`, await addMethodResponse.text());
+                  }
                   
                   // Get the URL to visit to trigger a redirect
                   const response = await fetch(`/api/urls/${urlId}`);
@@ -235,7 +253,7 @@ export const RedirectMethodStats: React.FC<RedirectMethodStatsProps> = ({ urlId 
                   if (urlData && urlData.campaignId) {
                     // Open the redirect URL in a new tab
                     window.open(`/r/${urlData.campaignId}/${urlId}`, '_blank');
-                    // Wait a moment before reloading
+                    // Wait a moment before reloading to see updated analytics
                     setTimeout(() => window.location.reload(), 1500);
                   }
                 } catch (error) {

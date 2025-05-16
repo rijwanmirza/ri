@@ -2103,6 +2103,38 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
+  // Endpoint to directly add redirect method tracking for a URL
+  app.post("/api/urls/:id/add-redirect-method", async (req: Request, res: Response) => {
+    try {
+      const urlId = parseInt(req.params.id);
+      if (isNaN(urlId)) {
+        return res.status(400).json({ message: "Invalid URL ID" });
+      }
+      
+      // Get redirect method from request body
+      const { method } = req.body;
+      if (!method || !["linkedin", "facebook", "whatsapp", "google_meet", "google_search", "google_play", "direct"].includes(method)) {
+        return res.status(400).json({ message: "Invalid redirect method" });
+      }
+      
+      // Increment count for that method
+      await urlRedirectAnalytics.incrementRedirectCount(urlId, method);
+      
+      // Return success
+      return res.status(200).json({ 
+        success: true, 
+        message: `Tracked ${method} redirect for URL ID ${urlId}` 
+      });
+    } catch (error) {
+      console.error("Failed to track redirect method:", error);
+      return res.status(500).json({ 
+        success: false,
+        message: "Failed to track redirect method",
+        error: error instanceof Error ? error.message : String(error)
+      });
+    }
+  });
+  
   // Test endpoint to directly increment a redirect method count
   app.post("/api/urls/:id/test-redirect-method", async (req: Request, res: Response) => {
     try {

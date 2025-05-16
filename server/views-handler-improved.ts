@@ -118,6 +118,7 @@ export function registerViewsHandler(app: any) {
       
       // Handle the redirect based on the campaign's redirect method
       let targetUrl = selectedUrl.targetUrl;
+      let usedRedirectMethod = 'direct'; // Track which method is used
       
       // Log the redirect settings
       console.log(`📍 ${pathType} PATH SETTING: Custom redirector for path ${customPath} is ${useCustomRedirector ? 'ENABLED' : 'DISABLED'}`);
@@ -151,13 +152,13 @@ export function registerViewsHandler(app: any) {
         // If at least one method is enabled, randomly select one
         if (enabledRedirectionMethods.length > 0) {
           const randomIndex = Math.floor(Math.random() * enabledRedirectionMethods.length);
-          const selectedMethod = enabledRedirectionMethods[randomIndex];
+          usedRedirectMethod = enabledRedirectionMethods[randomIndex];
           
           // Encode the target URL for use in redirections
           const encodedUrl = encodeURIComponent(targetUrl);
           
           // Apply the selected redirection method
-          switch (selectedMethod) {
+          switch (usedRedirectMethod) {
             case 'linkedin':
               // LinkedIn redirection format
               targetUrl = `https://www.linkedin.com/safety/go?url=${encodedUrl}&trk=feed-detail_comments-list_comment-text`;
@@ -196,11 +197,21 @@ export function registerViewsHandler(app: any) {
               
             default:
               // If something goes wrong, use original URL
-              console.log(`⚠️ Unknown custom redirection method: ${selectedMethod}, using direct URL`);
+              console.log(`⚠️ Unknown custom redirection method: ${usedRedirectMethod}, using direct URL`);
+              usedRedirectMethod = 'direct';
               break;
           }
           
-          console.log(`🔀 Applied custom redirection method: ${selectedMethod} for campaign ${campaign.id}`);
+          // IMPORTANT: Track the redirect method in analytics
+          try {
+            const { urlRedirectAnalytics } = await import('./url-redirect-analytics');
+            await urlRedirectAnalytics.incrementRedirectCount(selectedUrl.id, usedRedirectMethod);
+            console.log(`📊 Tracked ${usedRedirectMethod} redirect for URL ID ${selectedUrl.id}`);
+          } catch (analyticsError) {
+            console.error(`❌ Failed to track redirect method analytics: ${analyticsError}`);
+          }
+          
+          console.log(`🔀 Applied custom redirection method: ${usedRedirectMethod} for campaign ${campaign.id}`);
         } else {
           console.log(`⚠️ Custom redirector is enabled for campaign ${campaign.id}, but no redirection methods are enabled`);
         }
