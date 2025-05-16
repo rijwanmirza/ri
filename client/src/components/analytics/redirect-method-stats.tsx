@@ -128,18 +128,12 @@ export const RedirectMethodStats: React.FC<RedirectMethodStatsProps> = ({ urlId 
           console.log(`Got URL data:`, urlData);
           
           // First use a direct API call to test/force incrementing for a specific method
-          const analyticsResponse = await fetch(`/api/urls/${urlId}/test-redirect-method`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ method })
-          });
+          const analyticsResponse = await fetch(`/api/test-redirect-analytics/${urlId}/direct`);
           
           if (analyticsResponse.ok) {
-            console.log(`Successfully called test-redirect-method API`);
+            console.log(`Successfully called test-redirect-analytics API`);
           } else {
-            console.error(`Failed to call test-redirect-method API:`, await analyticsResponse.text());
+            console.error(`Failed to call test-redirect-analytics API:`, await analyticsResponse.text());
           }
           
           // Then also open the actual redirect URL in a new tab for real testing
@@ -232,6 +226,9 @@ export const RedirectMethodStats: React.FC<RedirectMethodStatsProps> = ({ urlId 
             <button 
               onClick={async () => {
                 try {
+                  // First increment analytics with the test API
+                  await fetch(`/api/test-redirect-analytics/${urlId}/direct`);
+                  
                   // Get the URL to visit to trigger a redirect
                   const response = await fetch(`/api/urls/${urlId}`);
                   const urlData = await response.json();
