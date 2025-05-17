@@ -1025,20 +1025,40 @@ function startMinutelyStatusCheck(campaignId: number, trafficstarCampaignId: str
           const THRESHOLD = 10.0; // $10 threshold for different handling
           
           if (currentSpent >= THRESHOLD) {
-            // HIGH SPEND: use high spend thresholds
+                       // HIGH SPEND: use high spend thresholds
             MINIMUM_CLICKS_THRESHOLD = campaignSettings?.highSpendPauseThreshold || 1000; // High spend threshold for pausing
             MAXIMUM_CLICKS_THRESHOLD = campaignSettings?.highSpendActivateThreshold || 5000; // High spend threshold for activation
+            
+            // Ensure sufficient gap between thresholds (at least 15%)
+            if (MAXIMUM_CLICKS_THRESHOLD <= MINIMUM_CLICKS_THRESHOLD * 1.15) {
+              // Thresholds are too close - create a proper gap
+              console.log(`⚠️ WARNING: HIGH SPEND thresholds are too close together! Pause: ${MINIMUM_CLICKS_THRESHOLD}, Activate: ${MAXIMUM_CLICKS_THRESHOLD}`);
+              MAXIMUM_CLICKS_THRESHOLD = Math.max(MAXIMUM_CLICKS_THRESHOLD, Math.ceil(MINIMUM_CLICKS_THRESHOLD * 1.15));
+              console.log(`⚠️ Adjusted HIGH SPEND activate threshold to ${MAXIMUM_CLICKS_THRESHOLD} to prevent oscillation`);
+            }
             console.log(`Using HIGH SPEND thresholds for active monitoring: Pause at ${MINIMUM_CLICKS_THRESHOLD} clicks, Activate at ${MAXIMUM_CLICKS_THRESHOLD} clicks`);
           } else {
-            // LOW SPEND: use regular thresholds
+                       // LOW SPEND: use regular thresholds
             MINIMUM_CLICKS_THRESHOLD = campaignSettings?.minPauseClickThreshold || 5000; // Low spend threshold for pausing
             MAXIMUM_CLICKS_THRESHOLD = campaignSettings?.minActivateClickThreshold || 15000; // Low spend threshold for activation
+            
+            // Ensure sufficient gap between thresholds (at least 15%)
+            if (MAXIMUM_CLICKS_THRESHOLD <= MINIMUM_CLICKS_THRESHOLD * 1.15) {
+              // Thresholds are too close - create a proper gap
+              console.log(`⚠️ WARNING: LOW SPEND thresholds are too close together! Pause: ${MINIMUM_CLICKS_THRESHOLD}, Activate: ${MAXIMUM_CLICKS_THRESHOLD}`);
+              MAXIMUM_CLICKS_THRESHOLD = Math.max(MAXIMUM_CLICKS_THRESHOLD, Math.ceil(MINIMUM_CLICKS_THRESHOLD * 1.15));
+              console.log(`⚠️ Adjusted LOW SPEND activate threshold to ${MAXIMUM_CLICKS_THRESHOLD} to prevent oscillation`);
+            }
             console.log(`Using LOW SPEND thresholds for active monitoring: Pause at ${MINIMUM_CLICKS_THRESHOLD} clicks, Activate at ${MAXIMUM_CLICKS_THRESHOLD} clicks`);
           }
           
-          // Only pause if clearly below the minimum threshold to avoid oscillation
-          if (totalRemainingClicks < MINIMUM_CLICKS_THRESHOLD) {
-            console.log(`⏹️ During monitoring: Campaign ${trafficstarCampaignId} remaining clicks (${totalRemainingClicks}) fell below threshold (${MINIMUM_CLICKS_THRESHOLD}) - pausing campaign`);
+          // Add hysteresis buffer to prevent oscillation
+          // Only pause if remaining clicks are well below the minimum threshold
+          // Use a 10% buffer below the minimum threshold to prevent frequent state changes
+          const PAUSE_BUFFER = Math.floor(MINIMUM_CLICKS_THRESHOLD * 0.9); // 10% below minimum threshold
+          
+          if (totalRemainingClicks < PAUSE_BUFFER) {
+            console.log(`⏹️ During monitoring: Campaign ${trafficstarCampaignId} remaining clicks (${totalRemainingClicks}) fell below buffered threshold (${PAUSE_BUFFER}) - pausing campaign`);
             
             // Stop active status monitoring since we're switching to pause monitoring
             clearInterval(interval);
@@ -1410,12 +1430,23 @@ function startMinutelyPauseStatusCheck(campaignId: number, trafficstarCampaignId
               console.log(`Using LOW SPEND thresholds for hysteresis check: Pause at ${MINIMUM_CLICKS_THRESHOLD} clicks, Activate at ${MAXIMUM_CLICKS_THRESHOLD} clicks`);
             }
             
-            // Create hysteresis zone - a buffer between thresholds to prevent oscillation
-            // Only re-pause if clearly below the activation threshold with a 10% buffer
-            const HYSTERESIS_THRESHOLD = MAXIMUM_CLICKS_THRESHOLD * 0.9;
+            // Create improved hysteresis zone logic to prevent oscillation
+            // Only re-pause if remaining clicks are significantly below the pause threshold
+            // The MINIMUM_CLICKS_THRESHOLD is our pause threshold
+            // The MAXIMUM_CLICKS_THRESHOLD is our activate threshold
+            // We want a significant gap between these to prevent oscillation
             
-            if (totalRemainingClicks < HYSTERESIS_THRESHOLD) {
-              console.log(`Campaign ${trafficstarCampaignId} has ${totalRemainingClicks} remaining clicks (< ${HYSTERESIS_THRESHOLD}) - re-pausing campaign`);
+            // Ensure sufficient gap between thresholds (at least 15%)
+            if (MAXIMUM_CLICKS_THRESHOLD <= MINIMUM_CLICKS_THRESHOLD * 1.15) {
+              // Thresholds are too close - create a proper gap
+              console.log(`⚠️ WARNING: Thresholds are too close together! Pause: ${MINIMUM_CLICKS_THRESHOLD}, Activate: ${MAXIMUM_CLICKS_THRESHOLD}`);
+              MAXIMUM_CLICKS_THRESHOLD = Math.max(MAXIMUM_CLICKS_THRESHOLD, Math.ceil(MINIMUM_CLICKS_THRESHOLD * 1.15));
+              console.log(`⚠️ Adjusted activate threshold to ${MAXIMUM_CLICKS_THRESHOLD} to prevent oscillation`);
+            }
+            
+            // If remaining clicks are below pause threshold, re-pause the campaign
+            if (totalRemainingClicks < MINIMUM_CLICKS_THRESHOLD) {
+              console.log(`Campaign ${trafficstarCampaignId} has ${totalRemainingClicks} remaining clicks (< ${MINIMUM_CLICKS_THRESHOLD}) - re-pausing campaign`);
               
               // Set current date/time for end time
               const now = new Date();
@@ -1427,7 +1458,7 @@ function startMinutelyPauseStatusCheck(campaignId: number, trafficstarCampaignId
               // Then set its end time
               await trafficStarService.updateCampaignEndTime(Number(trafficstarCampaignId), formattedDateTime);
             } else {
-              console.log(`Campaign ${trafficstarCampaignId} has ${totalRemainingClicks} remaining clicks in hysteresis zone (>= ${HYSTERESIS_THRESHOLD}) - not re-pausing to prevent oscillation`);
+              console.log(`Campaign ${trafficstarCampaignId} has ${totalRemainingClicks} remaining clicks which is >= ${MINIMUM_CLICKS_THRESHOLD} (pause threshold) - not re-pausing to prevent oscillation`);
               return; // Exit early without taking any action
             }
             
@@ -1657,7 +1688,7 @@ export async function processTrafficGenerator(campaignId: number, forceMode?: st
         console.log(`✅ FORCE MODE: Successfully activated campaign ${campaign.trafficstarCampaignId || campaign.trafficstar_campaign_id}`);
         
         // Start minute-by-minute monitoring
-        startMinutelyStatusCheck(campaignId, campaign.trafficstarCampaignId || campaign.trafficstar_campaign_id);
+        startMinutelyStatusCheck(campaignId, campaign.trafficstarCampaignId || '');
         
         return;
       } catch (error) {

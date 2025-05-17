@@ -1,0 +1,861 @@
+0|url-tracker  | 7:44:58 AM [access] Access denied for path: /public/api/v1/info/landing - no valid session or API key
+0|url-tracker  | 7:44:59 AM [access] Access check for path: /public/api/v1/info/landing
+0|url-tracker  | 7:44:59 AM [access] Access denied for path: /public/api/v1/info/landing - no valid session or API key
+0|url-tracker  | 7:44:59 AM [access] Access check for path: /public/api/v1/info/landing
+0|url-tracker  | 7:44:59 AM [access] Access denied for path: /public/api/v1/info/landing - no valid session or API key
+0|url-tracker  | Flushed 0 pending click updates to database
+0|url-tracker  | 7:44:59 AM [access] Access check for path: /public/api/v1/info/landing
+0|url-tracker  | 7:44:59 AM [access] Access denied for path: /public/api/v1/info/landing - no valid session or API key
+0|url-tracker  | ⏱️ Running minute check for campaign 1019777 pause status
+0|url-tracker  | TRAFFIC-GENERATOR: Getting REAL-TIME status for campaign 1019777
+0|url-tracker  | Getting campaign 1019777 details
+0|url-tracker  | 7:44:59 AM [access] Access check for path: /public/api/v1/info/landing
+0|url-tracker  | 7:44:59 AM [access] Access denied for path: /public/api/v1/info/landing - no valid session or API key
+0|url-tracker  | TRAFFIC-GENERATOR: TrafficStar campaign 1019777 REAL status is enabled, active=true
+0|url-tracker  | ⚠️ Campaign 1019777 was found active but should be paused - will attempt to pause again
+0|url-tracker  | Campaign 1019777 has 69749 remaining clicks but should be paused - re-pausing campaign
+0|url-tracker  | Pausing campaign 1019777
+0|url-tracker  | Successfully paused campaign 1019777
+0|url-tracker  | Setting campaign 1019777 end time to: 2025-05-17 07:44:59
+0|url-tracker  | Flushed 0 pending click updates to database
+0|url-tracker  | Successfully updated end time for campaign 1019777
+0|url-tracker  | Confirmed end time update for campaign 1019777
+0|url-tracker  | ✅ RE-PAUSED campaign 1019777 during pause monitoring - it was found active
+0|url-tracker  | ✅ Marked campaign 1 as 're_paused_during_monitoring' in database
+0|url-tracker  | Flushed 0 pending click updates to database
+0|url-tracker  | Flushed 0 pending click updates to database
+0|url-tracker  | 7:45:02 AM [access] Access check for path: /public/api/v1/landing/not_integrated
+0|url-tracker  | 7:45:02 AM [access] Access denied for path: /public/api/v1/landing/not_integrated - no valid session or API key
+0|url-tracker  | 7:45:02 AM [access] Access check for path: /public/api/v1/landing/not_integrated
+0|url-tracker  | 7:45:02 AM [access] Access denied for path: /public/api/v1/landing/not_integrated - no valid session or API key
+0|url-tracker  | 7:45:03 AM [access] Access check for path: /public/api/v1/landing/not_integrated
+0|url-tracker  | 7:45:03 AM [access] Access denied for path: /public/api/v1/landing/not_integrated - no valid session or API key
+0|url-tracker  | 7:45:03 AM [access] Access check for path: /public/api/v1/landing/not_integrated
+0|url-tracker  | 7:45:03 AM [access] Access denied for path: /public/api/v1/landing/not_integrated - no valid session or API key
+0|url-tracker  | 7:45:03 AM [access] Access check for path: /public/api/v1/landing/not_integrated
+0|url-tracker  | 7:45:03 AM [access] Access denied for path: /public/api/v1/landing/not_integrated - no valid session or API key
+0|url-tracker  | Flushed 0 pending click updates to database
+0|url-tracker  | 7:45:03 AM [access] Access check for path: /public/api/v1/landing/not_integrated
+0|url-tracker  | 7:45:03 AM [access] Access denied for path: /public/api/v1/landing/not_integrated - no valid session or API key
+0|url-tracker  | 7:45:03 AM [access] Access check for path: /public/api/v1/landing/not_integrated
+0|url-tracker  | 7:45:03 AM [access] Access denied for path: /public/api/v1/landing/not_integrated - no valid session or API key
+0|url-tracker  | 7:45:04 AM [access] Access check for path: /public/api/v1/landing/not_integrated
+0|url-tracker  | 7:45:04 AM [access] Access denied for path: /public/api/v1/landing/not_integrated - no valid session or API key
+0|url-tracker  | 7:45:04 AM [access] Access check for path: /public/api/v1/landing/not_integrated
+0|url-tracker  | 7:45:04 AM [access] Access denied for path: /public/api/v1/landing/not_integrated - no valid session or API key
+0|url-tracker  | 7:45:04 AM [access] Access check for path: /public/api/v1/landing/not_integrated
+0|url-tracker  | 7:45:04 AM [access] Access denied for path: /public/api/v1/landing/not_integrated - no valid session or API key
+0|url-tracker  | Flushed 0 pending click updates to database
+0|url-tracker  | 7:45:04 AM [access] Access check for path: /public/api/v1/landing/not_integrated
+0|url-tracker  | 7:45:04 AM [access] Access denied for path: /public/api/v1/landing/not_integrated - no valid session or API key
+0|url-tracker  | 7:45:04 AM [access] Access check for path: /public/api/v1/landing/not_integrated
+0|url-tracker  | 7:45:04 AM [access] Access denied for path: /public/api/v1/landing/not_integrated - no valid session or API key
+0|url-tracker  | 7:45:04 AM [access] Access check for path: /public/api/v1/landing/not_integrated
+0|url-tracker  | 7:45:04 AM [access] Access denied for path: /public/api/v1/landing/not_integrated - no valid session or API key
+0|url-tracker  | 7:45:05 AM [access] Access check for path: /public/api/v1/landing/not_integrated
+0|url-tracker  | 7:45:05 AM [access] Access denied for path: /public/api/v1/landing/not_integrated - no valid session or API key
+0|url-tracker  | 7:45:05 AM [access] Access check for path: /public/api/v1/landing/not_integrated
+0|url-tracker  | 7:45:05 AM [access] Access denied for path: /public/api/v1/landing/not_integrated - no valid session or API key
+0|url-tracker  | Flushed 0 pending click updates to database
+0|url-tracker  | 7:45:05 AM [access] Access check for path: /public/api/v1/landing/not_integrated
+0|url-tracker  | 7:45:05 AM [access] Access denied for path: /public/api/v1/landing/not_integrated - no valid session or API key
+0|url-tracker  | 7:45:05 AM [access] Access check for path: /public/api/v1/landing/not_integrated
+0|url-tracker  | 7:45:05 AM [access] Access denied for path: /public/api/v1/landing/not_integrated - no valid session or API key
+0|url-tracker  | 7:45:06 AM [access] Access check for path: /public/api/v1/landing/not_integrated
+0|url-tracker  | 7:45:06 AM [access] Access denied for path: /public/api/v1/landing/not_integrated - no valid session or API key
+0|url-tracker  | 7:45:06 AM [access] Access check for path: /public/api/v1/landing/not_integrated
+0|url-tracker  | 7:45:06 AM [access] Access denied for path: /public/api/v1/landing/not_integrated - no valid session or API key
+0|url-tracker  | 7:45:06 AM [access] Access check for path: /public/api/v1/landing/not_integrated
+0|url-tracker  | 7:45:06 AM [access] Access denied for path: /public/api/v1/landing/not_integrated - no valid session or API key
+0|url-tracker  | Flushed 0 pending click updates to database
+0|url-tracker  | 7:45:06 AM [access] Access check for path: /public/api/v1/landing/not_integrated
+0|url-tracker  | 7:45:06 AM [access] Access denied for path: /public/api/v1/landing/not_integrated - no valid session or API key
+0|url-tracker  | 7:45:06 AM [access] Access check for path: /public/api/v1/landing/not_integrated
+0|url-tracker  | 7:45:06 AM [access] Access denied for path: /public/api/v1/landing/not_integrated - no valid session or API key
+0|url-tracker  | 7:45:06 AM [access] Access check for path: /public/api/v1/landing/not_integrated
+0|url-tracker  | 7:45:06 AM [access] Access denied for path: /public/api/v1/landing/not_integrated - no valid session or API key
+0|url-tracker  | 7:45:07 AM [access] Access check for path: /public/api/v1/landing/not_integrated
+0|url-tracker  | 7:45:07 AM [access] Access denied for path: /public/api/v1/landing/not_integrated - no valid session or API key
+0|url-tracker  | 7:45:07 AM [access] Access check for path: /public/api/v1/landing/not_integrated
+0|url-tracker  | 7:45:07 AM [access] Access denied for path: /public/api/v1/landing/not_integrated - no valid session or API key
+0|url-tracker  | Flushed 0 pending click updates to database
+0|url-tracker  | 7:45:07 AM [access] Access check for path: /public/api/v1/landing/not_integrated
+0|url-tracker  | 7:45:07 AM [access] Access denied for path: /public/api/v1/landing/not_integrated - no valid session or API key
+0|url-tracker  | 7:45:07 AM [access] Access check for path: /public/api/v1/landing/not_integrated
+0|url-tracker  | 7:45:07 AM [access] Access denied for path: /public/api/v1/landing/not_integrated - no valid session or API key
+0|url-tracker  | 7:45:07 AM [access] Access check for path: /public/api/v1/landing/not_integrated
+0|url-tracker  | 7:45:07 AM [access] Access denied for path: /public/api/v1/landing/not_integrated - no valid session or API key
+0|url-tracker  | 7:45:07 AM [access] Access check for path: /public/api/v1/landing/not_integrated
+0|url-tracker  | 7:45:08 AM [access] Access denied for path: /public/api/v1/landing/not_integrated - no valid session or API key
+0|url-tracker  | 7:45:08 AM [access] Access check for path: /public/api/v1/landing/not_integrated
+0|url-tracker  | 7:45:08 AM [access] Access denied for path: /public/api/v1/landing/not_integrated - no valid session or API key
+0|url-tracker  | 7:45:08 AM [access] Access check for path: /public/api/v1/landing/not_integrated
+0|url-tracker  | 7:45:08 AM [access] Access denied for path: /public/api/v1/landing/not_integrated - no valid session or API key
+0|url-tracker  | Flushed 0 pending click updates to database
+0|url-tracker  | 7:45:08 AM [access] Access check for path: /public/api/v1/landing/not_integrated
+0|url-tracker  | 7:45:08 AM [access] Access denied for path: /public/api/v1/landing/not_integrated - no valid session or API key
+0|url-tracker  | 7:45:08 AM [access] Access check for path: /public/api/v1/landing/not_integrated
+0|url-tracker  | 7:45:08 AM [access] Access denied for path: /public/api/v1/landing/not_integrated - no valid session or API key
+0|url-tracker  | 7:45:08 AM [access] Access check for path: /public/api/v1/landing/not_integrated
+0|url-tracker  | 7:45:08 AM [access] Access denied for path: /public/api/v1/landing/not_integrated - no valid session or API key
+0|url-tracker  | 7:45:08 AM [access] Access check for path: /public/api/v1/landing/not_integrated
+0|url-tracker  | 7:45:08 AM [access] Access denied for path: /public/api/v1/landing/not_integrated - no valid session or API key
+0|url-tracker  | 7:45:09 AM [access] Access check for path: /public/api/v1/landing/not_integrated
+0|url-tracker  | 7:45:09 AM [access] Access denied for path: /public/api/v1/landing/not_integrated - no valid session or API key
+0|url-tracker  | 7:45:09 AM [access] Access check for path: /public/api/v1/landing/not_integrated
+0|url-tracker  | 7:45:09 AM [access] Access denied for path: /public/api/v1/landing/not_integrated - no valid session or API key
+0|url-tracker  | Flushed 0 pending click updates to database
+0|url-tracker  | 7:45:09 AM [access] Access check for path: /public/api/v1/landing/not_integrated
+0|url-tracker  | 7:45:09 AM [access] Access denied for path: /public/api/v1/landing/not_integrated - no valid session or API key
+0|url-tracker  | 7:45:09 AM [access] Access check for path: /public/api/v1/landing/not_integrated
+0|url-tracker  | 7:45:09 AM [access] Access denied for path: /public/api/v1/landing/not_integrated - no valid session or API key
+0|url-tracker  | 7:45:09 AM [access] Access check for path: /public/api/v1/landing/not_integrated
+0|url-tracker  | 7:45:09 AM [access] Access denied for path: /public/api/v1/landing/not_integrated - no valid session or API key
+0|url-tracker  | 7:45:10 AM [access] Access check for path: /public/api/v1/landing/not_integrated
+0|url-tracker  | 7:45:10 AM [access] Access denied for path: /public/api/v1/landing/not_integrated - no valid session or API key
+0|url-tracker  | 7:45:10 AM [access] Access check for path: /public/api/v1/landing/not_integrated
+0|url-tracker  | 7:45:10 AM [access] Access denied for path: /public/api/v1/landing/not_integrated - no valid session or API key
+0|url-tracker  | 7:45:10 AM [access] Access check for path: /public/api/v1/landing/not_integrated
+0|url-tracker  | 7:45:10 AM [access] Access denied for path: /public/api/v1/landing/not_integrated - no valid session or API key
+0|url-tracker  | Flushed 0 pending click updates to database
+0|url-tracker  | 7:45:10 AM [access] Access check for path: /public/api/v1/landing/not_integrated
+0|url-tracker  | 7:45:10 AM [access] Access denied for path: /public/api/v1/landing/not_integrated - no valid session or API key
+0|url-tracker  | 7:45:10 AM [access] Access check for path: /public/api/v1/landing/not_integrated
+0|url-tracker  | 7:45:10 AM [access] Access denied for path: /public/api/v1/landing/not_integrated - no valid session or API key
+0|url-tracker  | 7:45:10 AM [access] Access check for path: /public/api/v1/landing/not_integrated
+0|url-tracker  | 7:45:10 AM [access] Access denied for path: /public/api/v1/landing/not_integrated - no valid session or API key
+0|url-tracker  | 7:45:11 AM [access] Access check for path: /public/api/v1/landing/not_integrated
+0|url-tracker  | 7:45:11 AM [access] Access denied for path: /public/api/v1/landing/not_integrated - no valid session or API key
+0|url-tracker  | 7:45:11 AM [access] Access check for path: /public/api/v1/landing/not_integrated
+0|url-tracker  | 7:45:11 AM [access] Access denied for path: /public/api/v1/landing/not_integrated - no valid session or API key
+0|url-tracker  | Flushed 0 pending click updates to database
+0|url-tracker  | 7:45:11 AM [access] Access check for path: /public/api/v1/landing/not_integrated
+0|url-tracker  | 7:45:11 AM [access] Access denied for path: /public/api/v1/landing/not_integrated - no valid session or API key
+0|url-tracker  | 7:45:11 AM [access] Access check for path: /public/api/v1/landing/not_integrated
+0|url-tracker  | 7:45:11 AM [access] Access denied for path: /public/api/v1/landing/not_integrated - no valid session or API key
+0|url-tracker  | 7:45:11 AM [access] Access check for path: /public/api/v1/landing/not_integrated
+0|url-tracker  | 7:45:11 AM [access] Access denied for path: /public/api/v1/landing/not_integrated - no valid session or API key
+0|url-tracker  | 7:45:12 AM [access] Access check for path: /public/api/v1/landing/not_integrated
+0|url-tracker  | 7:45:12 AM [access] Access denied for path: /public/api/v1/landing/not_integrated - no valid session or API key
+0|url-tracker  | 7:45:12 AM [access] Access check for path: /public/api/v1/landing/not_integrated
+0|url-tracker  | 7:45:12 AM [access] Access denied for path: /public/api/v1/landing/not_integrated - no valid session or API key
+0|url-tracker  | 7:45:12 AM [access] Access check for path: /public/api/v1/landing/not_integrated
+0|url-tracker  | 7:45:12 AM [access] Access denied for path: /public/api/v1/landing/not_integrated - no valid session or API key
+0|url-tracker  | Flushed 0 pending click updates to database
+0|url-tracker  | 7:45:12 AM [access] Access check for path: /public/api/v1/landing/not_integrated
+0|url-tracker  | 7:45:12 AM [access] Access denied for path: /public/api/v1/landing/not_integrated - no valid session or API key
+0|url-tracker  | 7:45:12 AM [access] Access check for path: /public/api/v1/landing/not_integrated
+0|url-tracker  | 7:45:12 AM [access] Access denied for path: /public/api/v1/landing/not_integrated - no valid session or API key
+0|url-tracker  | 7:45:13 AM [access] Access check for path: /public/api/v1/info/landing
+0|url-tracker  | 7:45:13 AM [access] Access denied for path: /public/api/v1/info/landing - no valid session or API key
+0|url-tracker  | 7:45:13 AM [access] Access check for path: /public/api/v1/info/landing
+0|url-tracker  | 7:45:13 AM [access] Access denied for path: /public/api/v1/info/landing - no valid session or API key
+0|url-tracker  | Flushed 0 pending click updates to database
+0|url-tracker  | 7:45:13 AM [access] Access check for path: /public/api/v1/info/landing
+0|url-tracker  | 7:45:13 AM [access] Access denied for path: /public/api/v1/info/landing - no valid session or API key
+0|url-tracker  | 7:45:13 AM [access] Access check for path: /public/api/v1/info/landing
+0|url-tracker  | 7:45:13 AM [access] Access denied for path: /public/api/v1/info/landing - no valid session or API key
+0|url-tracker  | 7:45:14 AM [access] Access check for path: /public/api/v1/info/landing
+0|url-tracker  | 7:45:14 AM [access] Access denied for path: /public/api/v1/info/landing - no valid session or API key
+0|url-tracker  | 7:45:14 AM [access] Access check for path: /public/api/v1/info/landing
+0|url-tracker  | 7:45:14 AM [access] Access denied for path: /public/api/v1/info/landing - no valid session or API key
+0|url-tracker  | Flushed 0 pending click updates to database
+0|url-tracker  | 7:45:14 AM [access] Access check for path: /public/api/v1/info/landing
+0|url-tracker  | 7:45:14 AM [access] Access denied for path: /public/api/v1/info/landing - no valid session or API key
+0|url-tracker  | Flushed 0 pending click updates to database
+0|url-tracker  | Flushed 0 pending click updates to database
+0|url-tracker  | Flushed 0 pending click updates to database
+0|url-tracker  | Flushed 0 pending click updates to database
+0|url-tracker  | Flushed 0 pending click updates to database
+0|url-tracker  | Flushed 0 pending click updates to database
+0|url-tracker  | Flushed 0 pending click updates to database
+0|url-tracker  | Flushed 0 pending click updates to database
+0|url-tracker  | Flushed 0 pending click updates to database
+0|url-tracker  | Flushed 0 pending click updates to database
+0|url-tracker  | Flushed 0 pending click updates to database
+0|url-tracker  | Flushed 0 pending click updates to database
+0|url-tracker  | 7:45:27 AM [access] Access check for path: /public/api/v1/landing/not_integrated
+0|url-tracker  | 7:45:27 AM [access] Access denied for path: /public/api/v1/landing/not_integrated - no valid session or API key
+0|url-tracker  | 7:45:27 AM [access] Access check for path: /public/api/v1/landing/not_integrated
+0|url-tracker  | 7:45:27 AM [access] Access denied for path: /public/api/v1/landing/not_integrated - no valid session or API key
+0|url-tracker  | 7:45:27 AM [access] Access check for path: /public/api/v1/landing/not_integrated
+0|url-tracker  | 7:45:27 AM [access] Access denied for path: /public/api/v1/landing/not_integrated - no valid session or API key
+0|url-tracker  | Flushed 0 pending click updates to database
+0|url-tracker  | 7:45:27 AM [access] Access check for path: /public/api/v1/landing/not_integrated
+0|url-tracker  | 7:45:27 AM [access] Access denied for path: /public/api/v1/landing/not_integrated - no valid session or API key
+0|url-tracker  | 7:45:27 AM [access] Access check for path: /public/api/v1/landing/not_integrated
+0|url-tracker  | 7:45:27 AM [access] Access denied for path: /public/api/v1/landing/not_integrated - no valid session or API key
+0|url-tracker  | 7:45:27 AM [access] Access check for path: /public/api/v1/landing/not_integrated
+0|url-tracker  | 7:45:27 AM [access] Access denied for path: /public/api/v1/landing/not_integrated - no valid session or API key
+0|url-tracker  | 7:45:28 AM [access] Access check for path: /public/api/v1/landing/not_integrated
+0|url-tracker  | 7:45:28 AM [access] Access denied for path: /public/api/v1/landing/not_integrated - no valid session or API key
+0|url-tracker  | 7:45:28 AM [access] Access check for path: /public/api/v1/landing/not_integrated
+0|url-tracker  | 7:45:28 AM [access] Access denied for path: /public/api/v1/landing/not_integrated - no valid session or API key
+0|url-tracker  | Flushed 0 pending click updates to database
+0|url-tracker  | 7:45:28 AM [access] Access check for path: /public/api/v1/landing/not_integrated
+0|url-tracker  | 7:45:28 AM [access] Access denied for path: /public/api/v1/landing/not_integrated - no valid session or API key
+0|url-tracker  | 7:45:28 AM [access] Access check for path: /public/api/v1/landing/not_integrated
+0|url-tracker  | 7:45:28 AM [access] Access denied for path: /public/api/v1/landing/not_integrated - no valid session or API key
+0|url-tracker  | 7:45:28 AM [access] Access check for path: /public/api/v1/landing/not_integrated
+0|url-tracker  | 7:45:28 AM [access] Access denied for path: /public/api/v1/landing/not_integrated - no valid session or API key
+0|url-tracker  | 7:45:29 AM [access] Access check for path: /public/api/v1/landing/not_integrated
+0|url-tracker  | 7:45:29 AM [access] Access denied for path: /public/api/v1/landing/not_integrated - no valid session or API key
+0|url-tracker  | 7:45:29 AM [access] Access check for path: /public/api/v1/landing/not_integrated
+0|url-tracker  | 7:45:29 AM [access] Access denied for path: /public/api/v1/landing/not_integrated - no valid session or API key
+0|url-tracker  | 7:45:29 AM [access] Access check for path: /public/api/v1/landing/not_integrated
+0|url-tracker  | 7:45:29 AM [access] Access denied for path: /public/api/v1/landing/not_integrated - no valid session or API key
+0|url-tracker  | Flushed 0 pending click updates to database
+0|url-tracker  | 7:45:29 AM [access] Access check for path: /public/api/v1/landing/not_integrated
+0|url-tracker  | 7:45:29 AM [access] Access denied for path: /public/api/v1/landing/not_integrated - no valid session or API key
+0|url-tracker  | 7:45:29 AM [access] Access check for path: /public/api/v1/landing/not_integrated
+0|url-tracker  | 7:45:29 AM [access] Access denied for path: /public/api/v1/landing/not_integrated - no valid session or API key
+0|url-tracker  | 7:45:29 AM [access] Access check for path: /public/api/v1/landing/not_integrated
+0|url-tracker  | 7:45:29 AM [access] Access denied for path: /public/api/v1/landing/not_integrated - no valid session or API key
+0|url-tracker  | 7:45:30 AM [access] Access check for path: /public/api/v1/landing/not_integrated
+0|url-tracker  | 7:45:30 AM [access] Access denied for path: /public/api/v1/landing/not_integrated - no valid session or API key
+0|url-tracker  | 7:45:30 AM [access] Access check for path: /public/api/v1/landing/not_integrated
+0|url-tracker  | 7:45:30 AM [access] Access denied for path: /public/api/v1/landing/not_integrated - no valid session or API key
+0|url-tracker  | 7:45:30 AM [access] Access check for path: /public/api/v1/landing/not_integrated
+0|url-tracker  | 7:45:30 AM [access] Access denied for path: /public/api/v1/landing/not_integrated - no valid session or API key
+0|url-tracker  | 7:45:30 AM [server-monitor] OS module CPU info: {
+0|url-tracker  |   "cpus": [
+0|url-tracker  |     {
+0|url-tracker  |       "model": "AMD Ryzen 7 PRO 8700GE w/ Radeon 780M Graphics",
+0|url-tracker  |       "speed": 3477,
+0|url-tracker  |       "times": {
+0|url-tracker  |         "user": 27944360,
+0|url-tracker  |         "nice": 10,
+0|url-tracker  |         "sys": 3207910,
+0|url-tracker  |         "idle": 447548770,
+0|url-tracker  |         "irq": 0
+0|url-tracker  |       }
+0|url-tracker  |     },
+0|url-tracker  |     {
+0|url-tracker  |       "model": "AMD Ryzen 7 PRO 8700GE w/ Radeon 780M Graphics",
+0|url-tracker  |       "speed": 5077,
+0|url-tracker  |       "times": {
+0|url-tracker  |         "user": 64569660,
+0|url-tracker  |         "nice": 3910,
+0|url-tracker  |         "sys": 7275470,
+0|url-tracker  |         "idle": 406052780,
+0|url-tracker  |         "irq": 0
+0|url-tracker  |       }
+0|url-tracker  |     },
+0|url-tracker  |     {
+0|url-tracker  |       "model": "AMD Ryzen 7 PRO 8700GE w/ Radeon 780M Graphics",
+0|url-tracker  |       "speed": 2901,
+0|url-tracker  |       "times": {
+0|url-tracker  |         "user": 14752450,
+0|url-tracker  |         "nice": 0,
+0|url-tracker  |         "sys": 2182640,
+0|url-tracker  |         "idle": 463816040,
+0|url-tracker  |         "irq": 0
+0|url-tracker  |       }
+0|url-tracker  |     },
+0|url-tracker  |     {
+0|url-tracker  |       "model": "AMD Ryzen 7 PRO 8700GE w/ Radeon 780M Graphics",
+0|url-tracker  |       "speed": 2912,
+0|url-tracker  |       "times": {
+0|url-tracker  |         "user": 6944540,
+0|url-tracker  |         "nice": 0,
+0|url-tracker  |         "sys": 1396870,
+0|url-tracker  |         "idle": 473336630,
+0|url-tracker  |         "irq": 0
+0|url-tracker  |       }
+0|url-tracker  |     },
+0|url-tracker  |     {
+0|url-tracker  |       "model": "AMD Ryzen 7 PRO 8700GE w/ Radeon 780M Graphics",
+0|url-tracker  |       "speed": 4921,
+0|url-tracker  |       "times": {
+0|url-tracker  |         "user": 24092320,
+0|url-tracker  |         "nice": 10,
+0|url-tracker  |         "sys": 2928510,
+0|url-tracker  |         "idle": 453002300,
+0|url-tracker  |         "irq": 0
+0|url-tracker  |       }
+0|url-tracker  |     },
+0|url-tracker  |     {
+0|url-tracker  |       "model": "AMD Ryzen 7 PRO 8700GE w/ Radeon 780M Graphics",
+0|url-tracker  |       "speed": 2962,
+0|url-tracker  |       "times": {
+0|url-tracker  |         "user": 62220660,
+0|url-tracker  |         "nice": 1410,
+0|url-tracker  |         "sys": 7216730,
+0|url-tracker  |         "idle": 409442080,
+0|url-tracker  |         "irq": 0
+0|url-tracker  |       }
+0|url-tracker  |     },
+0|url-tracker  |     {
+0|url-tracker  |       "model": "AMD Ryzen 7 PRO 8700GE w/ Radeon 780M Graphics",
+0|url-tracker  |       "speed": 2914,
+0|url-tracker  |       "times": {
+0|url-tracker  |         "user": 20099670,
+0|url-tracker  |         "nice": 30,
+0|url-tracker  |         "sys": 2666920,
+0|url-tracker  |         "idle": 457583330,
+0|url-tracker  |         "irq": 0
+0|url-tracker  |       }
+0|url-tracker  |     },
+0|url-tracker  |     {
+0|url-tracker  |       "model": "AMD Ryzen 7 PRO 8700GE w/ Radeon 780M Graphics",
+0|url-tracker  |       "speed": 3984,
+0|url-tracker  |       "times": {
+0|url-tracker  |         "user": 5879840,
+0|url-tracker  |         "nice": 10,
+0|url-tracker  |         "sys": 1321170,
+0|url-tracker  |         "idle": 474830190,
+0|url-tracker  |         "irq": 0
+0|url-tracker  |       }
+0|url-tracker  |     },
+0|url-tracker  |     {
+0|url-tracker  |       "model": "AMD Ryzen 7 PRO 8700GE w/ Radeon 780M Graphics",
+0|url-tracker  |       "speed": 400,
+0|url-tracker  |       "times": {
+0|url-tracker  |         "user": 13753260,
+0|url-tracker  |         "nice": 0,
+0|url-tracker  |         "sys": 1741790,
+0|url-tracker  |         "idle": 465281170,
+0|url-tracker  |         "irq": 0
+0|url-tracker  |       }
+0|url-tracker  |     },
+0|url-tracker  |     {
+0|url-tracker  |       "model": "AMD Ryzen 7 PRO 8700GE w/ Radeon 780M Graphics",
+0|url-tracker  |       "speed": 400,
+0|url-tracker  |       "times": {
+0|url-tracker  |         "user": 62239460,
+0|url-tracker  |         "nice": 2080,
+0|url-tracker  |         "sys": 5581170,
+0|url-tracker  |         "idle": 412407260,
+0|url-tracker  |         "irq": 0
+0|url-tracker  |       }
+0|url-tracker  |     },
+0|url-tracker  |     {
+0|url-tracker  |       "model": "AMD Ryzen 7 PRO 8700GE w/ Radeon 780M Graphics",
+0|url-tracker  |       "speed": 400,
+0|url-tracker  |       "times": {
+0|url-tracker  |         "user": 5248510,
+0|url-tracker  |         "nice": 0,
+0|url-tracker  |         "sys": 1075680,
+0|url-tracker  |         "idle": 474909090,
+0|url-tracker  |         "irq": 0
+0|url-tracker  |       }
+0|url-tracker  |     },
+0|url-tracker  |     {
+0|url-tracker  |       "model": "AMD Ryzen 7 PRO 8700GE w/ Radeon 780M Graphics",
+0|url-tracker  |       "speed": 3768,
+0|url-tracker  |       "times": {
+0|url-tracker  |         "user": 3171060,
+0|url-tracker  |         "nice": 0,
+0|url-tracker  |         "sys": 841580,
+0|url-tracker  |         "idle": 478014370,
+0|url-tracker  |         "irq": 0
+0|url-tracker  |       }
+0|url-tracker  |     },
+0|url-tracker  |     {
+0|url-tracker  |       "model": "AMD Ryzen 7 PRO 8700GE w/ Radeon 780M Graphics",
+0|url-tracker  |       "speed": 400,
+0|url-tracker  |       "times": {
+0|url-tracker  |         "user": 7301690,
+0|url-tracker  |         "nice": 30,
+0|url-tracker  |         "sys": 1140670,
+0|url-tracker  |         "idle": 472890210,
+0|url-tracker  |         "irq": 0
+0|url-tracker  |       }
+0|url-tracker  |     },
+0|url-tracker  |     {
+0|url-tracker  |       "model": "AMD Ryzen 7 PRO 8700GE w/ Radeon 780M Graphics",
+0|url-tracker  |       "speed": 3242,
+0|url-tracker  |       "times": {
+0|url-tracker  |         "user": 61154170,
+0|url-tracker  |         "nice": 450,
+0|url-tracker  |         "sys": 5371070,
+0|url-tracker  |         "idle": 414174260,
+0|url-tracker  |         "irq": 0
+0|url-tracker  |       }
+0|url-tracker  |     },
+0|url-tracker  |     {
+0|url-tracker  |       "model": "AMD Ryzen 7 PRO 8700GE w/ Radeon 780M Graphics",
+0|url-tracker  |       "speed": 2972,
+0|url-tracker  |       "times": {
+0|url-tracker  |         "user": 6242140,
+0|url-tracker  |         "nice": 0,
+0|url-tracker  |         "sys": 1119910,
+0|url-tracker  |         "idle": 473415040,
+0|url-tracker  |         "irq": 0
+0|url-tracker  |       }
+0|url-tracker  |     },
+0|url-tracker  |     {
+0|url-tracker  |       "model": "AMD Ryzen 7 PRO 8700GE w/ Radeon 780M Graphics",
+0|url-tracker  |       "speed": 400,
+0|url-tracker  |       "times": {
+0|url-tracker  |         "user": 2646610,
+0|url-tracker  |         "nice": 0,
+0|url-tracker  |         "sys": 754540,
+0|url-tracker  |         "idle": 478923380,
+0|url-tracker  |         "irq": 0
+0|url-tracker  |       }
+0|url-tracker  |     }
+0|url-tracker  |   ],
+0|url-tracker  |   "cpuCount": 16,
+0|url-tracker  |   "arch": "x64",
+0|url-tracker  |   "platform": "linux",
+0|url-tracker  |   "osType": "Linux",
+0|url-tracker  |   "totalMemory": 66490040320,
+0|url-tracker  |   "freeMemory": 63687462912
+0|url-tracker  | }
+0|url-tracker  | 7:45:30 AM [server-monitor] Using OS module CPU info: {
+0|url-tracker  |   "manufacturer": "AMD",
+0|url-tracker  |   "brand": "AMD Ryzen 7 PRO 8700GE w/ Radeon 780M Graphics",
+0|url-tracker  |   "speed": 4.718,
+0|url-tracker  |   "cores": 16,
+0|url-tracker  |   "physicalCores": 8
+0|url-tracker  | }
+0|url-tracker  | 🔄 Running scheduled multiplier verification check...
+0|url-tracker  | 🔍 VERIFYING CLICK MULTIPLIERS: Checking for inconsistencies between original and required click values
+0|url-tracker  | 🔍 Found 0 URLs with mismatched click values (incorrect multiplication)
+0|url-tracker  | ⚠️ Found mismatches in 0 campaigns:
+0|url-tracker  | Flushed 0 pending click updates to database
+0|url-tracker  | 7:45:30 AM [server-monitor] Disk space information: [
+0|url-tracker  |   {
+0|url-tracker  |     "fs": "efivarfs",
+0|url-tracker  |     "type": "efivarfs",
+0|url-tracker  |     "size": 131072,
+0|url-tracker  |     "used": 16384,
+0|url-tracker  |     "available": 110592,
+0|url-tracker  |     "use": 12.9,
+0|url-tracker  |     "mount": "/sys/firmware/efi/efivars",
+0|url-tracker  |     "rw": false
+0|url-tracker  |   },
+0|url-tracker  |   {
+0|url-tracker  |     "fs": "/dev/md1",
+0|url-tracker  |     "type": "ext4",
+0|url-tracker  |     "size": 501994504192,
+0|url-tracker  |     "used": 66926055424,
+0|url-tracker  |     "available": 429939998720,
+0|url-tracker  |     "use": 13.47,
+0|url-tracker  |     "mount": "/",
+0|url-tracker  |     "rw": true
+0|url-tracker  |   },
+0|url-tracker  |   {
+0|url-tracker  |     "fs": "/dev/md0",
+0|url-tracker  |     "type": "ext3",
+0|url-tracker  |     "size": 491491328,
+0|url-tracker  |     "used": 194563072,
+0|url-tracker  |     "available": 270137344,
+0|url-tracker  |     "use": 41.87,
+0|url-tracker  |     "mount": "/boot",
+0|url-tracker  |     "rw": true
+0|url-tracker  |   },
+0|url-tracker  |   {
+0|url-tracker  |     "fs": "/dev/nvme1n1p2",
+0|url-tracker  |     "type": "vfat",
+0|url-tracker  |     "size": 268152832,
+0|url-tracker  |     "used": 6430720,
+0|url-tracker  |     "available": 261722112,
+0|url-tracker  |     "use": 2.4,
+0|url-tracker  |     "mount": "/boot/efi",
+0|url-tracker  |     "rw": true
+0|url-tracker  |   }
+0|url-tracker  | ]
+0|url-tracker  | Load average data: {
+0|url-tracker  |   "avgLoad": 0.07,
+0|url-tracker  |   "currentLoad": 6.604887324090809,
+0|url-tracker  |   "currentLoadUser": 5.914309892704535,
+0|url-tracker  |   "currentLoadSystem": 0.6905774313862741,
+0|url-tracker  |   "currentLoadNice": 0,
+0|url-tracker  |   "currentLoadIdle": 93.39511267590919,
+0|url-tracker  |   "currentLoadIrq": 0,
+0|url-tracker  |   "currentLoadSteal": 0,
+0|url-tracker  |   "currentLoadGuest": 0,
+0|url-tracker  |   "rawCurrentLoad": 63220,
+0|url-tracker  |   "rawCurrentLoadUser": 56610,
+0|url-tracker  |   "rawCurrentLoadSystem": 6610,
+0|url-tracker  |   "rawCurrentLoadNice": 0,
+0|url-tracker  |   "rawCurrentLoadIdle": 893950,
+0|url-tracker  |   "rawCurrentLoadIrq": 0,
+0|url-tracker  |   "rawCurrentLoadSteal": 0,
+0|url-tracker  |   "rawCurrentLoadGuest": 0,
+0|url-tracker  |   "cpus": [
+0|url-tracker  |     {
+0|url-tracker  |       "load": 8.236873007884583,
+0|url-tracker  |       "loadUser": 7.431638986747189,
+0|url-tracker  |       "loadSystem": 0.8052340211373931,
+0|url-tracker  |       "loadNice": 0,
+0|url-tracker  |       "loadIdle": 91.76312699211542,
+0|url-tracker  |       "loadIrq": 0,
+0|url-tracker  |       "rawLoad": 4910,
+0|url-tracker  |       "rawLoadUser": 4430,
+0|url-tracker  |       "rawLoadSystem": 480,
+0|url-tracker  |       "rawLoadNice": 0,
+0|url-tracker  |       "rawLoadIdle": 54700,
+0|url-tracker  |       "rawLoadIrq": 0,
+0|url-tracker  |       "rawLoadSteal": 0,
+0|url-tracker  |       "rawLoadGuest": 0
+0|url-tracker  |     },
+0|url-tracker  |     {
+0|url-tracker  |       "load": 17.60763947059809,
+0|url-tracker  |       "loadUser": 15.44647344613838,
+0|url-tracker  |       "loadSystem": 2.161166024459708,
+0|url-tracker  |       "loadNice": 0,
+0|url-tracker  |       "loadIdle": 82.39236052940191,
+0|url-tracker  |       "loadIrq": 0,
+0|url-tracker  |       "rawLoad": 10510,
+0|url-tracker  |       "rawLoadUser": 9220,
+0|url-tracker  |       "rawLoadSystem": 1290,
+0|url-tracker  |       "rawLoadNice": 0,
+0|url-tracker  |       "rawLoadIdle": 49180,
+0|url-tracker  |       "rawLoadIrq": 0,
+0|url-tracker  |       "rawLoadSteal": 0,
+0|url-tracker  |       "rawLoadGuest": 0
+0|url-tracker  |     },
+0|url-tracker  |     {
+0|url-tracker  |       "load": 4.142308334725238,
+0|url-tracker  |       "loadUser": 3.6078169366961754,
+0|url-tracker  |       "loadSystem": 0.534491398029063,
+0|url-tracker  |       "loadNice": 0,
+0|url-tracker  |       "loadIdle": 95.85769166527476,
+0|url-tracker  |       "loadIrq": 0,
+0|url-tracker  |       "rawLoad": 2480,
+0|url-tracker  |       "rawLoadUser": 2160,
+0|url-tracker  |       "rawLoadSystem": 320,
+0|url-tracker  |       "rawLoadNice": 0,
+0|url-tracker  |       "rawLoadIdle": 57390,
+0|url-tracker  |       "rawLoadIrq": 0,
+0|url-tracker  |       "rawLoadSteal": 0,
+0|url-tracker  |       "rawLoadGuest": 0
+0|url-tracker  |     },
+0|url-tracker  |     {
+0|url-tracker  |       "load": 1.9879719345138658,
+0|url-tracker  |       "loadUser": 1.670564650851988,
+0|url-tracker  |       "loadSystem": 0.3174072836618777,
+0|url-tracker  |       "loadNice": 0,
+0|url-tracker  |       "loadIdle": 98.01202806548613,
+0|url-tracker  |       "loadIrq": 0,
+0|url-tracker  |       "rawLoad": 1190,
+0|url-tracker  |       "rawLoadUser": 1000,
+0|url-tracker  |       "rawLoadSystem": 190,
+0|url-tracker  |       "rawLoadNice": 0,
+0|url-tracker  |       "rawLoadIdle": 58670,
+0|url-tracker  |       "rawLoadIrq": 0,
+0|url-tracker  |       "rawLoadSteal": 0,
+0|url-tracker  |       "rawLoadGuest": 0
+0|url-tracker  |     },
+0|url-tracker  |     {
+0|url-tracker  |       "load": 7.481171548117155,
+0|url-tracker  |       "loadUser": 6.661087866108787,
+0|url-tracker  |       "loadSystem": 0.8200836820083682,
+0|url-tracker  |       "loadNice": 0,
+0|url-tracker  |       "loadIdle": 92.51882845188284,
+0|url-tracker  |       "loadIrq": 0,
+0|url-tracker  |       "rawLoad": 4470,
+0|url-tracker  |       "rawLoadUser": 3980,
+0|url-tracker  |       "rawLoadSystem": 490,
+0|url-tracker  |       "rawLoadNice": 0,
+0|url-tracker  |       "rawLoadIdle": 55280,
+0|url-tracker  |       "rawLoadIrq": 0,
+0|url-tracker  |       "rawLoadSteal": 0,
+0|url-tracker  |       "rawLoadGuest": 0
+0|url-tracker  |     },
+0|url-tracker  |     {
+0|url-tracker  |       "load": 19.252680965147455,
+0|url-tracker  |       "loadUser": 17.359249329758715,
+0|url-tracker  |       "loadSystem": 1.89343163538874,
+0|url-tracker  |       "loadNice": 0,
+0|url-tracker  |       "loadIdle": 80.74731903485255,
+0|url-tracker  |       "loadIrq": 0,
+0|url-tracker  |       "rawLoad": 11490,
+0|url-tracker  |       "rawLoadUser": 10360,
+0|url-tracker  |       "rawLoadSystem": 1130,
+0|url-tracker  |       "rawLoadNice": 0,
+0|url-tracker  |       "rawLoadIdle": 48190,
+0|url-tracker  |       "rawLoadIrq": 0,
+0|url-tracker  |       "rawLoadSteal": 0,
+0|url-tracker  |       "rawLoadGuest": 0
+0|url-tracker  |     },
+0|url-tracker  |     {
+0|url-tracker  |       "load": 6.154875397223615,
+0|url-tracker  |       "loadUser": 5.469141996989463,
+0|url-tracker  |       "loadSystem": 0.6857334002341529,
+0|url-tracker  |       "loadNice": 0,
+0|url-tracker  |       "loadIdle": 93.84512460277638,
+0|url-tracker  |       "loadIrq": 0,
+0|url-tracker  |       "rawLoad": 3680,
+0|url-tracker  |       "rawLoadUser": 3270,
+0|url-tracker  |       "rawLoadSystem": 410,
+0|url-tracker  |       "rawLoadNice": 0,
+0|url-tracker  |       "rawLoadIdle": 56110,
+0|url-tracker  |       "rawLoadIrq": 0,
+0|url-tracker  |       "rawLoadSteal": 0,
+0|url-tracker  |       "rawLoadGuest": 0
+0|url-tracker  |     },
+0|url-tracker  |     {
+0|url-tracker  |       "load": 1.5705931495405179,
+0|url-tracker  |       "loadUser": 1.236424394319131,
+0|url-tracker  |       "loadSystem": 0.3341687552213868,
+0|url-tracker  |       "loadNice": 0,
+0|url-tracker  |       "loadIdle": 98.42940685045947,
+0|url-tracker  |       "loadIrq": 0,
+0|url-tracker  |       "rawLoad": 940,
+0|url-tracker  |       "rawLoadUser": 740,
+0|url-tracker  |       "rawLoadSystem": 200,
+0|url-tracker  |       "rawLoadNice": 0,
+0|url-tracker  |       "rawLoadIdle": 58910,
+0|url-tracker  |       "rawLoadIrq": 0,
+0|url-tracker  |       "rawLoadSteal": 0,
+0|url-tracker  |       "rawLoadGuest": 0
+0|url-tracker  |     },
+0|url-tracker  |     {
+0|url-tracker  |       "load": 3.241978609625668,
+0|url-tracker  |       "loadUser": 2.857620320855615,
+0|url-tracker  |       "loadSystem": 0.3843582887700535,
+0|url-tracker  |       "loadNice": 0,
+0|url-tracker  |       "loadIdle": 96.75802139037432,
+0|url-tracker  |       "loadIrq": 0,
+0|url-tracker  |       "rawLoad": 1940,
+0|url-tracker  |       "rawLoadUser": 1710,
+0|url-tracker  |       "rawLoadSystem": 230,
+0|url-tracker  |       "rawLoadNice": 0,
+0|url-tracker  |       "rawLoadIdle": 57900,
+0|url-tracker  |       "rawLoadIrq": 0,
+0|url-tracker  |       "rawLoadSteal": 0,
+0|url-tracker  |       "rawLoadGuest": 0
+0|url-tracker  |     },
+0|url-tracker  |     {
+0|url-tracker  |       "load": 18.318569279625606,
+0|url-tracker  |       "loadUser": 17.08173157278957,
+0|url-tracker  |       "loadSystem": 1.2368377068360354,
+0|url-tracker  |       "loadNice": 0,
+0|url-tracker  |       "loadIdle": 81.6814307203744,
+0|url-tracker  |       "loadIrq": 0,
+0|url-tracker  |       "rawLoad": 10960,
+0|url-tracker  |       "rawLoadUser": 10220,
+0|url-tracker  |       "rawLoadSystem": 740,
+0|url-tracker  |       "rawLoadNice": 0,
+0|url-tracker  |       "rawLoadIdle": 48870,
+0|url-tracker  |       "rawLoadIrq": 0,
+0|url-tracker  |       "rawLoadSteal": 0,
+0|url-tracker  |       "rawLoadGuest": 0
+0|url-tracker  |     },
+0|url-tracker  |     {
+0|url-tracker  |       "load": 1.0188742274929012,
+0|url-tracker  |       "loadUser": 0.8017370970435944,
+0|url-tracker  |       "loadSystem": 0.21713713044930685,
+0|url-tracker  |       "loadNice": 0,
+0|url-tracker  |       "loadIdle": 98.9811257725071,
+0|url-tracker  |       "loadIrq": 0,
+0|url-tracker  |       "rawLoad": 610,
+0|url-tracker  |       "rawLoadUser": 480,
+0|url-tracker  |       "rawLoadSystem": 130,
+0|url-tracker  |       "rawLoadNice": 0,
+0|url-tracker  |       "rawLoadIdle": 59260,
+0|url-tracker  |       "rawLoadIrq": 0,
+0|url-tracker  |       "rawLoadSteal": 0,
+0|url-tracker  |       "rawLoadGuest": 0
+0|url-tracker  |     },
+0|url-tracker  |     {
+0|url-tracker  |       "load": 0.7177432815890503,
+0|url-tracker  |       "loadUser": 0.5675179435820397,
+0|url-tracker  |       "loadSystem": 0.15022533800701052,
+0|url-tracker  |       "loadNice": 0,
+0|url-tracker  |       "loadIdle": 99.28225671841095,
+0|url-tracker  |       "loadIrq": 0,
+0|url-tracker  |       "rawLoad": 430,
+0|url-tracker  |       "rawLoadUser": 340,
+0|url-tracker  |       "rawLoadSystem": 90,
+0|url-tracker  |       "rawLoadNice": 0,
+0|url-tracker  |       "rawLoadIdle": 59480,
+0|url-tracker  |       "rawLoadIrq": 0,
+0|url-tracker  |       "rawLoadSteal": 0,
+0|url-tracker  |       "rawLoadGuest": 0
+0|url-tracker  |     },
+0|url-tracker  |     {
+0|url-tracker  |       "load": 1.3531573671901103,
+0|url-tracker  |       "loadUser": 1.1693952555963916,
+0|url-tracker  |       "loadSystem": 0.18376211159371866,
+0|url-tracker  |       "loadNice": 0,
+0|url-tracker  |       "loadIdle": 98.64684263280989,
+0|url-tracker  |       "loadIrq": 0,
+0|url-tracker  |       "rawLoad": 810,
+0|url-tracker  |       "rawLoadUser": 700,
+0|url-tracker  |       "rawLoadSystem": 110,
+0|url-tracker  |       "rawLoadNice": 0,
+0|url-tracker  |       "rawLoadIdle": 59050,
+0|url-tracker  |       "rawLoadIrq": 0,
+0|url-tracker  |       "rawLoadSteal": 0,
+0|url-tracker  |       "rawLoadGuest": 0
+0|url-tracker  |     },
+0|url-tracker  |     {
+0|url-tracker  |       "load": 13.019529293940913,
+0|url-tracker  |       "loadUser": 11.984643632114839,
+0|url-tracker  |       "loadSystem": 1.0348856618260724,
+0|url-tracker  |       "loadNice": 0,
+0|url-tracker  |       "loadIdle": 86.9804707060591,
+0|url-tracker  |       "loadIrq": 0,
+0|url-tracker  |       "rawLoad": 7800,
+0|url-tracker  |       "rawLoadUser": 7180,
+0|url-tracker  |       "rawLoadSystem": 620,
+0|url-tracker  |       "rawLoadNice": 0,
+0|url-tracker  |       "rawLoadIdle": 52110,
+0|url-tracker  |       "rawLoadIrq": 0,
+0|url-tracker  |       "rawLoadSteal": 0,
+0|url-tracker  |       "rawLoadGuest": 0
+0|url-tracker  |     },
+0|url-tracker  |     {
+0|url-tracker  |       "load": 1.0677344010677345,
+0|url-tracker  |       "loadUser": 0.8842175508842176,
+0|url-tracker  |       "loadSystem": 0.18351685018351685,
+0|url-tracker  |       "loadNice": 0,
+0|url-tracker  |       "loadIdle": 98.93226559893226,
+0|url-tracker  |       "loadIrq": 0,
+0|url-tracker  |       "rawLoad": 640,
+0|url-tracker  |       "rawLoadUser": 530,
+0|url-tracker  |       "rawLoadSystem": 110,
+0|url-tracker  |       "rawLoadNice": 0,
+0|url-tracker  |       "rawLoadIdle": 59300,
+0|url-tracker  |       "rawLoadIrq": 0,
+0|url-tracker  |       "rawLoadSteal": 0,
+0|url-tracker  |       "rawLoadGuest": 0
+0|url-tracker  |     },
+0|url-tracker  |     {
+0|url-tracker  |       "load": 0.6009013520280421,
+0|url-tracker  |       "loadUser": 0.4840594224670339,
+0|url-tracker  |       "loadSystem": 0.11684192956100817,
+0|url-tracker  |       "loadNice": 0,
+0|url-tracker  |       "loadIdle": 99.39909864797197,
+0|url-tracker  |       "loadIrq": 0,
+0|url-tracker  |       "rawLoad": 360,
+0|url-tracker  |       "rawLoadUser": 290,
+0|url-tracker  |       "rawLoadSystem": 70,
+0|url-tracker  |       "rawLoadNice": 0,
+0|url-tracker  |       "rawLoadIdle": 59550,
+0|url-tracker  |       "rawLoadIrq": 0,
+0|url-tracker  |       "rawLoadSteal": 0,
+0|url-tracker  |       "rawLoadGuest": 0
+0|url-tracker  |     }
+0|url-tracker  |   ]
+0|url-tracker  | }
+0|url-tracker  | ✅ Fixed 0 URL click values with incorrect multipliers
+0|url-tracker  | 🧹 Invalidating caches for 0 affected campaigns
+0|url-tracker  | ✅ Automatic multiplier check: No issues found
+0|url-tracker  | OS load averages: linux [ 1.07, 1.04, 1.08 ]
+0|url-tracker  | ========== SYSTEM LOAD CALCULATION ==========
+0|url-tracker  | Raw OS load averages: [1.07,1.04,1.08]
+0|url-tracker  | Using 1-minute load average: 1.07
+0|url-tracker  | CPU Info raw length: 16
+0|url-tracker  | Number of CPUs detected: 16
+0|url-tracker  | SI current load data: {"avgLoad":0.07,"currentLoad":6.604887324090809,"currentLoadUser":5.914309892704535,"currentLoadSystem":0.6905774313862741,"currentLoadNice":0,"currentLoadIdle":93.39511267590919,"currentLoadIrq":0,"currentLoadSteal":0,"currentLoadGuest":0,"rawCurrentLoad":63220,"rawCurrentLoadUser":56610,"rawCurrentLoadSystem":6610,"rawCurrentLoadNice":0,"rawCurrentLoadIdle":893950,"rawCurrentLoadIrq":0,"rawCurrentLoadSteal":0,"rawCurrentLoadGuest":0,"cpus":[{"load":8.236873007884583,"loadUser":7.431638986747189,"loadSystem":0.8052340211373931,"loadNice":0,"loadIdle":91.76312699211542,"loadIrq":0,"rawLoad":4910,"rawLoadUser":4430,"rawLoadSystem":480,"rawLoadNice":0,"rawLoadIdle":54700,"rawLoadIrq":0,"rawLoadSteal":0,"rawLoadGuest":0},{"load":17.60763947059809,"loadUser":15.44647344613838,"loadSystem":2.161166024459708,"loadNice":0,"loadIdle":82.39236052940191,"loadIrq":0,"rawLoad":10510,"rawLoadUser":9220,"rawLoadSystem":1290,"rawLoadNice":0,"rawLoadIdle":49180,"rawLoadIrq":0,"rawLoadSteal":0,"rawLoadGuest":0},{"load":4.142308334725238,"loadUser":3.6078169366961754,"loadSystem":0.534491398029063,"loadNice":0,"loadIdle":95.85769166527476,"loadIrq":0,"rawLoad":2480,"rawLoadUser":2160,"rawLoadSystem":320,"rawLoadNice":0,"rawLoadIdle":57390,"rawLoadIrq":0,"rawLoadSteal":0,"rawLoadGuest":0},{"load":1.9879719345138658,"loadUser":1.670564650851988,"loadSystem":0.3174072836618777,"loadNice":0,"loadIdle":98.01202806548613,"loadIrq":0,"rawLoad":1190,"rawLoadUser":1000,"rawLoadSystem":190,"rawLoadNice":0,"rawLoadIdle":58670,"rawLoadIrq":0,"rawLoadSteal":0,"rawLoadGuest":0},{"load":7.481171548117155,"loadUser":6.661087866108787,"loadSystem":0.8200836820083682,"loadNice":0,"loadIdle":92.51882845188284,"loadIrq":0,"rawLoad":4470,"rawLoadUser":3980,"rawLoadSystem":490,"rawLoadNice":0,"rawLoadIdle":55280,"rawLoadIrq":0,"rawLoadSteal":0,"rawLoadGuest":0},{"load":19.252680965147455,"loadUser":17.359249329758715,"loadSystem":1.89343163538874,"loadNice":0,"loadIdle":80.74731903485255,"loadIrq":0,"rawLoad":11490,"rawLoadUser":10360,"rawLoadSystem":1130,"rawLoadNice":0,"rawLoadIdle":48190,"rawLoadIrq":0,"rawLoadSteal":0,"rawLoadGuest":0},{"load":6.154875397223615,"loadUser":5.469141996989463,"loadSystem":0.6857334002341529,"loadNice":0,"loadIdle":93.84512460277638,"loadIrq":0,"rawLoad":3680,"rawLoadUser":3270,"rawLoadSystem":410,"rawLoadNice":0,"rawLoadIdle":56110,"rawLoadIrq":0,"rawLoadSteal":0,"rawLoadGuest":0},{"load":1.5705931495405179,"loadUser":1.236424394319131,"loadSystem":0.3341687552213868,"loadNice":0,"loadIdle":98.42940685045947,"loadIrq":0,"rawLoad":940,"rawLoadUser":740,"rawLoadSystem":200,"rawLoadNice":0,"rawLoadIdle":58910,"rawLoadIrq":0,"rawLoadSteal":0,"rawLoadGuest":0},{"load":3.241978609625668,"loadUser":2.857620320855615,"loadSystem":0.3843582887700535,"loadNice":0,"loadIdle":96.75802139037432,"loadIrq":0,"rawLoad":1940,"rawLoadUser":1710,"rawLoadSystem":230,"rawLoadNice":0,"rawLoadIdle":57900,"rawLoadIrq":0,"rawLoadSteal":0,"rawLoadGuest":0},{"load":18.318569279625606,"loadUser":17.08173157278957,"loadSystem":1.2368377068360354,"loadNice":0,"loadIdle":81.6814307203744,"loadIrq":0,"rawLoad":10960,"rawLoadUser":10220,"rawLoadSystem":740,"rawLoadNice":0,"rawLoadIdle":48870,"rawLoadIrq":0,"rawLoadSteal":0,"rawLoadGuest":0},{"load":1.0188742274929012,"loadUser":0.8017370970435944,"loadSystem":0.21713713044930685,"loadNice":0,"loadIdle":98.9811257725071,"loadIrq":0,"rawLoad":610,"rawLoadUser":480,"rawLoadSystem":130,"rawLoadNice":0,"rawLoadIdle":59260,"rawLoadIrq":0,"rawLoadSteal":0,"rawLoadGuest":0},{"load":0.7177432815890503,"loadUser":0.5675179435820397,"loadSystem":0.15022533800701052,"loadNice":0,"loadIdle":99.28225671841095,"loadIrq":0,"rawLoad":430,"rawLoadUser":340,"rawLoadSystem":90,"rawLoadNice":0,"rawLoadIdle":59480,"rawLoadIrq":0,"rawLoadSteal":0,"rawLoadGuest":0},{"load":1.3531573671901103,"loadUser":1.1693952555963916,"loadSystem":0.18376211159371866,"loadNice":0,"loadIdle":98.64684263280989,"loadIrq":0,"rawLoad":810,"rawLoadUser":700,"rawLoadSystem":110,"rawLoadNice":0,"rawLoadIdle":59050,"rawLoadIrq":0,"rawLoadSteal":0,"rawLoadGuest":0},{"load":13.019529293940913,"loadUser":11.984643632114839,"loadSystem":1.0348856618260724,"loadNice":0,"loadIdle":86.9804707060591,"loadIrq":0,"rawLoad":7800,"rawLoadUser":7180,"rawLoadSystem":620,"rawLoadNice":0,"rawLoadIdle":52110,"rawLoadIrq":0,"rawLoadSteal":0,"rawLoadGuest":0},{"load":1.0677344010677345,"loadUser":0.8842175508842176,"loadSystem":0.18351685018351685,"loadNice":0,"loadIdle":98.93226559893226,"loadIrq":0,"rawLoad":640,"rawLoadUser":530,"rawLoadSystem":110,"rawLoadNice":0,"rawLoadIdle":59300,"rawLoadIrq":0,"rawLoadSteal":0,"rawLoadGuest":0},{"load":0.6009013520280421,"loadUser":0.4840594224670339,"loadSystem":0.11684192956100817,"loadNice":0,"loadIdle":99.39909864797197,"loadIrq":0,"rawLoad":360,"rawLoadUser":290,"rawLoadSystem":70,"rawLoadNice":0,"rawLoadIdle":59550,"rawLoadIrq":0,"rawLoadSteal":0,"rawLoadGuest":0}]}
+0|url-tracker  | Initial calculated load value: 6.6875
+0|url-tracker  | Final system load calculation (before fallbacks): 7
+0|url-tracker  | FINAL SYSTEM LOAD VALUE TO DISPLAY: 7
+0|url-tracker  | ===========================================
+0|url-tracker  | Final CPU details being set: {
+0|url-tracker  |   "manufacturer": "AMD",
+0|url-tracker  |   "brand": "AMD Ryzen 7 PRO 8700GE w/ Radeon 780M Graphics",
+0|url-tracker  |   "speed": 4.718,
+0|url-tracker  |   "cores": 16,
+0|url-tracker  |   "physicalCores": 8
+0|url-tracker  | }
+0|url-tracker  | 7:45:30 AM [server-monitor] OS information: {
+0|url-tracker  |   "platform": "linux",
+0|url-tracker  |   "distro": "Ubuntu",
+0|url-tracker  |   "release": "24.04.2 LTS",
+0|url-tracker  |   "codename": "noble",
+0|url-tracker  |   "kernel": "6.11.0-25-generic",
+0|url-tracker  |   "arch": "x64",
+0|url-tracker  |   "hostname": "d026e9724",
+0|url-tracker  |   "fqdn": "d026e9724.fastvps-server.com",
+0|url-tracker  |   "codepage": "UTF-8",
+0|url-tracker  |   "logofile": "ubuntu",
+0|url-tracker  |   "serial": "90519979119242d1841742b7df90eab3",
+0|url-tracker  |   "build": "",
+0|url-tracker  |   "servicepack": "",
+0|url-tracker  |   "uefi": true
+0|url-tracker  | }
+0|url-tracker  | 7:45:30 AM [access] Access check for path: /public/api/v1/landing/not_integrated
+0|url-tracker  | 7:45:30 AM [access] Access denied for path: /public/api/v1/landing/not_integrated - no valid session or API key
+0|url-tracker  | 🕒 Checking for scheduled budget updates at current time 07:45:00 UTC
+0|url-tracker  | No campaigns need budget updates at this time.
+0|url-tracker  | 7:45:30 AM [access] Access check for path: /public/api/v1/landing/not_integrated
+0|url-tracker  | 7:45:30 AM [access] Access denied for path: /public/api/v1/landing/not_integrated - no valid session or API key
+0|url-tracker  | 7:45:30 AM [access] Access check for path: /public/api/v1/landing/not_integrated
+0|url-tracker  | 7:45:30 AM [access] Access denied for path: /public/api/v1/landing/not_integrated - no valid session or API key
+0|url-tracker  | 7:45:31 AM [access] Access check for path: /public/api/v1/landing/not_integrated
+0|url-tracker  | 7:45:31 AM [access] Access denied for path: /public/api/v1/landing/not_integrated - no valid session or API key
+0|url-tracker  | 7:45:31 AM [access] Access check for path: /public/api/v1/landing/not_integrated
+0|url-tracker  | 7:45:31 AM [access] Access denied for path: /public/api/v1/landing/not_integrated - no valid session or API key
+0|url-tracker  | 7:45:31 AM [access] Access check for path: /public/api/v1/landing/not_integrated
+0|url-tracker  | 7:45:31 AM [access] Access denied for path: /public/api/v1/landing/not_integrated - no valid session or API key
+0|url-tracker  | Flushed 0 pending click updates to database
+0|url-tracker  | 7:45:31 AM [access] Access check for path: /public/api/v1/landing/not_integrated
+0|url-tracker  | 7:45:31 AM [access] Access denied for path: /public/api/v1/landing/not_integrated - no valid session or API key
+0|url-tracker  | 7:45:31 AM [access] Access check for path: /public/api/v1/landing/not_integrated
+0|url-tracker  | 7:45:31 AM [access] Access denied for path: /public/api/v1/landing/not_integrated - no valid session or API key
+0|url-tracker  | ⏱️ Running minute check for campaign 1019777 active status
+0|url-tracker  | TRAFFIC-GENERATOR: Getting REAL-TIME status for campaign 1019777
+0|url-tracker  | Getting campaign 1019777 details
+0|url-tracker  | 7:45:31 AM [access] Access check for path: /public/api/v1/landing/not_integrated
+0|url-tracker  | 7:45:31 AM [access] Access denied for path: /public/api/v1/landing/not_integrated - no valid session or API key
+0|url-tracker  | TRAFFIC-GENERATOR: TrafficStar campaign 1019777 REAL status is paused, active=false
+0|url-tracker  | ⚠️ Campaign 1019777 was found paused but should be active - will attempt to reactivate
+0|url-tracker  | 7:45:32 AM [access] Access check for path: /public/api/v1/landing/not_integrated
+0|url-tracker  | 7:45:32 AM [access] Access denied for path: /public/api/v1/landing/not_integrated - no valid session or API key
+0|url-tracker  | 🔍 PAUSE DETECTED: Checking remaining clicks for 25 URLs in campaign 1019777
+0|url-tracker  | 🔍 URL ID: 420, status: active, clickLimit: 6800, clicks: 325
+0|url-tracker  | ✅ Adding 6475 remaining clicks from URL ID: 420
+0|url-tracker  | 🔍 URL ID: 399, status: active, clickLimit: 1700, clicks: 1699
+0|url-tracker  | ✅ Adding 1 remaining clicks from URL ID: 399
+0|url-tracker  | 🔍 URL ID: 418, status: active, clickLimit: 1700, clicks: 458
+0|url-tracker  | ✅ Adding 1242 remaining clicks from URL ID: 418
+0|url-tracker  | 🔍 URL ID: 414, status: active, clickLimit: 2380, clicks: 1857
+0|url-tracker  | ✅ Adding 523 remaining clicks from URL ID: 414
+0|url-tracker  | 🔍 URL ID: 400, status: active, clickLimit: 8500, clicks: 8496
+0|url-tracker  | ✅ Adding 4 remaining clicks from URL ID: 400
+0|url-tracker  | 🔍 URL ID: 408, status: active, clickLimit: 3400, clicks: 3360
+0|url-tracker  | ✅ Adding 40 remaining clicks from URL ID: 408
+0|url-tracker  | 🔍 URL ID: 417, status: active, clickLimit: 34000, clicks: 23376
+0|url-tracker  | ✅ Adding 10624 remaining clicks from URL ID: 417
+0|url-tracker  | 🔍 URL ID: 421, status: active, clickLimit: 6630, clicks: 365
+0|url-tracker  | ✅ Adding 6265 remaining clicks from URL ID: 421
+0|url-tracker  | 🔍 URL ID: 393, status: active, clickLimit: 1700, clicks: 1699
+0|url-tracker  | ✅ Adding 1 remaining clicks from URL ID: 393
+0|url-tracker  | 🔍 URL ID: 415, status: active, clickLimit: 10200, clicks: 8044
+0|url-tracker  | ✅ Adding 2156 remaining clicks from URL ID: 415
+0|url-tracker  | 🔍 URL ID: 419, status: active, clickLimit: 1700, clicks: 110
+0|url-tracker  | ✅ Adding 1590 remaining clicks from URL ID: 419
+0|url-tracker  | 🔍 URL ID: 422, status: active, clickLimit: 40800, clicks: 2025
+0|url-tracker  | ✅ Adding 38775 remaining clicks from URL ID: 422
+0|url-tracker  | 🔍 URL ID: 409, status: active, clickLimit: 3400, clicks: 3360
+0|url-tracker  | ✅ Adding 40 remaining clicks from URL ID: 409
+0|url-tracker  | 🔍 URL ID: 401, status: active, clickLimit: 3400, clicks: 3398
+0|url-tracker  | ✅ Adding 2 remaining clicks from URL ID: 401
+0|url-tracker  | 🔍 URL ID: 398, status: active, clickLimit: 20400, clicks: 20394
+0|url-tracker  | ✅ Adding 6 remaining clicks from URL ID: 398
+0|url-tracker  | 🔍 URL ID: 416, status: active, clickLimit: 1190, clicks: 956
+0|url-tracker  | ✅ Adding 234 remaining clicks from URL ID: 416
+0|url-tracker  | 🔍 URL ID: 410, status: active, clickLimit: 3400, clicks: 3355
+0|url-tracker  | ✅ Adding 45 remaining clicks from URL ID: 410
+0|url-tracker  | 🔍 URL ID: 402, status: active, clickLimit: 3400, clicks: 3399
+0|url-tracker  | ✅ Adding 1 remaining clicks from URL ID: 402
+0|url-tracker  | 🔍 URL ID: 413, status: active, clickLimit: 6800, clicks: 5395
+0|url-tracker  | ✅ Adding 1405 remaining clicks from URL ID: 413
+0|url-tracker  | 🔍 URL ID: 403, status: active, clickLimit: 23800, clicks: 23781
+0|url-tracker  | ✅ Adding 19 remaining clicks from URL ID: 403
+0|url-tracker  | 🔍 URL ID: 411, status: active, clickLimit: 6800, clicks: 6686
+0|url-tracker  | ✅ Adding 114 remaining clicks from URL ID: 411
+0|url-tracker  | 🔍 URL ID: 407, status: active, clickLimit: 3400, clicks: 3356
+0|url-tracker  | ✅ Adding 44 remaining clicks from URL ID: 407
+0|url-tracker  | 🔍 URL ID: 412, status: active, clickLimit: 6800, clicks: 6710
+0|url-tracker  | ✅ Adding 90 remaining clicks from URL ID: 412
+0|url-tracker  | 🔍 URL ID: 406, status: active, clickLimit: 3400, clicks: 3348
+0|url-tracker  | ✅ Adding 52 remaining clicks from URL ID: 406
+0|url-tracker  | 🔍 URL ID: 387, status: active, clickLimit: 9180, clicks: 9179
+0|url-tracker  | ✅ Adding 1 remaining clicks from URL ID: 387
+0|url-tracker  | Using LOW SPEND thresholds for pause monitoring: Pause at 20000 clicks, Activate at 23000 clicks
+0|url-tracker  | ✅ Campaign 1019777 has 69749 remaining clicks (>= 23000) - will attempt reactivation during monitoring
+0|url-tracker  | Setting campaign 1019777 end time to: 2025-05-17 23:59:00
+0|url-tracker  | 7:45:32 AM [access] Access check for path: /public/api/v1/landing/not_integrated
+0|url-tracker  | 7:45:32 AM [access] Access denied for path: /public/api/v1/landing/not_integrated - no valid session or API key
+0|url-tracker  | Successfully updated end time for campaign 1019777
+0|url-tracker  | Confirmed end time update for campaign 1019777
+0|url-tracker  | Activating campaign 1019777
+0|url-tracker  | Flushed 0 pending click updates to database
