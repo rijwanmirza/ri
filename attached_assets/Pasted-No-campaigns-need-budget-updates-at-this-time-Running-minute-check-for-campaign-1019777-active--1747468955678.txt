@@ -1,0 +1,66 @@
+No campaigns need budget updates at this time.
+⏱️ Running minute check for campaign 1019777 active status
+TRAFFIC-GENERATOR: Getting REAL-TIME status for campaign 1019777
+Getting campaign 1019777 details
+TRAFFIC-GENERATOR: TrafficStar campaign 1019777 REAL status is paused, active=false
+⚠️ Campaign 1019777 was found paused but should be active - will attempt to reactivate
+🔍 PAUSE DETECTED: Checking remaining clicks for 25 URLs in campaign 1019777
+🔍 URL ID: 399, status: active, clickLimit: 1700, clicks: 1699
+✅ Adding 1 remaining clicks from URL ID: 399
+🔍 URL ID: 418, status: active, clickLimit: 1700, clicks: 499
+✅ Adding 1201 remaining clicks from URL ID: 418
+🔍 URL ID: 414, status: active, clickLimit: 2380, clicks: 1872
+✅ Adding 508 remaining clicks from URL ID: 414
+🔍 URL ID: 400, status: active, clickLimit: 8500, clicks: 8496
+✅ Adding 4 remaining clicks from URL ID: 400
+🔍 URL ID: 408, status: active, clickLimit: 3400, clicks: 3362
+✅ Adding 38 remaining clicks from URL ID: 408
+🔍 URL ID: 417, status: active, clickLimit: 34000, clicks: 23767
+✅ Adding 10233 remaining clicks from URL ID: 417
+🔍 URL ID: 421, status: active, clickLimit: 6630, clicks: 589
+✅ Adding 6041 remaining clicks from URL ID: 421
+🔍 URL ID: 393, status: active, clickLimit: 1700, clicks: 1699
+✅ Adding 1 remaining clicks from URL ID: 393
+🔍 URL ID: 415, status: active, clickLimit: 10200, clicks: 8115
+✅ Adding 2085 remaining clicks from URL ID: 415
+🔍 URL ID: 419, status: active, clickLimit: 1700, clicks: 174
+✅ Adding 1526 remaining clicks from URL ID: 419
+🔍 URL ID: 422, status: active, clickLimit: 40800, clicks: 3402
+✅ Adding 37398 remaining clicks from URL ID: 422
+🔍 URL ID: 409, status: active, clickLimit: 3400, clicks: 3361
+✅ Adding 39 remaining clicks from URL ID: 409
+🔍 URL ID: 401, status: active, clickLimit: 3400, clicks: 3398
+✅ Adding 2 remaining clicks from URL ID: 401
+🔍 URL ID: 398, status: active, clickLimit: 20400, clicks: 20394
+✅ Adding 6 remaining clicks from URL ID: 398
+🔍 URL ID: 416, status: active, clickLimit: 1190, clicks: 965
+✅ Adding 225 remaining clicks from URL ID: 416
+🔍 URL ID: 410, status: active, clickLimit: 3400, clicks: 3356
+✅ Adding 44 remaining clicks from URL ID: 410
+🔍 URL ID: 402, status: active, clickLimit: 3400, clicks: 3399
+✅ Adding 1 remaining clicks from URL ID: 402
+🔍 URL ID: 420, status: active, clickLimit: 6800, clicks: 577
+✅ Adding 6223 remaining clicks from URL ID: 420
+🔍 URL ID: 413, status: active, clickLimit: 6800, clicks: 5432
+✅ Adding 1368 remaining clicks from URL ID: 413
+🔍 URL ID: 403, status: active, clickLimit: 23800, clicks: 23782
+✅ Adding 18 remaining clicks from URL ID: 403
+🔍 URL ID: 411, status: active, clickLimit: 6800, clicks: 6692
+✅ Adding 108 remaining clicks from URL ID: 411
+🔍 URL ID: 407, status: active, clickLimit: 3400, clicks: 3358
+✅ Adding 42 remaining clicks from URL ID: 407
+🔍 URL ID: 412, status: active, clickLimit: 6800, clicks: 6715
+✅ Adding 85 remaining clicks from URL ID: 412
+🔍 URL ID: 406, status: active, clickLimit: 3400, clicks: 3348
+✅ Adding 52 remaining clicks from URL ID: 406
+🔍 URL ID: 387, status: active, clickLimit: 9180, clicks: 9179
+✅ Adding 1 remaining clicks from URL ID: 387
+Using LOW SPEND thresholds for pause monitoring: Pause at 20000 clicks, Activate at 23000 clicks
+✅ Campaign 1019777 has 67250 remaining clicks (>= 23000) - will attempt reactivation during monitoring
+Setting campaign 1019777 end time to: 2025-05-17 23:59:00
+Successfully updated end time for campaign 1019777
+Confirmed end time update for campaign 1019777
+Activating campaign 1019777
+Successfully activated campaign 1019777
+✅ REACTIVATED campaign 1019777 during monitoring - it has 67250 remaining clicks
+✅ Marked campaign 1 as 'reactivated_during_monitoring' in database

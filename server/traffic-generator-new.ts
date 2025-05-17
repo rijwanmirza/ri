@@ -203,16 +203,109 @@ export async function handleCampaignBySpentValue(campaignId: number, trafficstar
   if (spentValue >= THRESHOLD) {
     console.log(`Campaign ${campaignId} has spent $${spentValue.toFixed(4)} which is ≥ $${THRESHOLD.toFixed(2)} (HIGH SPEND threshold)`);
     
-    // If we're transitioning from low spend to high spend, ensure we go through the proper states
-    if (currentCampaignStatus === 'low_spend' || 
-        currentCampaignStatus === 'auto_reactivated_low_spend' || 
-        currentCampaignStatus === 'auto_paused_low_clicks') {
-      console.log(`Campaign ${campaignId} is transitioning from ${currentCampaignStatus} to high spend state - forcing proper state transition`);
-    }
-  } else {
-    console.log(`Campaign ${campaignId} has spent $${spentValue.toFixed(4)} which is < $${THRESHOLD.toFixed(2)} (LOW SPEND threshold)`);
+    // Get campaign current state to determine the right action
+    const campaignResult = await db.select().from(campaigns).where(eq(campaigns.id, campaignId)).limit(1);
+    const campaignSettings = campaignResult[0];
+    const currentState = campaignSettings?.lastTrafficSenderStatus || 'unknown';
+    console.log(`Current campaign state for HIGH SPEND campaign: ${currentState}`);
     
-    // If we're transitioning from high spend to low spend, ensure we clear any high spend state
+    // HIGH SPEND CRITICAL FIX: Ensure we're taking the right action based on current state and remaining clicks
+    // Get the total remaining clicks for this campaign to decide the correct state
+    const campaignWithUrls = await db.query.campaigns.findFirst({
+      where: (c, { eq }) => eq(c.id, campaignId),
+      with: { 
+        urls: {
+          where: (urls, { eq }) => eq(urls.status, 'active')
+        } 
+      }
+    });
+    
+    if (campaignWithUrls && campaignWithUrls.urls && campaignWithUrls.urls.length > 0) {
+      // Calculate total remaining clicks
+      let totalRemainingClicks = 0;
+      for (const url of campaignWithUrls.urls) {
+        const remainingClicks = url.clickLimit - url.clicks;
+        const validRemaining = remainingClicks > 0 ? remainingClicks : 0;
+        totalRemainingClicks += validRemaining;
+      }
+      
+      console.log(`HIGH SPEND campaign ${campaignId} has ${totalRemainingClicks} remaining clicks`);
+      
+      // Get the HIGH SPEND thresholds
+      const HIGH_SPEND_PAUSE_THRESHOLD = campaignSettings?.highSpendPauseThreshold || 1000;
+      const HIGH_SPEND_ACTIVATE_THRESHOLD = campaignSettings?.highSpendActivateThreshold || 5000;
+      console.log(`HIGH SPEND thresholds: Pause at ${HIGH_SPEND_PAUSE_THRESHOLD}, Activate at ${HIGH_SPEND_ACTIVATE_THRESHOLD}`);
+      
+      // If we have enough remaining clicks and not in a high spend state already, transition directly
+      if (totalRemainingClicks >= HIGH_SPEND_ACTIVATE_THRESHOLD && 
+          !['high_spend', 'high_spend_budget_updated'].includes(currentState)) {
+        
+        console.log(`🔄 HIGH SPEND FIX: Campaign ${campaignId} has ${totalRemainingClicks} remaining clicks which is >= ${HIGH_SPEND_ACTIVATE_THRESHOLD} (HIGH SPEND activate threshold)`);
+        console.log(`🔄 Directly transitioning to high_spend state and activating campaign`);
+        
+        // Update campaign state
+        await db.update(campaigns)
+          .set({
+            lastTrafficSenderStatus: 'high_spend',
+            lastTrafficSenderAction: new Date(),
+            updatedAt: new Date()
+          })
+          .where(eq(campaigns.id, campaignId));
+        
+        // Activate the campaign if needed
+        const status = await getTrafficStarCampaignStatus(trafficstarCampaignId);
+        if (status !== 'active') {
+          // Set end time to today at 23:59 UTC
+          const today = new Date();
+          const formattedDate = today.toISOString().split('T')[0]; // YYYY-MM-DD
+          const endTimeStr = `${formattedDate} 23:59:00`;
+          
+          // Update end time
+          await trafficStarService.updateCampaignEndTime(Number(trafficstarCampaignId), endTimeStr);
+          
+          // Activate the campaign
+          await trafficStarService.activateCampaign(Number(trafficstarCampaignId));
+          console.log(`✅ HIGH SPEND FIX: Activated campaign ${trafficstarCampaignId} directly based on remaining clicks`);
+        }
+        
+        // Start the right monitoring process
+        startMinutelyStatusCheck(campaignId, trafficstarCampaignId);
+        
+        // Exit early - we've handled this case
+        return;
+      }
+      // If we're below the pause threshold, make sure we pause
+      else if (totalRemainingClicks < HIGH_SPEND_PAUSE_THRESHOLD && 
+               ['high_spend', 'high_spend_budget_updated'].includes(currentState)) {
+        
+        console.log(`🔄 HIGH SPEND FIX: Campaign ${campaignId} has ${totalRemainingClicks} remaining clicks which is < ${HIGH_SPEND_PAUSE_THRESHOLD} (HIGH SPEND pause threshold)`);
+        console.log(`🔄 Need to ensure campaign is paused`);
+        
+        // Check if it's already paused
+        const status = await getTrafficStarCampaignStatus(trafficstarCampaignId);
+        if (status === 'active') {
+          // Pause the campaign
+          await trafficStarService.pauseCampaign(Number(trafficstarCampaignId));
+          console.log(`✅ HIGH SPEND FIX: Paused campaign ${trafficstarCampaignId} based on low remaining clicks`);
+          
+          // Update the state
+          await db.update(campaigns)
+            .set({
+              lastTrafficSenderStatus: 'high_spend_paused_low_clicks',
+              lastTrafficSenderAction: new Date(),
+              updatedAt: new Date()
+            })
+            .where(eq(campaigns.id, campaignId));
+        }
+        
+        // Start pause monitoring
+        startMinutelyPauseStatusCheck(campaignId, trafficstarCampaignId);
+        
+        // Exit early - we've handled this case
+        return;
+      }
+    }
+// If we're transitioning from high spend to low spend, ensure we clear any high spend state
     if (currentCampaignStatus === 'high_spend' || 
         currentCampaignStatus === 'high_spend_waiting' || 
         currentCampaignStatus === 'high_spend_budget_updated') {
@@ -974,6 +1067,33 @@ function startMinutelyStatusCheck(campaignId: number, trafficstarCampaignId: str
   
   console.log(`🔄 Starting minute-by-minute ACTIVE status check for campaign ${trafficstarCampaignId}`);
   
+  
+  // CRITICAL FIX: Ensure we clear ALL types of monitoring before starting a new one
+  // This prevents multiple monitors from running simultaneously and conflicting with each other
+  
+  // Clear any active status checks
+  if (activeStatusChecks.has(campaignId)) {
+    clearInterval(activeStatusChecks.get(campaignId));
+    activeStatusChecks.delete(campaignId);
+    console.log(`🛑 Cleared existing ACTIVE monitor for campaign ${campaignId}`);
+  }
+  
+  // Clear any pause status checks
+  if (pauseStatusChecks.has(campaignId)) {
+    clearInterval(pauseStatusChecks.get(campaignId));
+    pauseStatusChecks.delete(campaignId);
+    console.log(`🛑 Cleared existing PAUSE monitor for campaign ${campaignId}`);
+  }
+  
+  // Clear any empty URL checks
+  if (emptyUrlStatusChecks.has(campaignId)) {
+    clearInterval(emptyUrlStatusChecks.get(campaignId));
+    emptyUrlStatusChecks.delete(campaignId);
+    console.log(`🛑 Cleared existing EMPTY URL monitor for campaign ${campaignId}`);
+  }
+  
+  console.log(`🧹 All existing monitors cleared for campaign ${campaignId} before starting new ACTIVE monitor`);
+  
   // Set up a new interval that runs every minute
   const interval = setInterval(async () => {
     console.log(`⏱️ Running minute check for campaign ${trafficstarCampaignId} active status`);
@@ -1110,7 +1230,98 @@ function startMinutelyStatusCheck(campaignId: number, trafficstarCampaignId: str
           }
         }
       } else if (status === 'paused') {
-        console.log(`⚠️ Campaign ${trafficstarCampaignId} was found paused but should be active - will attempt to reactivate`);
+            // CRITICAL FIX: Track external pause interference pattern
+            // Store the last few activation timestamps to detect patterns of external interference
+            if (!global.campaignActivationHistory) {
+              global.campaignActivationHistory = {};
+            }
+            
+            if (!global.campaignActivationHistory[campaignId]) {
+              global.campaignActivationHistory[campaignId] = [];
+            }
+            
+            // Add current timestamp
+            global.campaignActivationHistory[campaignId].push(Date.now());
+            
+            // Only keep the last 5 activations
+            if (global.campaignActivationHistory[campaignId].length > 5) {
+              global.campaignActivationHistory[campaignId].shift();
+            }
+            
+            // Calculate frequency of activations
+            let isUnderAttack = false;
+            let timeGap = 0;
+            
+            if (global.campaignActivationHistory[campaignId].length >= 3) {
+              // If we've had to reactivate 3+ times, check the time pattern
+              const timestamps = global.campaignActivationHistory[campaignId];
+              const gaps = [];
+              
+              for (let i = 1; i < timestamps.length; i++) {
+                gaps.push(timestamps[i] - timestamps[i-1]);
+              }
+              
+              // Calculate average gap (in seconds)
+              const avgGap = gaps.reduce((sum, gap) => sum + gap, 0) / gaps.length / 1000;
+              timeGap = avgGap;
+              
+              // If campaigns are being paused more often than every 5 minutes, consider it interference
+              if (avgGap < 300) { // 300 seconds = 5 minutes
+                isUnderAttack = true;
+                console.log(`⚠️⚠️⚠️ CRITICAL: Campaign ${trafficstarCampaignId} appears to be under external interference!`);
+                console.log(`Detection: ${global.campaignActivationHistory[campaignId].length} reactivations with average gap of ${avgGap.toFixed(1)} seconds`);
+              }
+            }
+            
+            // Log the pause detection
+            if (isUnderAttack) {
+              console.log(`🔒 ENHANCED PROTECTION: Campaign ${trafficstarCampaignId} was found paused by external interference - activating robust protection`);
+              
+              // Update database to mark campaign as under attack
+              await db.update(campaigns)
+                .set({
+                  externalPauseProtection: true,
+                  externalPauseCount: sql`COALESCE(external_pause_count, 0) + 1`,
+                  updatedAt: new Date()
+                })
+                .where(eq(campaigns.id, campaignId));
+                
+              // If time gap is extremely short, increase our check frequency to counter
+              // For this case, we'll use an even shorter interval (15 seconds) to ensure we win
+              const checkInterval = 15 * 1000; // 15 seconds
+              
+              // Adjust interval to be more aggressive
+              clearInterval(interval);
+              const newInterval = setInterval(async () => {
+                // Just directly activate every time with minimal checks
+                try {
+                  console.log(`🔒 ANTI-INTERFERENCE: Force activating campaign ${trafficstarCampaignId} (anti-interference mode)`);
+                  
+                  // Set end time to today at 23:59 UTC
+                  const today = new Date();
+                  const formattedDate = today.toISOString().split('T')[0]; // YYYY-MM-DD
+                  const endTimeStr = `${formattedDate} 23:59:00`;
+                  
+                  // Update end time first
+                  await trafficStarService.updateCampaignEndTime(Number(trafficstarCampaignId), endTimeStr);
+                  
+                  // Then activate
+                  await trafficStarService.activateCampaign(Number(trafficstarCampaignId));
+                  
+                  console.log(`✅ ANTI-INTERFERENCE: Campaign ${trafficstarCampaignId} forcibly activated`);
+                } catch (error) {
+                  console.error(`❌ ANTI-INTERFERENCE: Error activating campaign ${trafficstarCampaignId}:`, error);
+                }
+              }, checkInterval);
+              
+              // Update the interval in our map
+              activeStatusChecks.set(campaignId, newInterval);
+              
+              // Skip normal reactivation logic since we're in enhanced mode
+              return;
+            } else {
+              console.log(`⚠️ Campaign ${trafficstarCampaignId} was found paused but should be active - will attempt to reactivate`);
+            }
         
         try {
           // Get the campaign details to check URLs and remaining clicks
